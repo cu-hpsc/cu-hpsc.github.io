@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Nelson Bighetti">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Overview This course will develop the skills necessary to reason about performance of applications and modern architectures, to identify opportunities and side-effects of changes, to develop high-performance software, to transfer algorithmic patterns and lessons learned from different domains, and to communicate such analyses with diverse stakeholders. These skills are important for research and development of numerical methods and performance-sensitive science and engineering applications as well as jobs affiliated with computing facilities in academia, national labs, and industry.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/fall2019/syllabus/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/fall2019/syllabus/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="/fall2019/syllabus/">
+  <meta property="og:title" content="Syllabus | HPSC">
+  <meta property="og:description" content="Overview This course will develop the skills necessary to reason about performance of applications and modern architectures, to identify opportunities and side-effects of changes, to develop high-performance software, to transfer algorithmic patterns and lessons learned from different domains, and to communicate such analyses with diverse stakeholders. These skills are important for research and development of numerical methods and performance-sensitive science and engineering applications as well as jobs affiliated with computing facilities in academia, national labs, and industry."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="twitter:image" content="/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+    
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>Syllabus | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item active">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#preparation">Preparation</a></li>
+<li><a href="#approximate-timeline">Approximate timeline</a></li>
+<li><a href="#evaluation">Evaluation</a>
+<ul>
+<li><a href="#git-and-github">Git and GitHub</a></li>
+</ul></li>
+<li><a href="#moodle">Moodle</a></li>
+<li><a href="#resources">Resources</a>
+<ul>
+<li><a href="#additional-resources">Additional resources</a></li>
+</ul></li>
+<li><a href="#disability-accommodations">Disability Accommodations</a></li>
+<li><a href="#religious-observances">Religious Observances</a></li>
+<li><a href="#classroom-behavior">Classroom Behavior</a></li>
+<li><a href="#discrimination-and-harassment">Discrimination and Harassment</a></li>
+<li><a href="#honor-code">Honor Code</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">Syllabus</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<h3 id="overview">Overview</h3>
+
+<p>This course will develop the skills necessary to reason about
+performance of applications and modern architectures, to identify
+opportunities and side-effects of changes, to develop high-performance
+software, to transfer algorithmic patterns and lessons learned from
+different domains, and to communicate such analyses with diverse
+stakeholders.  These skills are important for research and development
+of numerical methods and performance-sensitive science and engineering
+applications as well as jobs affiliated with computing facilities in
+academia, <a href="https://www.alcf.anl.gov/about/careers" target="_blank">national labs</a>, and
+industry.</p>
+
+<p>We will introduce widely-used parallel programming models such as
+OpenMP, MPI, and CUDA, as well as ubiquitous parallel libraries, but
+the purpose of the course is not to teach interfaces, but to develop
+skills that will be durable and transferrable.</p>
+
+<h3 id="preparation">Preparation</h3>
+
+<p>This course does not assume prior experience with parallel
+programming.  It will use Linux command-line tools, and some
+activities will involve batch computing environments (SLURM).  Most
+exercises will use the C programming language, though you can use any
+appropriate language for projects.  Some of the exercises will involve
+techniques from numerical computing (e.g., CSCI-3656).  I will do my
+best to avoid assuming prior knowledge of these topics, and to provide
+resources for you to learn or refresh your memory as we use them.</p>
+
+<p>Everyone here is capable of succeeding in the course, but the effort
+level will be higher if most of the topics above are new to you.
+Regardless of your preparation, it is normal to feel lost sometimes.
+A big part of pragmatic HPC is learning to efficiently answer your
+questions through documentation, online resources, and even consulting
+the code or running experiments.  (Most of our software stack is open
+source.)  That said, it&rsquo;s easy to lose lots of time in a rabbit hole.
+My hope is that you will have the courage to dive into that rabbit
+hole occasionally, but also to ask questions when stuck and to budget
+your time for such excursions so that you can complete assignments
+on-time without compromising your work/life balance.</p>
+
+<h3 id="approximate-timeline">Approximate timeline</h3>
+
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topics</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Aug 26</td>
+<td>Introduction and modern computer architecture (vectorization and memory hierarchy)</td>
+</tr>
+
+<tr>
+<td>Sep 2</td>
+<td>Performance modeling, analysis, and scaling; profiling</td>
+</tr>
+
+<tr>
+<td>Sep 9</td>
+<td>Intro to OpenMP and non-numerical algorithms (sorting and searching)</td>
+</tr>
+
+<tr>
+<td>Sep 16</td>
+<td>Parallel algorithmic patterns</td>
+</tr>
+
+<tr>
+<td>Sep 23</td>
+<td>Dense linear algebra</td>
+</tr>
+
+<tr>
+<td>Sep 30</td>
+<td>Intro to MPI and distributed memory parallelism</td>
+</tr>
+
+<tr>
+<td>Oct 7</td>
+<td>Sparse and iterative linear algebra</td>
+</tr>
+
+<tr>
+<td>Oct 14</td>
+<td>Domain decomposition</td>
+</tr>
+
+<tr>
+<td>Oct 21</td>
+<td>Graph algorithms</td>
+</tr>
+
+<tr>
+<td>Oct 28</td>
+<td>GPU programming via OpenMP-5 and CUDA</td>
+</tr>
+
+<tr>
+<td>Nov 4</td>
+<td>Parallel file systems and IO</td>
+</tr>
+
+<tr>
+<td>Nov 11</td>
+<td>Data analysis/machine learning algorithms</td>
+</tr>
+
+<tr>
+<td>Nov 18</td>
+<td>Particles and N-body systems</td>
+</tr>
+
+<tr>
+<td>Nov 25</td>
+<td>Fall Break</td>
+</tr>
+
+<tr>
+<td>Dec 2</td>
+<td>Multigrid, FFT, and FMM</td>
+</tr>
+
+<tr>
+<td>Dec 9</td>
+<td>Special topics</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="evaluation">Evaluation</h3>
+
+<table>
+<thead>
+<tr>
+<th>Activity</th>
+<th>Percentage</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Participation</td>
+<td>10%</td>
+</tr>
+
+<tr>
+<td>Labs and homework assignments</td>
+<td>40%</td>
+</tr>
+
+<tr>
+<td>Community contribution</td>
+<td>15%</td>
+</tr>
+
+<tr>
+<td>Community analysis</td>
+<td>15%</td>
+</tr>
+
+<tr>
+<td>Final project (written + presentation)</td>
+<td>20%</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="git-and-github">Git and GitHub</h4>
+
+<p>Homework assignments and in-class activities will be submitted via Git.  This class will use GitHub classroom.
+Homeworks will be completed by cloning GitHub repositories, completing coding and analysis activities, and pushing completed assignments back to GitHub.</p>
+
+<p>Assignments may be completed using <a href="https://coding.csel.io/" target="_blank">Coding CSEL Hub</a> and/or <a href="https://www.colorado.edu/rc/resources/summit/specifications" target="_blank">RMACC Summit</a> (<a href="https://rcamp.rc.colorado.edu/accounts/account-request/create/organization" target="_blank">request an account</a>).
+Assignments will typically have written analysis, for which I recommend <a href="https://jupyter.org/" target="_blank">Jupyter</a>.</p>
+
+<p>It is notoriously difficult to predict the time required to develop
+quality code and understand its performance, so please start early to
+give yourself plenty of time.  You are welcome to work together on all
+assignments, but must give credit to collaborators.  You should ensure
+that your written work is entirely your own.</p>
+
+<h3 id="moodle">Moodle</h3>
+
+<p>Moodle will be used to maintain grades.  Please enroll yourself at <a href="https://moodle.cs.colorado.edu" target="_blank">https://moodle.cs.colorado.edu</a>.</p>
+
+<h3 id="resources">Resources</h3>
+
+<p>This course will use a variety of online resources and papers.
+There is no required textbook, but the following resources may be helpful.</p>
+
+<ul>
+<li><a href="https://blogs.fau.de/hager/hpc-book" target="_blank">Hager and Wellein (2010), <strong>Introduction to High Performance Computing for Scientists and Engineers</strong></a></li>
+<li><a href="http://www.cs.utexas.edu/users/flame/laff/pfhp/index.html" target="_blank">van de Geijn, Myers, Parikh (2019): <strong>LAFF on Programming for High Performance</strong></a> (free online)</li>
+<li><a href="http://pages.tacc.utexas.edu/~eijkhout/istc/istc.html" target="_blank">Eijkhout (2017), <strong>Introduction to High-Performance Scientific Computing</strong></a> (free PDF)</li>
+</ul>
+
+<h4 id="additional-resources">Additional resources</h4>
+
+<ul>
+<li><a href="https://press.princeton.edu/titles/9763.html" target="_blank">Greenbaum and Chartier (2012), <strong>Numerical Methods Design, Analysis, and Computer Implementation of Algorithms</strong></a> &ndash; an excellent, comprehensive book.</li>
+<li><a href="https://web.stanford.edu/~boyd/vmls/" target="_blank">Boyd and Vandenberghe (2018), <strong>Introduction to Applied Linear Algebra</strong></a> &ndash; practical introduction to linear algebra for computer scientists; free PDF</li>
+<li><a href="http://bookstore.siam.org/ot50/" target="_blank">Trefethen and Bau (1997), <strong>Numerical Linear Algebra</strong></a> &ndash; fantastic, but limited to numerical linear algebra and covers more advanced topics.</li>
+<li><a href="http://physics.codes/" target="_blank">Scopatz and Huff (2015), <strong>Effective Computation in Physics</strong></a> &ndash; Python language, data science workflow, and computation.</li>
+</ul>
+
+<p>A <a href="http://www.siam.org/students/memberships.php" target="_blank">SIAM Membership</a> is free for CU students and provides a 30% discount on SIAM books.</p>
+
+<h3 id="disability-accommodations">Disability Accommodations</h3>
+
+<p>If you qualify for accommodations because of a disability, please submit to your professor a letter from Disability Services in a timely manner (for exam accommodations provide your letter at least one week prior to the exam) so that your needs can be addressed. Disability Services determines accommodations based on documented disabilities. Contact Disability Services at 303-492-8671 or by e-mail at dsinfo@colorado.edu. If you have a temporary medical condition or injury, see the Temporary Injuries guidelines under the Quick Links at the Disability Services website and discuss your needs with your professor.</p>
+
+<h3 id="religious-observances">Religious Observances</h3>
+
+<p><a href="http://www.colorado.edu/policies/fac_relig.html" target="_blank">Campus policy regarding religious observances</a> requires that faculty make every effort to deal reasonably and fairly with all students who, because of religious obligations, have conflicts with scheduled exams, assignments or required assignments/attendance. If this applies to you, please speak with me directly as soon as possible at the beginning of the term. See the <a href="http://www.colorado.edu/policies/observance-religious-holidays-and-absences-classes-andor-exams" target="_blank">campus policy regarding religious observances</a> for full details.</p>
+
+<h3 id="classroom-behavior">Classroom Behavior</h3>
+
+<p>Students and faculty each have responsibility for maintaining an appropriate learning environment. Those who fail to adhere to such behavioral standards may be subject to discipline. Professional courtesy and sensitivity are especially important with respect to individuals and topics dealing with differences of race, color, culture, religion, creed, politics, veteran&rsquo;s status, sexual orientation, gender, gender identity and gender expression, age, disability,and nationalities. Class rosters are provided to the instructor with the student&rsquo;s legal name. I will gladly honor your request to address you by an alternate name or gender pronoun. Please advise me of this preference early in the semester so that I may make appropriate changes to my records. For more information, see the policies on <a href="http://www.colorado.edu/policies/student-classroom-and-course-related-behavior" target="_blank">classroom behavior</a> and the <a href="http://www.colorado.edu/osc/sites/default/files/attached-files/studentconductcode_16-17-a.pdf" target="_blank">student code</a>.</p>
+
+<h3 id="discrimination-and-harassment">Discrimination and Harassment</h3>
+
+<p>The University of Colorado Boulder (CU Boulder) is committed to maintaining a positive learning, working, and living environment. CU Boulder will not tolerate acts of sexual misconduct, discrimination, harassment or related retaliation against or by any employee or student. CU&rsquo;s Sexual Misconduct Policy prohibits sexual assault, sexual exploitation, sexual harassment,intimate partner abuse (dating or domestic violence), stalking or related retaliation. CU Boulder&rsquo;s Discrimination and Harassment Policy prohibits discrimination, harassment or related retaliation based on race, color,national origin, sex, pregnancy, age, disability, creed, religion, sexual orientation, gender identity, gender expression, veteran status, political affiliation or political philosophy. Individuals who believe they have been subject to misconduct under either policy should contact the Office of Institutional Equity and Compliance (OIEC) at 303-492-2127. Information about the OIEC, the above referenced policies, and the campus resources available to assist individuals regarding sexual misconduct, discrimination, harassment or related retaliation can be found at the <a href="http://www.colorado.edu/institutionalequity/" target="_blank">OIEC website</a>.</p>
+
+<h3 id="honor-code">Honor Code</h3>
+
+<p>All students enrolled in a University of Colorado Boulder course are responsible for knowing and adhering to the <a href="http://www.colorado.edu/policies/academic-integrity-policy" target="_blank">academic integrity policy</a> of the institution. Violations of the policy may include: plagiarism, cheating,fabrication, lying, bribery, threat, unauthorized access, clicker fraud,resubmission, and aiding academic dishonesty.  All incidents of academic misconduct will be reported to the Honor Code Council (honor@colorado.edu; 303-735-2273). Students who are found responsible for violating the academic integrity policy will be subject to nonacademic sanctions from the Honor Code Council as well as academic sanctions from the faculty member. Additional information regarding the academic integrity policy can be found at <a href="http://honorcode.colorado.edu" target="_blank">http://honorcode.colorado.edu</a>.</p>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/trends/" rel="prev">Trends</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Jan 1, 0001</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-course/edit/master/content/fall2019/syllabus.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+        
+  </p>
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

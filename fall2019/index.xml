@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Logistics | HPSC</title>
+    <link>/fall2019/</link>
+      <atom:link href="/fall2019/index.xml" rel="self" type="application/rss+xml" />
+    <description>Logistics</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
+    <image>
+      <url>/img/icon-192.png</url>
+      <title>Logistics</title>
+      <link>/fall2019/</link>
+    </image>
+    
+    <item>
+      <title>Syllabus</title>
+      <link>/fall2019/syllabus/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/fall2019/syllabus/</guid>
+      <description>
+
+&lt;h3 id=&#34;overview&#34;&gt;Overview&lt;/h3&gt;
+
+&lt;p&gt;This course will develop the skills necessary to reason about
+performance of applications and modern architectures, to identify
+opportunities and side-effects of changes, to develop high-performance
+software, to transfer algorithmic patterns and lessons learned from
+different domains, and to communicate such analyses with diverse
+stakeholders.  These skills are important for research and development
+of numerical methods and performance-sensitive science and engineering
+applications as well as jobs affiliated with computing facilities in
+academia, &lt;a href=&#34;https://www.alcf.anl.gov/about/careers&#34; target=&#34;_blank&#34;&gt;national labs&lt;/a&gt;, and
+industry.&lt;/p&gt;
+
+&lt;p&gt;We will introduce widely-used parallel programming models such as
+OpenMP, MPI, and CUDA, as well as ubiquitous parallel libraries, but
+the purpose of the course is not to teach interfaces, but to develop
+skills that will be durable and transferrable.&lt;/p&gt;
+
+&lt;h3 id=&#34;preparation&#34;&gt;Preparation&lt;/h3&gt;
+
+&lt;p&gt;This course does not assume prior experience with parallel
+programming.  It will use Linux command-line tools, and some
+activities will involve batch computing environments (SLURM).  Most
+exercises will use the C programming language, though you can use any
+appropriate language for projects.  Some of the exercises will involve
+techniques from numerical computing (e.g., CSCI-3656).  I will do my
+best to avoid assuming prior knowledge of these topics, and to provide
+resources for you to learn or refresh your memory as we use them.&lt;/p&gt;
+
+&lt;p&gt;Everyone here is capable of succeeding in the course, but the effort
+level will be higher if most of the topics above are new to you.
+Regardless of your preparation, it is normal to feel lost sometimes.
+A big part of pragmatic HPC is learning to efficiently answer your
+questions through documentation, online resources, and even consulting
+the code or running experiments.  (Most of our software stack is open
+source.)  That said, it&amp;rsquo;s easy to lose lots of time in a rabbit hole.
+My hope is that you will have the courage to dive into that rabbit
+hole occasionally, but also to ask questions when stuck and to budget
+your time for such excursions so that you can complete assignments
+on-time without compromising your work/life balance.&lt;/p&gt;
+
+&lt;h3 id=&#34;approximate-timeline&#34;&gt;Approximate timeline&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Week&lt;/th&gt;
+&lt;th&gt;Topics&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Aug 26&lt;/td&gt;
+&lt;td&gt;Introduction and modern computer architecture (vectorization and memory hierarchy)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Sep 2&lt;/td&gt;
+&lt;td&gt;Performance modeling, analysis, and scaling; profiling&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Sep 9&lt;/td&gt;
+&lt;td&gt;Intro to OpenMP and non-numerical algorithms (sorting and searching)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Sep 16&lt;/td&gt;
+&lt;td&gt;Parallel algorithmic patterns&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Sep 23&lt;/td&gt;
+&lt;td&gt;Dense linear algebra&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Sep 30&lt;/td&gt;
+&lt;td&gt;Intro to MPI and distributed memory parallelism&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Oct 7&lt;/td&gt;
+&lt;td&gt;Sparse and iterative linear algebra&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Oct 14&lt;/td&gt;
+&lt;td&gt;Domain decomposition&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Oct 21&lt;/td&gt;
+&lt;td&gt;Graph algorithms&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Oct 28&lt;/td&gt;
+&lt;td&gt;GPU programming via OpenMP-5 and CUDA&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Nov 4&lt;/td&gt;
+&lt;td&gt;Parallel file systems and IO&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Nov 11&lt;/td&gt;
+&lt;td&gt;Data analysis/machine learning algorithms&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Nov 18&lt;/td&gt;
+&lt;td&gt;Particles and N-body systems&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Nov 25&lt;/td&gt;
+&lt;td&gt;Fall Break&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Dec 2&lt;/td&gt;
+&lt;td&gt;Multigrid, FFT, and FMM&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Dec 9&lt;/td&gt;
+&lt;td&gt;Special topics&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;evaluation&#34;&gt;Evaluation&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Activity&lt;/th&gt;
+&lt;th&gt;Percentage&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Participation&lt;/td&gt;
+&lt;td&gt;10%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Labs and homework assignments&lt;/td&gt;
+&lt;td&gt;40%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Community contribution&lt;/td&gt;
+&lt;td&gt;15%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Community analysis&lt;/td&gt;
+&lt;td&gt;15%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Final project (written + presentation)&lt;/td&gt;
+&lt;td&gt;20%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h4 id=&#34;git-and-github&#34;&gt;Git and GitHub&lt;/h4&gt;
+
+&lt;p&gt;Homework assignments and in-class activities will be submitted via Git.  This class will use GitHub classroom.
+Homeworks will be completed by cloning GitHub repositories, completing coding and analysis activities, and pushing completed assignments back to GitHub.&lt;/p&gt;
+
+&lt;p&gt;Assignments may be completed using &lt;a href=&#34;https://coding.csel.io/&#34; target=&#34;_blank&#34;&gt;Coding CSEL Hub&lt;/a&gt; and/or &lt;a href=&#34;https://www.colorado.edu/rc/resources/summit/specifications&#34; target=&#34;_blank&#34;&gt;RMACC Summit&lt;/a&gt; (&lt;a href=&#34;https://rcamp.rc.colorado.edu/accounts/account-request/create/organization&#34; target=&#34;_blank&#34;&gt;request an account&lt;/a&gt;).
+Assignments will typically have written analysis, for which I recommend &lt;a href=&#34;https://jupyter.org/&#34; target=&#34;_blank&#34;&gt;Jupyter&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;It is notoriously difficult to predict the time required to develop
+quality code and understand its performance, so please start early to
+give yourself plenty of time.  You are welcome to work together on all
+assignments, but must give credit to collaborators.  You should ensure
+that your written work is entirely your own.&lt;/p&gt;
+
+&lt;h3 id=&#34;moodle&#34;&gt;Moodle&lt;/h3&gt;
+
+&lt;p&gt;Moodle will be used to maintain grades.  Please enroll yourself at &lt;a href=&#34;https://moodle.cs.colorado.edu&#34; target=&#34;_blank&#34;&gt;https://moodle.cs.colorado.edu&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;resources&#34;&gt;Resources&lt;/h3&gt;
+
+&lt;p&gt;This course will use a variety of online resources and papers.
+There is no required textbook, but the following resources may be helpful.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://blogs.fau.de/hager/hpc-book&#34; target=&#34;_blank&#34;&gt;Hager and Wellein (2010), &lt;strong&gt;Introduction to High Performance Computing for Scientists and Engineers&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.cs.utexas.edu/users/flame/laff/pfhp/index.html&#34; target=&#34;_blank&#34;&gt;van de Geijn, Myers, Parikh (2019): &lt;strong&gt;LAFF on Programming for High Performance&lt;/strong&gt;&lt;/a&gt; (free online)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://pages.tacc.utexas.edu/~eijkhout/istc/istc.html&#34; target=&#34;_blank&#34;&gt;Eijkhout (2017), &lt;strong&gt;Introduction to High-Performance Scientific Computing&lt;/strong&gt;&lt;/a&gt; (free PDF)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;additional-resources&#34;&gt;Additional resources&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://press.princeton.edu/titles/9763.html&#34; target=&#34;_blank&#34;&gt;Greenbaum and Chartier (2012), &lt;strong&gt;Numerical Methods Design, Analysis, and Computer Implementation of Algorithms&lt;/strong&gt;&lt;/a&gt; &amp;ndash; an excellent, comprehensive book.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://web.stanford.edu/~boyd/vmls/&#34; target=&#34;_blank&#34;&gt;Boyd and Vandenberghe (2018), &lt;strong&gt;Introduction to Applied Linear Algebra&lt;/strong&gt;&lt;/a&gt; &amp;ndash; practical introduction to linear algebra for computer scientists; free PDF&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://bookstore.siam.org/ot50/&#34; target=&#34;_blank&#34;&gt;Trefethen and Bau (1997), &lt;strong&gt;Numerical Linear Algebra&lt;/strong&gt;&lt;/a&gt; &amp;ndash; fantastic, but limited to numerical linear algebra and covers more advanced topics.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://physics.codes/&#34; target=&#34;_blank&#34;&gt;Scopatz and Huff (2015), &lt;strong&gt;Effective Computation in Physics&lt;/strong&gt;&lt;/a&gt; &amp;ndash; Python language, data science workflow, and computation.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;A &lt;a href=&#34;http://www.siam.org/students/memberships.php&#34; target=&#34;_blank&#34;&gt;SIAM Membership&lt;/a&gt; is free for CU students and provides a 30% discount on SIAM books.&lt;/p&gt;
+
+&lt;h3 id=&#34;disability-accommodations&#34;&gt;Disability Accommodations&lt;/h3&gt;
+
+&lt;p&gt;If you qualify for accommodations because of a disability, please submit to your professor a letter from Disability Services in a timely manner (for exam accommodations provide your letter at least one week prior to the exam) so that your needs can be addressed. Disability Services determines accommodations based on documented disabilities. Contact Disability Services at 303-492-8671 or by e-mail at dsinfo@colorado.edu. If you have a temporary medical condition or injury, see the Temporary Injuries guidelines under the Quick Links at the Disability Services website and discuss your needs with your professor.&lt;/p&gt;
+
+&lt;h3 id=&#34;religious-observances&#34;&gt;Religious Observances&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.colorado.edu/policies/fac_relig.html&#34; target=&#34;_blank&#34;&gt;Campus policy regarding religious observances&lt;/a&gt; requires that faculty make every effort to deal reasonably and fairly with all students who, because of religious obligations, have conflicts with scheduled exams, assignments or required assignments/attendance. If this applies to you, please speak with me directly as soon as possible at the beginning of the term. See the &lt;a href=&#34;http://www.colorado.edu/policies/observance-religious-holidays-and-absences-classes-andor-exams&#34; target=&#34;_blank&#34;&gt;campus policy regarding religious observances&lt;/a&gt; for full details.&lt;/p&gt;
+
+&lt;h3 id=&#34;classroom-behavior&#34;&gt;Classroom Behavior&lt;/h3&gt;
+
+&lt;p&gt;Students and faculty each have responsibility for maintaining an appropriate learning environment. Those who fail to adhere to such behavioral standards may be subject to discipline. Professional courtesy and sensitivity are especially important with respect to individuals and topics dealing with differences of race, color, culture, religion, creed, politics, veteran&amp;rsquo;s status, sexual orientation, gender, gender identity and gender expression, age, disability,and nationalities. Class rosters are provided to the instructor with the student&amp;rsquo;s legal name. I will gladly honor your request to address you by an alternate name or gender pronoun. Please advise me of this preference early in the semester so that I may make appropriate changes to my records. For more information, see the policies on &lt;a href=&#34;http://www.colorado.edu/policies/student-classroom-and-course-related-behavior&#34; target=&#34;_blank&#34;&gt;classroom behavior&lt;/a&gt; and the &lt;a href=&#34;http://www.colorado.edu/osc/sites/default/files/attached-files/studentconductcode_16-17-a.pdf&#34; target=&#34;_blank&#34;&gt;student code&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;discrimination-and-harassment&#34;&gt;Discrimination and Harassment&lt;/h3&gt;
+
+&lt;p&gt;The University of Colorado Boulder (CU Boulder) is committed to maintaining a positive learning, working, and living environment. CU Boulder will not tolerate acts of sexual misconduct, discrimination, harassment or related retaliation against or by any employee or student. CU&amp;rsquo;s Sexual Misconduct Policy prohibits sexual assault, sexual exploitation, sexual harassment,intimate partner abuse (dating or domestic violence), stalking or related retaliation. CU Boulder&amp;rsquo;s Discrimination and Harassment Policy prohibits discrimination, harassment or related retaliation based on race, color,national origin, sex, pregnancy, age, disability, creed, religion, sexual orientation, gender identity, gender expression, veteran status, political affiliation or political philosophy. Individuals who believe they have been subject to misconduct under either policy should contact the Office of Institutional Equity and Compliance (OIEC) at 303-492-2127. Information about the OIEC, the above referenced policies, and the campus resources available to assist individuals regarding sexual misconduct, discrimination, harassment or related retaliation can be found at the &lt;a href=&#34;http://www.colorado.edu/institutionalequity/&#34; target=&#34;_blank&#34;&gt;OIEC website&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;honor-code&#34;&gt;Honor Code&lt;/h3&gt;
+
+&lt;p&gt;All students enrolled in a University of Colorado Boulder course are responsible for knowing and adhering to the &lt;a href=&#34;http://www.colorado.edu/policies/academic-integrity-policy&#34; target=&#34;_blank&#34;&gt;academic integrity policy&lt;/a&gt; of the institution. Violations of the policy may include: plagiarism, cheating,fabrication, lying, bribery, threat, unauthorized access, clicker fraud,resubmission, and aiding academic dishonesty.  All incidents of academic misconduct will be reported to the Honor Code Council (honor@colorado.edu; 303-735-2273). Students who are found responsible for violating the academic integrity policy will be subject to nonacademic sanctions from the Honor Code Council as well as academic sanctions from the faculty member. Additional information regarding the academic integrity policy can be found at &lt;a href=&#34;http://honorcode.colorado.edu&#34; target=&#34;_blank&#34;&gt;http://honorcode.colorado.edu&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Trends</title>
+      <link>/fall2019/trends/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/fall2019/trends/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://www.karlrupp.net/2018/02/42-years-of-microprocessor-trend-data/&#34; target=&#34;_blank&#34;&gt;https://www.karlrupp.net/2018/02/42-years-of-microprocessor-trend-data/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.karlrupp.net/2013/06/cpu-gpu-and-mic-hardware-characteristics-over-time/&#34; target=&#34;_blank&#34;&gt;https://www.karlrupp.net/2013/06/cpu-gpu-and-mic-hardware-characteristics-over-time/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;Fischer2015-Latency.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
