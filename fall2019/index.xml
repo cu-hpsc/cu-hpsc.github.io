@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Logistics | HPSC</title>
-    <link>/fall2019/</link>
-      <atom:link href="/fall2019/index.xml" rel="self" type="application/rss+xml" />
+    <link>https://cucs-hpsc.github.io/fall2019/</link>
+      <atom:link href="https://cucs-hpsc.github.io/fall2019/index.xml" rel="self" type="application/rss+xml" />
     <description>Logistics</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
     <image>
-      <url>/img/icon-192.png</url>
+      <url>https://cucs-hpsc.github.io/img/icon-192.png</url>
       <title>Logistics</title>
-      <link>/fall2019/</link>
+      <link>https://cucs-hpsc.github.io/fall2019/</link>
     </image>
     
     <item>
       <title>Syllabus</title>
-      <link>/fall2019/syllabus/</link>
+      <link>https://cucs-hpsc.github.io/fall2019/syllabus/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>/fall2019/syllabus/</guid>
+      <guid>https://cucs-hpsc.github.io/fall2019/syllabus/</guid>
       <description>
 
 &lt;h3 id=&#34;overview&#34;&gt;Overview&lt;/h3&gt;
@@ -255,9 +255,9 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     
     <item>
       <title>Trends</title>
-      <link>/fall2019/trends/</link>
+      <link>https://cucs-hpsc.github.io/fall2019/trends/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>/fall2019/trends/</guid>
+      <guid>https://cucs-hpsc.github.io/fall2019/trends/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://www.karlrupp.net/2018/02/42-years-of-microprocessor-trend-data/&#34; target=&#34;_blank&#34;&gt;https://www.karlrupp.net/2018/02/42-years-of-microprocessor-trend-data/&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://www.karlrupp.net/2013/06/cpu-gpu-and-mic-hardware-characteristics-over-time/&#34; target=&#34;_blank&#34;&gt;https://www.karlrupp.net/2013/06/cpu-gpu-and-mic-hardware-characteristics-over-time/&lt;/a&gt;&lt;/p&gt;
