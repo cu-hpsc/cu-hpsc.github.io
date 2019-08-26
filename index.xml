@@ -93,7 +93,7 @@ questions through documentation, online resources, and even consulting
 the code or running experiments.  (Most of our software stack is open
 source.)  That said, it&amp;rsquo;s easy to lose lots of time in a rabbit hole.
 My hope is that you will have the courage to dive into that rabbit
-hole occasionally, but also to ask questions when stuck and to budget
+hole occasionally, but also to &lt;a href=&#34;https://jvns.ca/blog/good-questions/&#34; target=&#34;_blank&#34;&gt;ask questions&lt;/a&gt; when stuck and to budget
 your time for such excursions so that you can complete assignments
 on-time without compromising your work/life balance.&lt;/p&gt;
 
@@ -378,6 +378,17 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
 &lt;/ul&gt;
 
 &lt;p&gt;Further talk details can easily be added to this page using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Asking Questions</title>
+      <link>https://cucs-hpsc.github.io/post/asking-questions/</link>
+      <pubDate>Mon, 26 Aug 2019 14:24:27 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/post/asking-questions/</guid>
+      <description>&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;asking good questions &lt;a href=&#34;https://t.co/nRKvVHaRQM&#34;&gt;pic.twitter.com/nRKvVHaRQM&lt;/a&gt;&lt;/p&gt;&amp;mdash; 🔎Julia Evans🔍 (@b0rk) &lt;a href=&#34;https://twitter.com/b0rk/status/815059169388720128?ref_src=twsrc%5Etfw&#34;&gt;December 31, 2016&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
+
 </description>
     </item>
     
