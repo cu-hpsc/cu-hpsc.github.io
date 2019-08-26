@@ -4,88 +4,87 @@
   
   <url>
     <loc>https://cucs-hpsc.github.io/courses/example/example1/</loc>
-    <lastmod>2019-05-05T00:00:00+01:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/courses/example/</loc>
-    <lastmod>2018-09-09T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/fall2019/</loc>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/fall2019/syllabus/</loc>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/courses/example/example2/</loc>
-    <lastmod>2019-05-05T00:00:00+01:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/fall2019/trends/</loc>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/talk/example/</loc>
-    <lastmod>2030-06-01T13:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/</loc>
-    <lastmod>2030-06-01T13:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://cucs-hpsc.github.io/talk/</loc>
-    <lastmod>2030-06-01T13:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/slides/</loc>
-    <lastmod>2019-02-05T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/slides/example/</loc>
-    <lastmod>2019-02-05T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/tags/deep-learning/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/tags/demo/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/project/external-project/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/project/internal-project/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/project/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/tags/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/authors/admin/</loc>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
@@ -98,14 +97,21 @@
   
   <url>
     <loc>https://cucs-hpsc.github.io/courses/</loc>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/post/</loc>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
     <loc>https://cucs-hpsc.github.io/publication_types/</loc>
+  </url>
+  
+  <url>
+    <loc>https://cucs-hpsc.github.io/talk/</loc>
+    <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
 </urlset>
