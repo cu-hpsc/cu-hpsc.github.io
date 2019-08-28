@@ -28,10 +28,11 @@
   
     
   
-  <meta name="description" content="CSCI 5576/4576: Fall 2019: High Performance Scientific Computing">
+  <meta name="description" content="Cores, caches, and memory A von Neumann Architecture A contemporary architecture My laptop We can get this kind of information for our machine using hwloc, which provides a library as well as the command-line tool lstopo.
+!lstopo --output-format svg &gt; lstopo-local.svg  A double-socket compute node with two GPUs 2x Xeon Ivy-Bridge-EP E5-2680v2 &#43; 2x NVIDIA GPUs (from 2013, with hwloc v1.11). GPUs are reported as CUDA devices and X11 display :1.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
 
   
 
@@ -93,14 +94,12 @@
   
 
   
-  <link rel="alternate" href="/fall2019/index.xml" type="application/rss+xml" title="HPSC">
-  
 
   <link rel="manifest" href="/index.webmanifest">
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
 
   
   
@@ -116,12 +115,16 @@
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/">
-  <meta property="og:title" content="Logistics | HPSC">
-  <meta property="og:description" content="CSCI 5576/4576: Fall 2019: High Performance Scientific Computing"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
+  <meta property="og:title" content="Intro to Architecture | HPSC">
+  <meta property="og:description" content="Cores, caches, and memory A von Neumann Architecture A contemporary architecture My laptop We can get this kind of information for our machine using hwloc, which provides a library as well as the command-line tool lstopo.
+!lstopo --output-format svg &gt; lstopo-local.svg  A double-socket compute node with two GPUs 2x Xeon Ivy-Bridge-EP E5-2680v2 &#43; 2x NVIDIA GPUs (from 2013, with hwloc v1.11). GPUs are reported as CUDA devices and X11 display :1."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
+      <meta property="article:published_time" content="2019-08-28T08:10:18-06:00">
+    
+    <meta property="article:modified_time" content="2019-08-28T15:00:12-06:00">
   
 
   
@@ -133,7 +136,7 @@
 
 
 
-  <title>Logistics | HPSC</title>
+  <title>Intro to Architecture | HPSC</title>
 
 </head>
 
@@ -262,7 +265,7 @@
 <nav class="collapse docs-links" id="docs-nav">
   
   
-  <div class="docs-toc-item active">
+  <div class="docs-toc-item">
     <a class="docs-toc-link" href="/fall2019/">Logistics</a>
 
   </div>
@@ -276,7 +279,7 @@
     <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
     <ul class="nav docs-sidenav">
       
-      <li >
+      <li class="active">
         <a href="/fall2019/intro-architecture/">2019-08-26 Architecture</a>
       </li>
       
@@ -311,18 +314,34 @@
 
       <nav id="TableOfContents">
 <ul>
-<li>
-<ul>
-<li><a href="#where-and-when">Where and When</a>
+<li><a href="#cores-caches-and-memory">Cores, caches, and memory</a>
 <ul>
 <li>
 <ul>
-<li><a href="#zoom">Zoom</a></li>
-<li><a href="#instructor-jed-brown-https-www-colorado-edu-cs-jed-brown">Instructor: <a href="https://www.colorado.edu/cs/jed-brown" target="_blank">Jed Brown</a></a></li>
-<li><a href="#teaching-assistant-camden-elliott-williams-https-www-colorado-edu-ics-camden-elliott-williams">Teaching Assistant: <a href="https://www.colorado.edu/ics/camden-elliott-williams" target="_blank">Camden Elliott-Williams</a></a></li>
+<li><a href="#a-von-neumann-architecture-https-en-wikipedia-org-wiki-von-neumann-architecture">A <a href="https://en.wikipedia.org/wiki/Von_Neumann_architecture" target="_blank">von Neumann Architecture</a></a></li>
+<li><a href="#a-contemporary-architecture">A contemporary architecture</a></li>
+<li><a href="#my-laptop">My laptop</a></li>
+<li><a href="#a-double-socket-compute-node-with-two-gpus">A double-socket compute node with two GPUs</a></li>
+<li><a href="#block-diagrams">Block diagrams</a>
+<ul>
+<li><a href="#ring-bus-xeon-e5-2600-family">Ring bus (Xeon E5-2600 family)</a></li>
+<li><a href="#mesh-bus-xeon-scalable-family">Mesh bus (Xeon Scalable family)</a></li>
+<li><a href="#multi-socket-configurations">Multi-socket configurations</a></li>
+</ul></li>
+<li><a href="#multiple-nodes-go-into-racks-or-cabinets">Multiple nodes go into <strong>racks</strong> or <strong>cabinets</strong></a></li>
+<li><a href="#terminology">Terminology</a></li>
+<li><a href="#how-expensive-is-it-to-access-memory">How expensive is it to access memory?</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#videos">Videos</a></li>
+<li><a href="#how-your-program-accesses-memory">How your program accesses memory</a>
+<ul>
+<li>
+<ul>
+<li><a href="#let-s-compare-three-code-samples">Let&rsquo;s compare three code samples</a></li>
+<li><a href="#what-happens-when-you-request-a-cache-line">What happens when you request a cache line?</a></li>
+</ul></li>
+<li><a href="#operating-system-effects">Operating system effects</a></li>
+<li><a href="#further-resources">Further resources</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -336,70 +355,136 @@
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Logistics</h1>
+          <h1 itemprop="name">Intro to Architecture</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<h2 id="where-and-when">Where and When</h2>
+<h1 id="cores-caches-and-memory">Cores, caches, and memory</h1>
+
+<h3 id="a-von-neumann-architecture-https-en-wikipedia-org-wiki-von-neumann-architecture">A <a href="https://en.wikipedia.org/wiki/Von_Neumann_architecture" target="_blank">von Neumann Architecture</a></h3>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Von_Neumann_Architecture.svg/2880px-Von_Neumann_Architecture.svg.png" alt="von Neumann architecture" /></p>
+
+<h3 id="a-contemporary-architecture">A contemporary architecture</h3>
+
+<p><img src="http://static.duartes.org/img/blogPosts/physicalMemoryAccess.png" alt="Core 2" /></p>
+
+<h3 id="my-laptop">My laptop</h3>
+
+<p>We can get this kind of information for our machine using <a href="https://www.open-mpi.org/projects/hwloc/" target="_blank">hwloc</a>, which provides a library as well as the command-line tool <code>lstopo</code>.</p>
+
+<pre><code class="language-python">!lstopo --output-format svg &gt; lstopo-local.svg
+</code></pre>
+
+<p><img src="lstopo-local.svg" alt="lstopo" /></p>
+
+<h3 id="a-double-socket-compute-node-with-two-gpus">A double-socket compute node with two GPUs</h3>
+
+<p>2x Xeon Ivy-Bridge-EP <a href="https://ark.intel.com/content/www/us/en/ark/products/75277/intel-xeon-processor-e5-2680-v2-25m-cache-2-80-ghz.html" target="_blank">E5-2680v2</a> + 2x NVIDIA GPUs (from 2013, with hwloc v1.11).
+GPUs are reported as CUDA devices and X11 display :1.0: (from the <a href="https://www-lb.open-mpi.org/projects/hwloc/lstopo/" target="_blank">hwloc gallery</a>)
+<img src="https://www-lb.open-mpi.org/projects/hwloc/lstopo/images/2XeonE5v2+2cuda+1display_v1.11.png" alt="" /></p>
+
+<h3 id="block-diagrams">Block diagrams</h3>
+
+<p>A block diagram from a vendor can include additional information about how cores are physically connected.</p>
+
+<h4 id="ring-bus-xeon-e5-2600-family">Ring bus (Xeon E5-2600 family)</h4>
+
+<p><img src="https://software.intel.com/sites/default/files/managed/e3/a4/xeon-processor-scalable-family-tech-overview-fig04.png" alt="Intel Xeon E5-2600" /></p>
+
+<h4 id="mesh-bus-xeon-scalable-family">Mesh bus (Xeon Scalable family)</h4>
+
+<p><img src="https://software.intel.com/sites/default/files/managed/5a/03/xeon-processor-scalable-family-tech-overview-fig05.png" alt="Intel Xeon Scalable" /></p>
+
+<h4 id="multi-socket-configurations">Multi-socket configurations</h4>
+
+<p><img src="https://software.intel.com/sites/default/files/managed/77/f2/xeon-processor-scalable-family-tech-overview-fig07.png" alt="4-socket ring" /></p>
+
+<p><a href="https://software.intel.com/en-us/articles/intel-xeon-processor-scalable-family-technical-overview" target="_blank">https://software.intel.com/en-us/articles/intel-xeon-processor-scalable-family-technical-overview</a></p>
+
+<h3 id="multiple-nodes-go-into-racks-or-cabinets">Multiple nodes go into <strong>racks</strong> or <strong>cabinets</strong></h3>
+
+<p><img src="BlueGenePRacks.png" alt="Blue Gene/P Racks" /></p>
+
+<p><img src="https://www.olcf.ornl.gov/wp-content/uploads/2018/06/summit-1.jpg" alt="OLCF Summit" /></p>
+
+<h3 id="terminology">Terminology</h3>
 
 <ul>
-<li>CSCI 5576 / 4576: High Performance Scientific Computing</li>
-<li>Lectures: <strong>Mon/Wed/Fri 11-11:50</strong> in ECCR 150</li>
-<li>Labs: <strong>Fri 9-10:40</strong> in KOBL 300</li>
-<li>Website: <a href="https://cucs-hpsc.github.io/fall2019" target="_blank">https://cucs-hpsc.github.io/fall2019</a></li>
+<li><strong>Core</strong> (virtual and physical): has a single program counter (logically sequential processing of instructions)</li>
+<li><strong>Memory channel</strong>: e.g., DDR4-2400: transfers 64 bits (8 bytes) at a rate of 2400 MHz = 15.36 GB/s</li>
+<li><strong>Socket</strong> or <strong>CPU</strong>: contains multiple cores in a single piece* of silicon</li>
+<li><strong>Non-Uniform Memory Access (NUMA)</strong>: different channels may be different distances from a core</li>
+<li><strong>Compute node</strong>: one or more sockets, plus memory, network card, etc.</li>
 </ul>
 
-<h4 id="zoom">Zoom</h4>
+<h3 id="how-expensive-is-it-to-access-memory">How expensive is it to access memory?</h3>
+
+<p>What does that mean?  How would we measure?</p>
+
+<p><a href="http://www.rdrop.com/~paulmck/RCU/RCU.2013.01.22d.PLMW.pdf" target="_blank">McKenney (2013): Laws of Physics</a></p>
+
+<p><a href="https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank">Interactive</a></p>
+
+<p><a href="https://www.anandtech.com/show/14694/amd-rome-epyc-2nd-gen/7" target="_blank">Variation by vendor</a></p>
+
+<h1 id="how-your-program-accesses-memory">How your program accesses memory</h1>
+
+<pre><code class="language-c">double a[1000];
+
+void foo() {
+    for (int i=0; i&lt;1000; i++)
+        a[i] = 1.234 * i;
+}
+</code></pre>
+
+<p>The compiler turns the loop body into instructions, which we can examine using <a href="https://gcc.godbolt.org/z/gbhuZR" target="_blank">Godbolt</a>.</p>
+
+<pre><code>pxor xmm0, xmm0                  ; zero the xmm0 register
+cvtsi2sd xmm0, eax               ; convert the integer i to double
+mulsd xmm0, xmm1                 ; multiply by 1.234 (held in xmm1)
+movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
+</code></pre>
+
+<p>Only one instruction here accesses memory, and the performance will be affected greatly by where that memory resides (which level of cache, where in DRAM).</p>
+
+<p>Most architectures today have <strong>64-byte cache lines</strong>: all transfers from main memory (DRAM) to and from cache operate in units of 64 bytes.</p>
+
+<p><img src="http://static.duartes.org/img/blogPosts/L1CacheExample.png" alt="" /></p>
+
+<h3 id="let-s-compare-three-code-samples">Let&rsquo;s compare three code samples</h3>
+
+<pre><code class="language-c">for (int i=0; i&lt;N; i++)
+    a[i] = b[i];
+</code></pre>
+
+<pre><code class="language-c">for (int i=0; i&lt;N; i++)
+    a[i] = b[(i*8) % N];
+</code></pre>
+
+<pre><code class="language-c">for (int i=0; i&lt;N; i++)
+    a[i] = b[random() % N];
+</code></pre>
+
+<h3 id="what-happens-when-you-request-a-cache-line">What happens when you request a cache line?</h3>
+
+<p><img src="http://static.duartes.org/img/blogPosts/memoryRead.png" alt="" /></p>
+
+<h2 id="operating-system-effects">Operating system effects</h2>
+
+<p>Most systems today use virtual addressing, so every address in your program needs to be translated to a physical address before looking for it (in cache or memory).  Fortunately, there is hardware to assist with this: the Translation Lookaside Buffer (TLB).</p>
+
+<p><img src="https://drawings.jvns.ca/drawings/pagetable.svg" alt="Virtual memory and the page table" /></p>
+
+<h2 id="further-resources">Further resources</h2>
 
 <ul>
-<li>Meeting ID: 214-104-523</li>
-<li>Join via web browser: <a href="https://cuboulder.zoom.us/j/214104523" target="_blank">https://cuboulder.zoom.us/j/214104523</a></li>
-<li>Join via Zoom app (using meeting ID)</li>
-<li>Join via One tap mobile: +16699006833,,214104523# or +16465588656,,214104523#</li>
-<li>Join via telephone: 1-669-900-6833 or 1-646-558-8656</li>
+<li><a href="https://jvns.ca/blog/2016/12/03/how-much-memory-is-my-process-using-/" target="_blank">Julia Evans (2016): How much memory is my process using?</a></li>
+<li><a href="https://manybutfinite.com/post/intel-cpu-caches/" target="_blank">Gustavo Duarte (2009): Cache: a place for concealment and safekeeping</a></li>
+<li><a href="https://manybutfinite.com/post/getting-physical-with-memory/" target="_blank">Gustavo Duarte (2009): Getting Physical With Memory</a></li>
+<li><a href="https://www.akkadia.org/drepper/cpumemory.pdf" target="_blank">Ulrich Drepper (2007): What Every Programmer Should Know About Memory</a></li>
 </ul>
-
-<h4 id="instructor-jed-brown-https-www-colorado-edu-cs-jed-brown">Instructor: <a href="https://www.colorado.edu/cs/jed-brown" target="_blank">Jed Brown</a></h4>
-
-<ul>
-<li>GitHub: <a href="https://github.com/jedbrown" target="_blank">@jedbrown</a></li>
-<li>Office hours: TBA in ECOT 824</li>
-</ul>
-
-<h4 id="teaching-assistant-camden-elliott-williams-https-www-colorado-edu-ics-camden-elliott-williams">Teaching Assistant: <a href="https://www.colorado.edu/ics/camden-elliott-williams" target="_blank">Camden Elliott-Williams</a></h4>
-
-<ul>
-<li>GitHub: <a href="https://github.com/CamdenCU" target="_blank">@CamdenCU</a></li>
-<li>Office hours: TBA Wed</li>
-</ul>
-
-<h2 id="videos">Videos</h2>
-
-<p>Videos appear automatically on
-<a href="https://canvas.colorado.edu/courses/54520/external_tools/2040" target="_blank">Canvas</a>
-and linked below.</p>
-
-<table>
-<thead>
-<tr>
-<th>Date</th>
-<th>Topic</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/055148f7c5c141578bb467d237da1d801d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Aug 26</a></td>
-<td>Course introduction and preview of architectural trends</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/e6af2695fcfe4276b08a3e85ea625dbf1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Aug 28</a></td>
-<td>Intro to architecture</td>
-</tr>
-</tbody>
-</table>
 
           </div>
 
@@ -413,6 +498,19 @@ and linked below.</p>
 <div class="post-nav">
   
   
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/trends/" rel="prev">Trends</a>
+  </div>
+  
 </div>
 
           </div>
@@ -424,7 +522,7 @@ and linked below.</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/_index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/intro-architecture/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

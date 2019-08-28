@@ -227,6 +227,19 @@ reviewers by learning about the project and its expectations and
 process, communicating in advance if appropriate, and leaving plenty
 of time for multiple rounds of review and revision.&lt;/p&gt;
 
+&lt;h3 id=&#34;distance-sections-and-labs&#34;&gt;Distance sections and labs&lt;/h3&gt;
+
+&lt;p&gt;The lectures for this class can be joined synchronously via Zoom (see
+&lt;a href=&#34;fall2019/&#34; target=&#34;_blank&#34;&gt;instructions&lt;/a&gt;); they are also recorded and will be posted
+&lt;a href=&#34;fall2019/#videos&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt; (and automatically on Canvas).  Some labs
+will be activities that can be completed within the time period (with
+group discussion and compare/contrast) while others will be a jump
+start for homeworks.  I envision that distance students will form
+groups and set a time for virtual discussion in lieu of synchronous
+discussion during the lab period.  In both settings, there will be a
+peer evaluation component during which each participant credits one or
+more peers with some specific contributions to the conversation.&lt;/p&gt;
+
 &lt;h2 id=&#34;moodle&#34;&gt;Moodle&lt;/h2&gt;
 
 &lt;p&gt;Moodle will be used to maintain grades.  Please enroll yourself at &lt;a href=&#34;https://moodle.cs.colorado.edu&#34; target=&#34;_blank&#34;&gt;https://moodle.cs.colorado.edu&lt;/a&gt;.&lt;/p&gt;
@@ -272,6 +285,141 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
 &lt;h2 id=&#34;honor-code&#34;&gt;Honor Code&lt;/h2&gt;
 
 &lt;p&gt;All students enrolled in a University of Colorado Boulder course are responsible for knowing and adhering to the &lt;a href=&#34;http://www.colorado.edu/policies/academic-integrity-policy&#34; target=&#34;_blank&#34;&gt;academic integrity policy&lt;/a&gt; of the institution. Violations of the policy may include: plagiarism, cheating,fabrication, lying, bribery, threat, unauthorized access, clicker fraud,resubmission, and aiding academic dishonesty.  All incidents of academic misconduct will be reported to the Honor Code Council (honor@colorado.edu; 303-735-2273). Students who are found responsible for violating the academic integrity policy will be subject to nonacademic sanctions from the Honor Code Council as well as academic sanctions from the faculty member. Additional information regarding the academic integrity policy can be found at &lt;a href=&#34;http://honorcode.colorado.edu&#34; target=&#34;_blank&#34;&gt;http://honorcode.colorado.edu&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Intro to Architecture</title>
+      <link>https://cucs-hpsc.github.io/fall2019/intro-architecture/</link>
+      <pubDate>Wed, 28 Aug 2019 08:10:18 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/intro-architecture/</guid>
+      <description>
+
+&lt;h1 id=&#34;cores-caches-and-memory&#34;&gt;Cores, caches, and memory&lt;/h1&gt;
+
+&lt;h3 id=&#34;a-von-neumann-architecture-https-en-wikipedia-org-wiki-von-neumann-architecture&#34;&gt;A &lt;a href=&#34;https://en.wikipedia.org/wiki/Von_Neumann_architecture&#34; target=&#34;_blank&#34;&gt;von Neumann Architecture&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Von_Neumann_Architecture.svg/2880px-Von_Neumann_Architecture.svg.png&#34; alt=&#34;von Neumann architecture&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;a-contemporary-architecture&#34;&gt;A contemporary architecture&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://static.duartes.org/img/blogPosts/physicalMemoryAccess.png&#34; alt=&#34;Core 2&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;my-laptop&#34;&gt;My laptop&lt;/h3&gt;
+
+&lt;p&gt;We can get this kind of information for our machine using &lt;a href=&#34;https://www.open-mpi.org/projects/hwloc/&#34; target=&#34;_blank&#34;&gt;hwloc&lt;/a&gt;, which provides a library as well as the command-line tool &lt;code&gt;lstopo&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!lstopo --output-format svg &amp;gt; lstopo-local.svg
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;lstopo-local.svg&#34; alt=&#34;lstopo&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;a-double-socket-compute-node-with-two-gpus&#34;&gt;A double-socket compute node with two GPUs&lt;/h3&gt;
+
+&lt;p&gt;2x Xeon Ivy-Bridge-EP &lt;a href=&#34;https://ark.intel.com/content/www/us/en/ark/products/75277/intel-xeon-processor-e5-2680-v2-25m-cache-2-80-ghz.html&#34; target=&#34;_blank&#34;&gt;E5-2680v2&lt;/a&gt; + 2x NVIDIA GPUs (from 2013, with hwloc v1.11).
+GPUs are reported as CUDA devices and X11 display :1.0: (from the &lt;a href=&#34;https://www-lb.open-mpi.org/projects/hwloc/lstopo/&#34; target=&#34;_blank&#34;&gt;hwloc gallery&lt;/a&gt;)
+&lt;img src=&#34;https://www-lb.open-mpi.org/projects/hwloc/lstopo/images/2XeonE5v2+2cuda+1display_v1.11.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;block-diagrams&#34;&gt;Block diagrams&lt;/h3&gt;
+
+&lt;p&gt;A block diagram from a vendor can include additional information about how cores are physically connected.&lt;/p&gt;
+
+&lt;h4 id=&#34;ring-bus-xeon-e5-2600-family&#34;&gt;Ring bus (Xeon E5-2600 family)&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://software.intel.com/sites/default/files/managed/e3/a4/xeon-processor-scalable-family-tech-overview-fig04.png&#34; alt=&#34;Intel Xeon E5-2600&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;mesh-bus-xeon-scalable-family&#34;&gt;Mesh bus (Xeon Scalable family)&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://software.intel.com/sites/default/files/managed/5a/03/xeon-processor-scalable-family-tech-overview-fig05.png&#34; alt=&#34;Intel Xeon Scalable&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;multi-socket-configurations&#34;&gt;Multi-socket configurations&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://software.intel.com/sites/default/files/managed/77/f2/xeon-processor-scalable-family-tech-overview-fig07.png&#34; alt=&#34;4-socket ring&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://software.intel.com/en-us/articles/intel-xeon-processor-scalable-family-technical-overview&#34; target=&#34;_blank&#34;&gt;https://software.intel.com/en-us/articles/intel-xeon-processor-scalable-family-technical-overview&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;multiple-nodes-go-into-racks-or-cabinets&#34;&gt;Multiple nodes go into &lt;strong&gt;racks&lt;/strong&gt; or &lt;strong&gt;cabinets&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;BlueGenePRacks.png&#34; alt=&#34;Blue Gene/P Racks&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://www.olcf.ornl.gov/wp-content/uploads/2018/06/summit-1.jpg&#34; alt=&#34;OLCF Summit&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;terminology&#34;&gt;Terminology&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Core&lt;/strong&gt; (virtual and physical): has a single program counter (logically sequential processing of instructions)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Memory channel&lt;/strong&gt;: e.g., DDR4-2400: transfers 64 bits (8 bytes) at a rate of 2400 MHz = 15.36 GB/s&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Socket&lt;/strong&gt; or &lt;strong&gt;CPU&lt;/strong&gt;: contains multiple cores in a single piece* of silicon&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Non-Uniform Memory Access (NUMA)&lt;/strong&gt;: different channels may be different distances from a core&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Compute node&lt;/strong&gt;: one or more sockets, plus memory, network card, etc.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;how-expensive-is-it-to-access-memory&#34;&gt;How expensive is it to access memory?&lt;/h3&gt;
+
+&lt;p&gt;What does that mean?  How would we measure?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.rdrop.com/~paulmck/RCU/RCU.2013.01.22d.PLMW.pdf&#34; target=&#34;_blank&#34;&gt;McKenney (2013): Laws of Physics&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html&#34; target=&#34;_blank&#34;&gt;Interactive&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.anandtech.com/show/14694/amd-rome-epyc-2nd-gen/7&#34; target=&#34;_blank&#34;&gt;Variation by vendor&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;how-your-program-accesses-memory&#34;&gt;How your program accesses memory&lt;/h1&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;double a[1000];
+
+void foo() {
+    for (int i=0; i&amp;lt;1000; i++)
+        a[i] = 1.234 * i;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The compiler turns the loop body into instructions, which we can examine using &lt;a href=&#34;https://gcc.godbolt.org/z/gbhuZR&#34; target=&#34;_blank&#34;&gt;Godbolt&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pxor xmm0, xmm0                  ; zero the xmm0 register
+cvtsi2sd xmm0, eax               ; convert the integer i to double
+mulsd xmm0, xmm1                 ; multiply by 1.234 (held in xmm1)
+movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Only one instruction here accesses memory, and the performance will be affected greatly by where that memory resides (which level of cache, where in DRAM).&lt;/p&gt;
+
+&lt;p&gt;Most architectures today have &lt;strong&gt;64-byte cache lines&lt;/strong&gt;: all transfers from main memory (DRAM) to and from cache operate in units of 64 bytes.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://static.duartes.org/img/blogPosts/L1CacheExample.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;let-s-compare-three-code-samples&#34;&gt;Let&amp;rsquo;s compare three code samples&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;for (int i=0; i&amp;lt;N; i++)
+    a[i] = b[i];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;for (int i=0; i&amp;lt;N; i++)
+    a[i] = b[(i*8) % N];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;for (int i=0; i&amp;lt;N; i++)
+    a[i] = b[random() % N];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;what-happens-when-you-request-a-cache-line&#34;&gt;What happens when you request a cache line?&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://static.duartes.org/img/blogPosts/memoryRead.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;operating-system-effects&#34;&gt;Operating system effects&lt;/h2&gt;
+
+&lt;p&gt;Most systems today use virtual addressing, so every address in your program needs to be translated to a physical address before looking for it (in cache or memory).  Fortunately, there is hardware to assist with this: the Translation Lookaside Buffer (TLB).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://drawings.jvns.ca/drawings/pagetable.svg&#34; alt=&#34;Virtual memory and the page table&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;further-resources&#34;&gt;Further resources&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://jvns.ca/blog/2016/12/03/how-much-memory-is-my-process-using-/&#34; target=&#34;_blank&#34;&gt;Julia Evans (2016): How much memory is my process using?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://manybutfinite.com/post/intel-cpu-caches/&#34; target=&#34;_blank&#34;&gt;Gustavo Duarte (2009): Cache: a place for concealment and safekeeping&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://manybutfinite.com/post/getting-physical-with-memory/&#34; target=&#34;_blank&#34;&gt;Gustavo Duarte (2009): Getting Physical With Memory&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.akkadia.org/drepper/cpumemory.pdf&#34; target=&#34;_blank&#34;&gt;Ulrich Drepper (2007): What Every Programmer Should Know About Memory&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
