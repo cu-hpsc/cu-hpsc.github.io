@@ -287,7 +287,8 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://blogs.fau.de/hager/hpc-book&#34; target=&#34;_blank&#34;&gt;Hager and Wellein (2010), &lt;strong&gt;Introduction to High Performance Computing for Scientists and Engineers&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.cs.utexas.edu/users/flame/laff/pfhp/index.html&#34; target=&#34;_blank&#34;&gt;van de Geijn, Myers, Parikh (2019): &lt;strong&gt;LAFF on Programming for High Performance&lt;/strong&gt;&lt;/a&gt; (free online)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://pages.tacc.utexas.edu/~eijkhout/istc/istc.html&#34; target=&#34;_blank&#34;&gt;Eijkhout (2017), &lt;strong&gt;Introduction to High-Performance Scientific Computing&lt;/strong&gt;&lt;/a&gt; (free PDF)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://pages.tacc.utexas.edu/~eijkhout/istc/istc.html&#34; target=&#34;_blank&#34;&gt;Eijkhout, Chow, van de Geijn (2017), &lt;strong&gt;Introduction to High-Performance Scientific Computing&lt;/strong&gt;&lt;/a&gt; (free PDF)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www-users.cs.umn.edu/~karypis/parbook/&#34; target=&#34;_blank&#34;&gt;Grama, Gupta, Karypis, Kumar (2003), &lt;strong&gt;Introduction to Parallel Computing&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&#34;additional-resources&#34;&gt;Additional resources&lt;/h4&gt;
@@ -320,6 +321,44 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
 &lt;h2 id=&#34;honor-code&#34;&gt;Honor Code&lt;/h2&gt;
 
 &lt;p&gt;All students enrolled in a University of Colorado Boulder course are responsible for knowing and adhering to the &lt;a href=&#34;http://www.colorado.edu/policies/academic-integrity-policy&#34; target=&#34;_blank&#34;&gt;academic integrity policy&lt;/a&gt; of the institution. Violations of the policy may include: plagiarism, cheating,fabrication, lying, bribery, threat, unauthorized access, clicker fraud,resubmission, and aiding academic dishonesty.  All incidents of academic misconduct will be reported to the Honor Code Council (honor@colorado.edu; 303-735-2273). Students who are found responsible for violating the academic integrity policy will be subject to nonacademic sanctions from the Honor Code Council as well as academic sanctions from the faculty member. Additional information regarding the academic integrity policy can be found at &lt;a href=&#34;http://honorcode.colorado.edu&#34; target=&#34;_blank&#34;&gt;http://honorcode.colorado.edu&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Vectorization and Instruction-Level Parallelism</title>
+      <link>https://cucs-hpsc.github.io/fall2019/intro-vectorization/</link>
+      <pubDate>Fri, 30 Aug 2019 11:00:00 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/intro-vectorization/</guid>
+      <description>
+
+&lt;p&gt;Remember how single-thread performance has increased significantly
+since ~2004 when clock frequency stagnated?&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://www.karlrupp.net/wp-content/uploads/2018/02/42-years-processor-trend.png&#34; alt=&#34;42 years of microprocessor data&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is a result of doing more per clock cycle.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://www.karlrupp.net/wp-content/uploads/2013/06/flops-per-cycle-sp.png&#34; alt=&#34;Flops per clock cycle&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s visit some slides:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://moodle.rrze.uni-erlangen.de/pluginfile.php/12916/mod_resource/content/6/01_IntroArchitecture.pdf&#34; target=&#34;_blank&#34;&gt;Georg Hager (2019): Modern Computer Architucture&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;further-resources&#34;&gt;Further resources&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://software.intel.com/sites/landingpage/IntrinsicsGuide/#&#34; target=&#34;_blank&#34;&gt;Intel Intrinsics Guide&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Wikichip
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikichip.org/wiki/intel/microarchitectures/cascade_lake&#34; target=&#34;_blank&#34;&gt;Intel Xeon: Cascade Lake&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikichip.org/wiki/amd/cores/rome&#34; target=&#34;_blank&#34;&gt;AMD EPYC gen2: Rome&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikichip.org/wiki/ibm/microarchitectures/power9&#34; target=&#34;_blank&#34;&gt;IBM POWER9&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.agner.org/optimize/&#34; target=&#34;_blank&#34;&gt;Agner Fog&amp;rsquo;s website&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     

@@ -28,11 +28,13 @@
   
     
   
-  <meta name="description" content="Cores, caches, and memory A von Neumann Architecture A contemporary architecture My laptop We can get this kind of information for our machine using hwloc, which provides a library as well as the command-line tool lstopo.
-!lstopo --output-format svg &gt; lstopo-local.svg  A double-socket compute node with two GPUs 2x Xeon Ivy-Bridge-EP E5-2680v2 &#43; 2x NVIDIA GPUs (from 2013, with hwloc v1.11). GPUs are reported as CUDA devices and X11 display :1.">
+  <meta name="description" content=" Remember how single-thread performance has increased significantly since ~2004 when clock frequency stagnated?
+This is a result of doing more per clock cycle.
+Let&rsquo;s visit some slides:
+ Georg Hager (2019): Modern Computer Architucture  Further resources  Intel Intrinsics Guide Wikichip  Intel Xeon: Cascade Lake AMD EPYC gen2: Rome IBM POWER9  Agner Fog&rsquo;s website  ">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/intro-vectorization/">
 
   
 
@@ -99,7 +101,7 @@
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/intro-vectorization/">
 
   
   
@@ -115,14 +117,16 @@
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
-  <meta property="og:title" content="Intro to Architecture | HPSC">
-  <meta property="og:description" content="Cores, caches, and memory A von Neumann Architecture A contemporary architecture My laptop We can get this kind of information for our machine using hwloc, which provides a library as well as the command-line tool lstopo.
-!lstopo --output-format svg &gt; lstopo-local.svg  A double-socket compute node with two GPUs 2x Xeon Ivy-Bridge-EP E5-2680v2 &#43; 2x NVIDIA GPUs (from 2013, with hwloc v1.11). GPUs are reported as CUDA devices and X11 display :1."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/intro-vectorization/">
+  <meta property="og:title" content="Vectorization and Instruction-Level Parallelism | HPSC">
+  <meta property="og:description" content=" Remember how single-thread performance has increased significantly since ~2004 when clock frequency stagnated?
+This is a result of doing more per clock cycle.
+Let&rsquo;s visit some slides:
+ Georg Hager (2019): Modern Computer Architucture  Further resources  Intel Intrinsics Guide Wikichip  Intel Xeon: Cascade Lake AMD EPYC gen2: Rome IBM POWER9  Agner Fog&rsquo;s website  "><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-08-28T08:10:18-06:00">
+      <meta property="article:published_time" content="2019-08-30T11:00:00-06:00">
     
     <meta property="article:modified_time" content="2019-08-30T17:08:25-06:00">
   
@@ -136,7 +140,7 @@
 
 
 
-  <title>Intro to Architecture | HPSC</title>
+  <title>Vectorization and Instruction-Level Parallelism | HPSC</title>
 
 </head>
 
@@ -279,11 +283,11 @@
     <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
     <ul class="nav docs-sidenav">
       
-      <li class="active">
+      <li >
         <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
       </li>
       
@@ -318,33 +322,8 @@
 
       <nav id="TableOfContents">
 <ul>
-<li><a href="#cores-caches-and-memory">Cores, caches, and memory</a>
-<ul>
 <li>
 <ul>
-<li><a href="#a-von-neumann-architecture-https-en-wikipedia-org-wiki-von-neumann-architecture">A <a href="https://en.wikipedia.org/wiki/Von_Neumann_architecture" target="_blank">von Neumann Architecture</a></a></li>
-<li><a href="#a-contemporary-architecture">A contemporary architecture</a></li>
-<li><a href="#my-laptop">My laptop</a></li>
-<li><a href="#a-double-socket-compute-node-with-two-gpus">A double-socket compute node with two GPUs</a></li>
-<li><a href="#block-diagrams">Block diagrams</a>
-<ul>
-<li><a href="#ring-bus-xeon-e5-2600-family">Ring bus (Xeon E5-2600 family)</a></li>
-<li><a href="#mesh-bus-xeon-scalable-family">Mesh bus (Xeon Scalable family)</a></li>
-<li><a href="#multi-socket-configurations">Multi-socket configurations</a></li>
-</ul></li>
-<li><a href="#multiple-nodes-go-into-racks-or-cabinets">Multiple nodes go into <strong>racks</strong> or <strong>cabinets</strong></a></li>
-<li><a href="#terminology">Terminology</a></li>
-<li><a href="#how-expensive-is-it-to-access-memory">How expensive is it to access memory?</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#how-your-program-accesses-memory">How your program accesses memory</a>
-<ul>
-<li>
-<ul>
-<li><a href="#let-s-compare-three-code-samples">Let&rsquo;s compare three code samples</a></li>
-<li><a href="#what-happens-when-you-request-a-cache-line">What happens when you request a cache line?</a></li>
-</ul></li>
-<li><a href="#operating-system-effects">Operating system effects</a></li>
 <li><a href="#further-resources">Further resources</a></li>
 </ul></li>
 </ul>
@@ -359,135 +338,38 @@
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Intro to Architecture</h1>
+          <h1 itemprop="name">Vectorization and Instruction-Level Parallelism</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<h1 id="cores-caches-and-memory">Cores, caches, and memory</h1>
+<p>Remember how single-thread performance has increased significantly
+since ~2004 when clock frequency stagnated?</p>
 
-<h3 id="a-von-neumann-architecture-https-en-wikipedia-org-wiki-von-neumann-architecture">A <a href="https://en.wikipedia.org/wiki/Von_Neumann_architecture" target="_blank">von Neumann Architecture</a></h3>
+<p><img src="https://www.karlrupp.net/wp-content/uploads/2018/02/42-years-processor-trend.png" alt="42 years of microprocessor data" /></p>
 
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Von_Neumann_Architecture.svg/2880px-Von_Neumann_Architecture.svg.png" alt="von Neumann architecture" /></p>
+<p>This is a result of doing more per clock cycle.</p>
 
-<h3 id="a-contemporary-architecture">A contemporary architecture</h3>
+<p><img src="https://www.karlrupp.net/wp-content/uploads/2013/06/flops-per-cycle-sp.png" alt="Flops per clock cycle" /></p>
 
-<p><img src="http://static.duartes.org/img/blogPosts/physicalMemoryAccess.png" alt="Core 2" /></p>
-
-<h3 id="my-laptop">My laptop</h3>
-
-<p>We can get this kind of information for our machine using <a href="https://www.open-mpi.org/projects/hwloc/" target="_blank">hwloc</a>, which provides a library as well as the command-line tool <code>lstopo</code>.</p>
-
-<pre><code class="language-python">!lstopo --output-format svg &gt; lstopo-local.svg
-</code></pre>
-
-<p><img src="lstopo-local.svg" alt="lstopo" /></p>
-
-<h3 id="a-double-socket-compute-node-with-two-gpus">A double-socket compute node with two GPUs</h3>
-
-<p>2x Xeon Ivy-Bridge-EP <a href="https://ark.intel.com/content/www/us/en/ark/products/75277/intel-xeon-processor-e5-2680-v2-25m-cache-2-80-ghz.html" target="_blank">E5-2680v2</a> + 2x NVIDIA GPUs (from 2013, with hwloc v1.11).
-GPUs are reported as CUDA devices and X11 display :1.0: (from the <a href="https://www-lb.open-mpi.org/projects/hwloc/lstopo/" target="_blank">hwloc gallery</a>)
-<img src="https://www-lb.open-mpi.org/projects/hwloc/lstopo/images/2XeonE5v2+2cuda+1display_v1.11.png" alt="" /></p>
-
-<h3 id="block-diagrams">Block diagrams</h3>
-
-<p>A block diagram from a vendor can include additional information about how cores are physically connected.</p>
-
-<h4 id="ring-bus-xeon-e5-2600-family">Ring bus (Xeon E5-2600 family)</h4>
-
-<p><img src="https://software.intel.com/sites/default/files/managed/e3/a4/xeon-processor-scalable-family-tech-overview-fig04.png" alt="Intel Xeon E5-2600" /></p>
-
-<h4 id="mesh-bus-xeon-scalable-family">Mesh bus (Xeon Scalable family)</h4>
-
-<p><img src="https://software.intel.com/sites/default/files/managed/5a/03/xeon-processor-scalable-family-tech-overview-fig05.png" alt="Intel Xeon Scalable" /></p>
-
-<h4 id="multi-socket-configurations">Multi-socket configurations</h4>
-
-<p><img src="https://software.intel.com/sites/default/files/managed/77/f2/xeon-processor-scalable-family-tech-overview-fig07.png" alt="4-socket ring" /></p>
-
-<p><a href="https://software.intel.com/en-us/articles/intel-xeon-processor-scalable-family-technical-overview" target="_blank">https://software.intel.com/en-us/articles/intel-xeon-processor-scalable-family-technical-overview</a></p>
-
-<h3 id="multiple-nodes-go-into-racks-or-cabinets">Multiple nodes go into <strong>racks</strong> or <strong>cabinets</strong></h3>
-
-<p><img src="BlueGenePRacks.png" alt="Blue Gene/P Racks" /></p>
-
-<p><img src="https://www.olcf.ornl.gov/wp-content/uploads/2018/06/summit-1.jpg" alt="OLCF Summit" /></p>
-
-<h3 id="terminology">Terminology</h3>
+<p>Let&rsquo;s visit some slides:</p>
 
 <ul>
-<li><strong>Core</strong> (virtual and physical): has a single program counter (logically sequential processing of instructions)</li>
-<li><strong>Memory channel</strong>: e.g., DDR4-2400: transfers 64 bits (8 bytes) at a rate of 2400 MHz = 15.36 GB/s</li>
-<li><strong>Socket</strong> or <strong>CPU</strong>: contains multiple cores in a single piece* of silicon</li>
-<li><strong>Non-Uniform Memory Access (NUMA)</strong>: different channels may be different distances from a core</li>
-<li><strong>Compute node</strong>: one or more sockets, plus memory, network card, etc.</li>
+<li><a href="https://moodle.rrze.uni-erlangen.de/pluginfile.php/12916/mod_resource/content/6/01_IntroArchitecture.pdf" target="_blank">Georg Hager (2019): Modern Computer Architucture</a></li>
 </ul>
-
-<h3 id="how-expensive-is-it-to-access-memory">How expensive is it to access memory?</h3>
-
-<p>What does that mean?  How would we measure?</p>
-
-<p><a href="http://www.rdrop.com/~paulmck/RCU/RCU.2013.01.22d.PLMW.pdf" target="_blank">McKenney (2013): Laws of Physics</a></p>
-
-<p><a href="https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank">Interactive</a></p>
-
-<p><a href="https://www.anandtech.com/show/14694/amd-rome-epyc-2nd-gen/7" target="_blank">Variation by vendor</a></p>
-
-<h1 id="how-your-program-accesses-memory">How your program accesses memory</h1>
-
-<pre><code class="language-c">double a[1000];
-
-void foo() {
-    for (int i=0; i&lt;1000; i++)
-        a[i] = 1.234 * i;
-}
-</code></pre>
-
-<p>The compiler turns the loop body into instructions, which we can examine using <a href="https://gcc.godbolt.org/z/gbhuZR" target="_blank">Godbolt</a>.</p>
-
-<pre><code>pxor xmm0, xmm0                  ; zero the xmm0 register
-cvtsi2sd xmm0, eax               ; convert the integer i to double
-mulsd xmm0, xmm1                 ; multiply by 1.234 (held in xmm1)
-movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
-</code></pre>
-
-<p>Only one instruction here accesses memory, and the performance will be affected greatly by where that memory resides (which level of cache, where in DRAM).</p>
-
-<p>Most architectures today have <strong>64-byte cache lines</strong>: all transfers from main memory (DRAM) to and from cache operate in units of 64 bytes.</p>
-
-<p><img src="http://static.duartes.org/img/blogPosts/L1CacheExample.png" alt="" /></p>
-
-<h3 id="let-s-compare-three-code-samples">Let&rsquo;s compare three code samples</h3>
-
-<pre><code class="language-c">for (int i=0; i&lt;N; i++)
-    a[i] = b[i];
-</code></pre>
-
-<pre><code class="language-c">for (int i=0; i&lt;N; i++)
-    a[i] = b[(i*8) % N];
-</code></pre>
-
-<pre><code class="language-c">for (int i=0; i&lt;N; i++)
-    a[i] = b[random() % N];
-</code></pre>
-
-<h3 id="what-happens-when-you-request-a-cache-line">What happens when you request a cache line?</h3>
-
-<p><img src="http://static.duartes.org/img/blogPosts/memoryRead.png" alt="" /></p>
-
-<h2 id="operating-system-effects">Operating system effects</h2>
-
-<p>Most systems today use virtual addressing, so every address in your program needs to be translated to a physical address before looking for it (in cache or memory).  Fortunately, there is hardware to assist with this: the Translation Lookaside Buffer (TLB).</p>
-
-<p><img src="https://drawings.jvns.ca/drawings/pagetable.svg" alt="Virtual memory and the page table" /></p>
 
 <h2 id="further-resources">Further resources</h2>
 
 <ul>
-<li><a href="https://jvns.ca/blog/2016/12/03/how-much-memory-is-my-process-using-/" target="_blank">Julia Evans (2016): How much memory is my process using?</a></li>
-<li><a href="https://manybutfinite.com/post/intel-cpu-caches/" target="_blank">Gustavo Duarte (2009): Cache: a place for concealment and safekeeping</a></li>
-<li><a href="https://manybutfinite.com/post/getting-physical-with-memory/" target="_blank">Gustavo Duarte (2009): Getting Physical With Memory</a></li>
-<li><a href="https://www.akkadia.org/drepper/cpumemory.pdf" target="_blank">Ulrich Drepper (2007): What Every Programmer Should Know About Memory</a></li>
+<li><a href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#" target="_blank">Intel Intrinsics Guide</a></li>
+<li>Wikichip
+
+<ul>
+<li><a href="https://en.wikichip.org/wiki/intel/microarchitectures/cascade_lake" target="_blank">Intel Xeon: Cascade Lake</a></li>
+<li><a href="https://en.wikichip.org/wiki/amd/cores/rome" target="_blank">AMD EPYC gen2: Rome</a></li>
+<li><a href="https://en.wikichip.org/wiki/ibm/microarchitectures/power9" target="_blank">IBM POWER9</a></li>
+</ul></li>
+<li><a href="https://www.agner.org/optimize/" target="_blank">Agner Fog&rsquo;s website</a></li>
 </ul>
 
           </div>
@@ -505,14 +387,14 @@ movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/intro-vectorization/" rel="next">Vectorization and Instruction-Level Parallelism</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/trends/" rel="prev">Trends</a>
+    <a href="/fall2019/intro-architecture/" rel="prev">Intro to Architecture</a>
   </div>
   
 </div>
@@ -526,7 +408,7 @@ movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/intro-architecture/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/intro-vectorization/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>
