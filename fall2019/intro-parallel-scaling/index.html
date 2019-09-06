@@ -124,7 +124,7 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
     
       <meta property="article:published_time" content="2019-09-06T08:07:31-06:00">
     
-    <meta property="article:modified_time" content="2019-09-06T12:16:50-06:00">
+    <meta property="article:modified_time" content="2019-09-06T12:46:03-06:00">
   
 
   
@@ -345,8 +345,8 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
 </ul></li>
 <li><a href="#weak-scaling-fixed-work-per-processor">Weak Scaling: Fixed work per processor</a></li>
 <li><a href="#fuhrer-et-al-2018-near-global-climate-simulation-at-1-km-resolution-https-www-geosci-model-dev-net-11-1665-2018-gmd-11-1665-2018-pdf"><a href="https://www.geosci-model-dev.net/11/1665/2018/gmd-11-1665-2018.pdf" target="_blank">Fuhrer et al (2018): Near-global climate simulation at 1 km resolution</a></a></li>
-<li><a href="#further-resources">Further resources</a></li>
 </ul></li>
+<li><a href="#further-resources">Further resources</a></li>
 </ul>
 </nav>
 
@@ -389,10 +389,10 @@ plt.loglog(ps, exec_time(.99, ps, latency=0))
 plt.loglog(ps, exec_time(1, ps, latency=0))
 plt.title('Strong scaling')
 plt.xlabel('p')
-plt.ylabel('time')
+plt.ylabel('time');
 </code></pre>
 
-<p><img src="./lecture_2_1.png" alt="png" /></p>
+<p><img src="./lecture_2_0.png" alt="png" /></p>
 
 <h2 id="strong-scaling-fixed-total-problem-size">Strong scaling: fixed total problem size</h2>
 
@@ -435,7 +435,7 @@ plt.ylim(bottom=0);
 
 <h2 id="stunt-1-report-speedup-not-absolute-performance">Stunt 1: Report speedup, not absolute performance!</h2>
 
-<p><img src="https://blogs.fau.de/hager/files/2010/07/stunt1.jpg" alt="Hager" /></p>
+<p><img src="stunt1.jpg" alt="Hager" /></p>
 
 <h2 id="efficiency-time-spectrum-my-preference">Efficiency-Time spectrum (my preference)</h2>
 
@@ -499,11 +499,19 @@ plt.ylim(bottom=0);
 
 <p><img src="fuhrer2018-scaling-time-ann4.png" alt="Fuhrer (2018) replotted" /></p>
 
-<h2 id="further-resources">Further resources</h2>
+<h1 id="further-resources">Further resources</h1>
 
 <ul>
-<li><a href="https://blogs.fau.de/hager/archives/5260" target="_blank">Hager: Fooling the masses</a></li>
-<li><a href="https://htor.inf.ethz.ch/publications/index.php?pub=222" target="_blank">Hoefler and Belli: Scientific Benchmarking of Parallel Computing Systems</a></li>
+<li><a href="https://blogs.fau.de/hager/archives/5260" target="_blank">Hager: Fooling the masses</a>
+
+<ul>
+<li>Learn by counter-examples</li>
+</ul></li>
+<li><a href="https://htor.inf.ethz.ch/publications/index.php?pub=222" target="_blank">Hoefler and Belli: Scientific Benchmarking of Parallel Computing Systems</a>
+
+<ul>
+<li>Recommended best practices, especially for dealing with performance variability</li>
+</ul></li>
 </ul>
 
 <p>Please read/watch something from this list and be prepared to share on Monday.</p>
