@@ -345,8 +345,8 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
 </ul></li>
 <li><a href="#weak-scaling-fixed-work-per-processor">Weak Scaling: Fixed work per processor</a></li>
 <li><a href="#fuhrer-et-al-2018-near-global-climate-simulation-at-1-km-resolution-https-www-geosci-model-dev-net-11-1665-2018-gmd-11-1665-2018-pdf"><a href="https://www.geosci-model-dev.net/11/1665/2018/gmd-11-1665-2018.pdf" target="_blank">Fuhrer et al (2018): Near-global climate simulation at 1 km resolution</a></a></li>
-</ul></li>
 <li><a href="#further-resources">Further resources</a></li>
+</ul></li>
 </ul>
 </nav>
 
@@ -390,9 +390,6 @@ plt.loglog(ps, exec_time(1, ps, latency=0))
 plt.title('Strong scaling')
 plt.xlabel('p')
 plt.ylabel('time')
-</code></pre>
-
-<pre><code>Text(0, 0.5, 'time')
 </code></pre>
 
 <p><img src="./lecture_2_1.png" alt="png" /></p>
@@ -502,11 +499,11 @@ plt.ylim(bottom=0);
 
 <p><img src="fuhrer2018-scaling-time-ann4.png" alt="Fuhrer (2018) replotted" /></p>
 
-<h1 id="further-resources">Further resources</h1>
+<h2 id="further-resources">Further resources</h2>
 
 <ul>
 <li><a href="https://blogs.fau.de/hager/archives/5260" target="_blank">Hager: Fooling the masses</a></li>
-<li><a href="https://htor.inf.ethz.ch/publications/index.php?pub=222" target="_blank">Belli and Hoefler: Scientific Benchmarking of Parallel Computing Systems</a></li>
+<li><a href="https://htor.inf.ethz.ch/publications/index.php?pub=222" target="_blank">Hoefler and Belli: Scientific Benchmarking of Parallel Computing Systems</a></li>
 </ul>
 
 <p>Please read/watch something from this list and be prepared to share on Monday.</p>

@@ -359,9 +359,6 @@ plt.xlabel(&#39;p&#39;)
 plt.ylabel(&#39;time&#39;)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code&gt;Text(0, 0.5, &#39;time&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-
 &lt;p&gt;&lt;img src=&#34;./lecture_2_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;strong-scaling-fixed-total-problem-size&#34;&gt;Strong scaling: fixed total problem size&lt;/h2&gt;
@@ -469,11 +466,11 @@ plt.ylim(bottom=0);
 
 &lt;p&gt;&lt;img src=&#34;fuhrer2018-scaling-time-ann4.png&#34; alt=&#34;Fuhrer (2018) replotted&#34; /&gt;&lt;/p&gt;
 
-&lt;h1 id=&#34;further-resources&#34;&gt;Further resources&lt;/h1&gt;
+&lt;h2 id=&#34;further-resources&#34;&gt;Further resources&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://blogs.fau.de/hager/archives/5260&#34; target=&#34;_blank&#34;&gt;Hager: Fooling the masses&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://htor.inf.ethz.ch/publications/index.php?pub=222&#34; target=&#34;_blank&#34;&gt;Belli and Hoefler: Scientific Benchmarking of Parallel Computing Systems&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://htor.inf.ethz.ch/publications/index.php?pub=222&#34; target=&#34;_blank&#34;&gt;Hoefler and Belli: Scientific Benchmarking of Parallel Computing Systems&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;Please read/watch something from this list and be prepared to share on Monday.&lt;/p&gt;
