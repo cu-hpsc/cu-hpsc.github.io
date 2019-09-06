@@ -446,6 +446,397 @@ plt.ylim(bottom=0);
     </item>
     
     <item>
+      <title>Introduction to Performance Modeling</title>
+      <link>https://cucs-hpsc.github.io/fall2019/intro-modeling/</link>
+      <pubDate>Wed, 04 Sep 2019 09:17:28 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/intro-modeling/</guid>
+      <description>
+
+&lt;h2 id=&#34;why-model-performance&#34;&gt;Why model performance?&lt;/h2&gt;
+
+&lt;p&gt;Models give is a conceptual and roughly quantitative framework by which to answer the following types of questions.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Why is an implementation exhibiting its observed performance?&lt;/li&gt;
+&lt;li&gt;How will performance change if we:
+
+&lt;ul&gt;
+&lt;li&gt;optimize this component?&lt;/li&gt;
+&lt;li&gt;buy new hardware? (Which new hardware?)&lt;/li&gt;
+&lt;li&gt;run a different configuration?&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;While conceptualizing a new algorithm, what performance can we expect and what will be bottlenecks?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Models are a guide for performance, but not an absolute.&lt;/p&gt;
+
+&lt;h3 id=&#34;terms&#34;&gt;Terms&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Symbol&lt;/th&gt;
+&lt;th&gt;Meaning&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;$n$&lt;/td&gt;
+&lt;td&gt;Input parameter related to problem size&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;$W$&lt;/td&gt;
+&lt;td&gt;Amount of work to solve problem $n$&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;$T$&lt;/td&gt;
+&lt;td&gt;Execution time&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;$R$&lt;/td&gt;
+&lt;td&gt;Rate at which work is done&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h4 id=&#34;stream-triad&#34;&gt;STREAM Triad&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;for (i=0; i&amp;lt;n; i++)
+    a[i] = b[i] + scalar*c[i];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;$n$ is the array size and
+$$W = 3 \cdot \texttt{sizeof(double)} \cdot n$$
+is the number of bytes transferred.  The rate $R = W/T$ is measured in bytes per second (or MB/s, etc.).&lt;/p&gt;
+
+&lt;h4 id=&#34;dense-matrix-multiplication&#34;&gt;Dense matrix multiplication&lt;/h4&gt;
+
+&lt;p&gt;To perform the operation $C \gets C + A B$ where $A,B,C$ are $n\times n$ matrices.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;for (i=0; i&amp;lt;n; i++)
+    for (j=0; j&amp;lt;n; j++)
+        for (k=0; k&amp;lt;n; k++)
+            c[i*n+j] += a[i*n+k] * b[k*n+j];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Can you identify two expressions for the total amount of work $W(n)$ and the associated units?&lt;/li&gt;
+&lt;li&gt;Can you think of a context in which one is better than the other and vice-versa?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;estimating-time&#34;&gt;Estimating time&lt;/h3&gt;
+
+&lt;p&gt;To estimate time, we need to know how fast hardware executes flops and moves bytes.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import matplotlib.pyplot as plt
+import pandas
+import numpy as np
+plt.style.use(&#39;seaborn&#39;)
+
+hardware = pandas.read_csv(&#39;data-intel.csv&#39;, index_col=&amp;quot;Name&amp;quot;)
+hardware
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Year&lt;/th&gt;
+      &lt;th&gt;GFLOPs-SP&lt;/th&gt;
+      &lt;th&gt;GFLOPs-DP&lt;/th&gt;
+      &lt;th&gt;Cores&lt;/th&gt;
+      &lt;th&gt;Mem-GBps&lt;/th&gt;
+      &lt;th&gt;TDP&lt;/th&gt;
+      &lt;th&gt;Freq(MHz)&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Name&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon X5482&lt;/th&gt;
+      &lt;td&gt;2007&lt;/td&gt;
+      &lt;td&gt;102&lt;/td&gt;
+      &lt;td&gt;51&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;26&lt;/td&gt;
+      &lt;td&gt;150&lt;/td&gt;
+      &lt;td&gt;3200&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon X5492&lt;/th&gt;
+      &lt;td&gt;2008&lt;/td&gt;
+      &lt;td&gt;108&lt;/td&gt;
+      &lt;td&gt;54&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;26&lt;/td&gt;
+      &lt;td&gt;150&lt;/td&gt;
+      &lt;td&gt;3400&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon W5590&lt;/th&gt;
+      &lt;td&gt;2009&lt;/td&gt;
+      &lt;td&gt;106&lt;/td&gt;
+      &lt;td&gt;53&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;32&lt;/td&gt;
+      &lt;td&gt;130&lt;/td&gt;
+      &lt;td&gt;3300&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon X5680&lt;/th&gt;
+      &lt;td&gt;2010&lt;/td&gt;
+      &lt;td&gt;160&lt;/td&gt;
+      &lt;td&gt;80&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;32&lt;/td&gt;
+      &lt;td&gt;130&lt;/td&gt;
+      &lt;td&gt;3300&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon X5690&lt;/th&gt;
+      &lt;td&gt;2011&lt;/td&gt;
+      &lt;td&gt;166&lt;/td&gt;
+      &lt;td&gt;83&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;32&lt;/td&gt;
+      &lt;td&gt;130&lt;/td&gt;
+      &lt;td&gt;3470&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon E5-2690&lt;/th&gt;
+      &lt;td&gt;2012&lt;/td&gt;
+      &lt;td&gt;372&lt;/td&gt;
+      &lt;td&gt;186&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+      &lt;td&gt;51&lt;/td&gt;
+      &lt;td&gt;135&lt;/td&gt;
+      &lt;td&gt;2900&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon E5-2697 v2&lt;/th&gt;
+      &lt;td&gt;2013&lt;/td&gt;
+      &lt;td&gt;518&lt;/td&gt;
+      &lt;td&gt;259&lt;/td&gt;
+      &lt;td&gt;12&lt;/td&gt;
+      &lt;td&gt;60&lt;/td&gt;
+      &lt;td&gt;130&lt;/td&gt;
+      &lt;td&gt;2700&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon E5-2699 v3&lt;/th&gt;
+      &lt;td&gt;2014&lt;/td&gt;
+      &lt;td&gt;1324&lt;/td&gt;
+      &lt;td&gt;662&lt;/td&gt;
+      &lt;td&gt;18&lt;/td&gt;
+      &lt;td&gt;68&lt;/td&gt;
+      &lt;td&gt;145&lt;/td&gt;
+      &lt;td&gt;2300&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon E5-2699 v3&lt;/th&gt;
+      &lt;td&gt;2015&lt;/td&gt;
+      &lt;td&gt;1324&lt;/td&gt;
+      &lt;td&gt;662&lt;/td&gt;
+      &lt;td&gt;18&lt;/td&gt;
+      &lt;td&gt;68&lt;/td&gt;
+      &lt;td&gt;145&lt;/td&gt;
+      &lt;td&gt;2300&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon E5-2699 v4&lt;/th&gt;
+      &lt;td&gt;2016&lt;/td&gt;
+      &lt;td&gt;1548&lt;/td&gt;
+      &lt;td&gt;774&lt;/td&gt;
+      &lt;td&gt;22&lt;/td&gt;
+      &lt;td&gt;77&lt;/td&gt;
+      &lt;td&gt;145&lt;/td&gt;
+      &lt;td&gt;2200&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon Platinum 8180&lt;/th&gt;
+      &lt;td&gt;2017&lt;/td&gt;
+      &lt;td&gt;4480&lt;/td&gt;
+      &lt;td&gt;2240&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;120&lt;/td&gt;
+      &lt;td&gt;205&lt;/td&gt;
+      &lt;td&gt;2500&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon Platinum 9282&lt;/th&gt;
+      &lt;td&gt;2018&lt;/td&gt;
+      &lt;td&gt;9320&lt;/td&gt;
+      &lt;td&gt;4660&lt;/td&gt;
+      &lt;td&gt;56&lt;/td&gt;
+      &lt;td&gt;175&lt;/td&gt;
+      &lt;td&gt;400&lt;/td&gt;
+      &lt;td&gt;2600&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;fig = hardware.plot(x=&#39;GFLOPs-DP&#39;, y=&#39;Mem-GBps&#39;, marker=&#39;o&#39;)
+fig.set_xlim(left=0)
+fig.set_ylim(bottom=0);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_2_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;So we have rates $R_f = 4660 \cdot 10^9$ flops/second and $R_m = 175 \cdot 10^9$ bytes/second.  Now we need to characterize some algorithms.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;algs = pandas.read_csv(&#39;algs.csv&#39;, index_col=&#39;Name&#39;)
+algs[&#39;intensity&#39;] = algs[&#39;flops&#39;] / algs[&#39;bytes&#39;]
+algs = algs.sort_values(&#39;intensity&#39;)
+algs
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;bytes&lt;/th&gt;
+      &lt;th&gt;flops&lt;/th&gt;
+      &lt;th&gt;intensity&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Name&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Triad&lt;/th&gt;
+      &lt;td&gt;24&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;0.083333&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;SpMV&lt;/th&gt;
+      &lt;td&gt;12&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;0.166667&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Stencil27-cache&lt;/th&gt;
+      &lt;td&gt;24&lt;/td&gt;
+      &lt;td&gt;54&lt;/td&gt;
+      &lt;td&gt;2.250000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;MatFree-FEM&lt;/th&gt;
+      &lt;td&gt;2376&lt;/td&gt;
+      &lt;td&gt;15228&lt;/td&gt;
+      &lt;td&gt;6.409091&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Stencil27-ideal&lt;/th&gt;
+      &lt;td&gt;8&lt;/td&gt;
+      &lt;td&gt;54&lt;/td&gt;
+      &lt;td&gt;6.750000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def exec_time(machine, alg, n):
+    bytes = n * alg.bytes
+    flops = n * alg.flops
+    T_mem = bytes / (machine[&#39;Mem-GBps&#39;] * 1e9)
+    T_flops = flops / (machine[&#39;GFLOPs-DP&#39;] * 1e9)
+    return max(T_mem, T_flops)
+    
+exec_time(hardware.loc[&#39;Xeon Platinum 9282&#39;], algs.loc[&#39;SpMV&#39;], 1e8)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;0.006857142857142857
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;for _, machine in hardware.iterrows():
+    for _, alg in algs.iterrows():
+        ns = np.geomspace(1e4, 1e9, 10)
+        times = np.array([exec_time(machine, alg, n) for n in ns])
+        flops = np.array([alg.flops * n for n in ns])
+        rates = flops/times
+        plt.loglog(ns, rates, &#39;o-&#39;)
+plt.xlabel(&#39;n&#39;)
+plt.ylabel(&#39;rate&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_6_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It looks like performance does not depend on problem size.&lt;/p&gt;
+
+&lt;p&gt;Well, yeah, we chose a model in which flops and bytes were both proportional to $n$, and our machine model has no sense of cache hierarchy or latency, so time is also proportional to $n$.  We can divide through by $n$ and yield a more illuminating plot.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;for _, machine in hardware.iterrows():
+    times = np.array([exec_time(machine, alg, 1) 
+                      for _, alg in algs.iterrows()])
+    rates = algs.flops/times
+    intensities = algs.intensity
+    plt.loglog(intensities, rates, &#39;o-&#39;, label=machine.name)
+plt.xlabel(&#39;intensity&#39;)
+plt.ylabel(&#39;rate&#39;)
+plt.legend();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_8_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;re seeing the &amp;ldquo;roofline&amp;rdquo; for the older processors while the newer models are memory bandwidth limited for all of these algorithms.&lt;/p&gt;
+
+&lt;h3 id=&#34;recommended-reading-on-single-node-performance-modeling&#34;&gt;Recommended reading on single-node performance modeling&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://doi.org/10.1145/1498765.1498785&#34; target=&#34;_blank&#34;&gt;Williams, Waterman, Patterson (2009): &lt;strong&gt;Roofline: An insightful visual performance model for multicore architectures&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Vectorization and Instruction-Level Parallelism</title>
       <link>https://cucs-hpsc.github.io/fall2019/intro-vectorization/</link>
       <pubDate>Fri, 30 Aug 2019 11:00:00 -0600</pubDate>
