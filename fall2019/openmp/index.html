@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Jed Brown">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="def render_c(filename): from IPython.display import Markdown with open(filename) as f: contents = f.read() return Markdown(&quot;```c\n&quot; &#43; contents &#43; &quot;```\n&quot;)  What is OpenMP? A community-developed standard Application Programming Interface (with &ldquo;directives&rdquo;) for * multithreaded programming * vectorization * offload to coprocessors (such as GPUs)
+OpenMP is available for C, C&#43;&#43;, and Fortran.
+Latest version: OpenMP-5.0, released November 2018. Implementations are still incomplete!
+OpenMP Resources  OpenMP-5.0 Reference Cards (a few pages, printable) OpenMP-5.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/openmp/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/openmp/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@five9a2">
+  <meta property="twitter:creator" content="@five9a2">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/openmp/">
+  <meta property="og:title" content="OpenMP Basics | HPSC">
+  <meta property="og:description" content="def render_c(filename): from IPython.display import Markdown with open(filename) as f: contents = f.read() return Markdown(&quot;```c\n&quot; &#43; contents &#43; &quot;```\n&quot;)  What is OpenMP? A community-developed standard Application Programming Interface (with &ldquo;directives&rdquo;) for * multithreaded programming * vectorization * offload to coprocessors (such as GPUs)
+OpenMP is available for C, C&#43;&#43;, and Fortran.
+Latest version: OpenMP-5.0, released November 2018. Implementations are still incomplete!
+OpenMP Resources  OpenMP-5.0 Reference Cards (a few pages, printable) OpenMP-5."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-09-11T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-09-11T06:49:25-06:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>OpenMP Basics | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
+      </li>
+      
+      <li class="active">
+        <a href="/fall2019/openmp/">2019-09-11 OpenMP Basics</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#what-is-openmp-https-en-wikipedia-org-wiki-openmp">What is <a href="https://en.wikipedia.org/wiki/OpenMP" target="_blank">OpenMP</a>?</a>
+<ul>
+<li><a href="#openmp-resources">OpenMP Resources</a></li>
+<li><a href="#pragma-omp-parallel"><code>#pragma omp parallel</code></a></li>
+<li><a href="#parallelizing-triad">Parallelizing <code>triad</code></a></li>
+<li><a href="#parallelizing-dot">Parallelizing <code>dot</code></a></li>
+<li><a href="#vectorization">Vectorization</a></li>
+<li><a href="#what-is-aliasing">What is aliasing?</a>
+<ul>
+<li><a href="#aside-warnings">Aside: Warnings</a></li>
+</ul></li>
+<li><a href="#check-the-assembly">Check the assembly</a></li>
+<li><a href="#pragma-omp-simd">Pragma <code>omp simd</code></a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">OpenMP Basics</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<pre><code class="language-python">def render_c(filename):
+    from IPython.display import Markdown
+    with open(filename) as f:
+        contents = f.read()
+    return Markdown(&quot;```c\n&quot; + contents + &quot;```\n&quot;)
+</code></pre>
+
+<h2 id="what-is-openmp-https-en-wikipedia-org-wiki-openmp">What is <a href="https://en.wikipedia.org/wiki/OpenMP" target="_blank">OpenMP</a>?</h2>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Fork_join.svg" alt="By Wikipedia user A1 - w:en:File:Fork_join.svg, CC BY 3.0, https://commons.wikimedia.org/w/index.php?curid=32004077" /></p>
+
+<p>A community-developed standard Application Programming Interface (with &ldquo;directives&rdquo;) for
+* multithreaded programming
+* vectorization
+* offload to coprocessors (such as GPUs)</p>
+
+<p>OpenMP is available for C, C++, and Fortran.</p>
+
+<p>Latest version: OpenMP-5.0, released November 2018.  Implementations are still incomplete!</p>
+
+<h3 id="openmp-resources">OpenMP Resources</h3>
+
+<ul>
+<li><a href="https://www.openmp.org/resources/refguides/" target="_blank">OpenMP-5.0 Reference Cards</a> (a few pages, printable)</li>
+<li><a href="https://www.openmp.org/spec-html/5.0/openmp.html" target="_blank">OpenMP-5.0 Standard</a></li>
+<li><a href="http://www.openmp.org/wp-content/uploads/openmp-examples-4.5.0.pdf" target="_blank">OpenMP-4.5 Examples</a></li>
+<li><a href="https://computing.llnl.gov/tutorials/openMP/" target="_blank">LLNL Tutorial</a></li>
+<li><a href="https://press3.mcs.anl.gov//atpesc/files/2019/07/ATPESC_2019_Track-2_2_7-31_830am_Mattson-The-OpenMP_Common_Core.pdf" target="_blank">Mattson: The OpenMP Common Core</a> from <a href="https://extremecomputingtraining.anl.gov/" target="_blank">ATPESC</a> (<a href="https://www.youtube.com/watch?v=T0csnAirv-U&amp;list=PLGj2a3KTwhRa6Ux64xg5L5ga6Jg8QykoQ&amp;index=2" target="_blank">video</a>)</li>
+</ul>
+
+<h3 id="pragma-omp-parallel"><code>#pragma omp parallel</code></h3>
+
+<p>The standard is <strong>big</strong>, but most applications only use a few constructs.</p>
+
+<pre><code class="language-python">render_c('omp-hello.c')
+</code></pre>
+
+<pre><code class="language-c">#include &lt;omp.h&gt;
+#include &lt;stdio.h&gt;
+
+int main() {
+  #pragma omp parallel
+  {
+    int num_threads = omp_get_num_threads();
+    int my_thread_num = omp_get_thread_num();
+    printf(&quot;I am %d of %d\n&quot;, my_thread_num, num_threads);
+  }
+  return 0;
+}
+</code></pre>
+
+<pre><code class="language-python">!make CFLAGS='-fopenmp -Wall' -B omp-hello
+</code></pre>
+
+<pre><code>cc -fopenmp -Wall    omp-hello.c   -o omp-hello
+</code></pre>
+
+<pre><code class="language-python">!./omp-hello
+</code></pre>
+
+<pre><code>I am 1 of 4
+I am 2 of 4
+I am 0 of 4
+I am 3 of 4
+</code></pre>
+
+<pre><code class="language-python">!OMP_NUM_THREADS=8 ./omp-hello
+</code></pre>
+
+<pre><code>I am 0 of 8
+I am 7 of 8
+I am 1 of 8
+I am 3 of 8
+I am 4 of 8
+I am 6 of 8
+I am 2 of 8
+I am 5 of 8
+</code></pre>
+
+<h3 id="parallelizing-triad">Parallelizing <code>triad</code></h3>
+
+<pre><code class="language-c">void triad(int N, double *a, const double *b, double scalar, const double *c) {
+#pragma omp parallel
+    {
+        for (int i=0; i&lt;N; i++)
+            a[i] = b[i] + scalar * c[i];
+    }
+}
+</code></pre>
+
+<p>What does this code do?</p>
+
+<pre><code class="language-c">void triad(int N, double *a, const double *b, double scalar, const double *c) {
+#pragma omp parallel
+    {
+        int id = omp_get_thread_num();
+        int num_threads = omp_get_num_threads();
+        for (int i=id; i&lt;N; i+=num_threads)
+            a[i] = b[i] + scalar * c[i];
+    }
+}
+</code></pre>
+
+<h3 id="parallelizing-dot">Parallelizing <code>dot</code></h3>
+
+<pre><code class="language-c">static double dot_ref(size_t n, const double *a, const double *b) {
+  double sum = 0;
+  for (size_t i=0; i&lt;n; i++)
+    sum += a[i] * b[i];
+  return sum;
+}
+</code></pre>
+
+<pre><code class="language-python">!make CFLAGS='-O3 -march=native -fopenmp' -B dot
+</code></pre>
+
+<pre><code>cc -O3 -march=native -fopenmp    dot.c   -o dot
+</code></pre>
+
+<pre><code class="language-python">!OMP_NUM_THREADS=2 ./dot -r 10 -n 10000
+</code></pre>
+
+<pre><code>  Name      flops   ticks   flops/tick
+ dot_ref    20000   40327       0.50    
+ dot_ref    20000   35717       0.56    
+ dot_ref    20000   36096       0.55    
+ dot_ref    20000   36487       0.55    
+ dot_ref    20000   37157       0.54    
+ dot_ref    20000   36024       0.56    
+ dot_ref    20000   35322       0.57    
+ dot_ref    20000   36601       0.55    
+ dot_ref    20000   72193       0.28    
+ dot_ref    20000   37924       0.53    
+dot_opt1    20000   51256384        0.00    
+dot_opt1    20000   23343145        0.00    
+dot_opt1    20000   4646174     0.00    
+dot_opt1    20000   16710       1.20    
+dot_opt1    20000   15512       1.29    
+dot_opt1    20000   16016       1.25    
+dot_opt1    20000   16982       1.18    
+dot_opt1    20000   452064      0.04    
+dot_opt1    20000   16278       1.23    
+dot_opt1    20000   16311       1.23    
+dot_opt2    20000   24616       0.81    
+dot_opt2    20000   16095       1.24    
+dot_opt2    20000   17561       1.14    
+dot_opt2    20000   16270       1.23    
+dot_opt2    20000   18130       1.10    
+dot_opt2    20000   16831       1.19    
+dot_opt2    20000   16968       1.18    
+dot_opt2    20000   16391       1.22    
+dot_opt2    20000   17063       1.17    
+dot_opt2    20000   16315       1.23    
+dot_opt3    20000   77013       0.26    
+dot_opt3    20000   12419       1.61    
+dot_opt3    20000   12124       1.65    
+dot_opt3    20000   12193       1.64    
+dot_opt3    20000   12051       1.66    
+dot_opt3    20000   12009       1.67    
+dot_opt3    20000   11944       1.67    
+dot_opt3    20000   12032       1.66    
+dot_opt3    20000   12687       1.58    
+dot_opt3    20000   12188       1.64    
+</code></pre>
+
+<h3 id="vectorization">Vectorization</h3>
+
+<p>OpenMP-4.0 added the <code>omp simd</code> construct, which is a portable way to request that the compiler vectorize code.
+An example of a reason why a compiler might fail to vectorize code is aliasing, which we investigate below.</p>
+
+<pre><code class="language-python">render_c('triad.c')
+</code></pre>
+
+<pre><code class="language-c">#include &lt;stdlib.h&gt;
+
+void triad(size_t N, double *a, const double *b, double scalar, const double *c) {
+  for (size_t i=0; i&lt;N; i++)
+    a[i] = b[i] + scalar * c[i];
+}
+</code></pre>
+
+<pre><code class="language-python">!gcc -O2 -ftree-vectorize -fopt-info-all -c triad.c
+</code></pre>
+
+<pre><code>Unit growth for small function inlining: 15-&gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+triad.c:4:3: optimized: loop vectorized using 16 byte vectors
+triad.c:4:3: optimized:  loop versioned for vectorization because of possible aliasing
+triad.c:3:6: note: vectorized 1 loops in function.
+triad.c:4:3: optimized: loop turned into non-loop; it never loops
+</code></pre>
+
+<ul>
+<li>gcc autovectorization starts at <code>-O3</code> or if you use <code>-ftree-vectorize</code></li>
+<li>options such as <a href="https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html#index-fopt-info" target="_blank">-fopt-info</a> give useful diagnostics, but are compiler-dependent and sometimes referring to assembly is useful</li>
+<li><code>man gcc</code> with search (<code>/</code>) is your friend</li>
+</ul>
+
+<h3 id="what-is-aliasing">What is aliasing?</h3>
+
+<p>Is this valid code?  What xs <code>x</code> after this call?</p>
+
+<pre><code class="language-c">double x[5] = {1, 2, 3, 4, 5};
+triad(2, x+1, x, 10., x);
+</code></pre>
+
+<p>C allows memory to overlap arbitrarily.  You can inform the compiler of this using the <a href="https://en.wikipedia.org/wiki/Restrict" target="_blank"><code>restrict</code> qualifier</a> (C99/C11; <code>__restrict</code> or <code>__restrict__</code> work with most C++ and <a href="https://devblogs.nvidia.com/cuda-pro-tip-optimize-pointer-aliasing/" target="_blank">CUDA</a> compilers).</p>
+
+<pre><code class="language-python">render_c('triad-restrict.c')
+</code></pre>
+
+<pre><code class="language-c">void triad(int N, double *restrict a, const double *restrict b, double scalar, const double *restrict c) {
+  for (int i=0; i&lt;N; i++)
+    a[i] = b[i] + scalar * c[i];
+}
+</code></pre>
+
+<pre><code class="language-python">!gcc -O2 -march=native -ftree-vectorize -fopt-info-all -c triad-restrict.c
+</code></pre>
+
+<pre><code>Unit growth for small function inlining: 15-&gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+triad-restrict.c:2:5: optimized: loop vectorized using 32 byte vectors
+triad-restrict.c:1:6: note: vectorized 1 loops in function.
+</code></pre>
+
+<p>Notice how there is no more <code>loop versioned for vectorization because of possible aliasing</code>.</p>
+
+<p>The complexity of checking for aliasing can grow combinatorially in the number of arrays being processed, leading to many loop variants and/or preventing vectorization.</p>
+
+<h4 id="aside-warnings">Aside: Warnings</h4>
+
+<p>The <code>-Wrestrict</code> flag (included in <code>-Wall</code>) can catch some programming errors</p>
+
+<pre><code class="language-c">void foo(double *x) {
+  triad(2, x, x, 10, x);
+}
+</code></pre>
+
+<pre><code class="language-python">!gcc -O2 -Wall -c triad-foo.c
+</code></pre>
+
+<p>The powers of <code>-Wrestrict</code> are limited, however, and (as of gcc-9) do not even catch</p>
+
+<pre><code class="language-c">void foo(double *x) {
+  triad(2, x+1, x, 10, x);
+}
+</code></pre>
+
+<h3 id="check-the-assembly">Check the assembly</h3>
+
+<pre><code class="language-python">!objdump -d --prefix-addresses -M intel triad-restrict.o
+</code></pre>
+
+<pre><code>triad-restrict.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+0000000000000000 &lt;triad&gt; test   edi,edi
+0000000000000002 &lt;triad+0x2&gt; jle    0000000000000067 &lt;triad+0x67&gt;
+0000000000000004 &lt;triad+0x4&gt; lea    eax,[rdi-0x1]
+0000000000000007 &lt;triad+0x7&gt; cmp    eax,0x2
+000000000000000a &lt;triad+0xa&gt; jbe    0000000000000074 &lt;triad+0x74&gt;
+000000000000000c &lt;triad+0xc&gt; mov    r8d,edi
+000000000000000f &lt;triad+0xf&gt; shr    r8d,0x2
+0000000000000013 &lt;triad+0x13&gt; vbroadcastsd ymm2,xmm0
+0000000000000018 &lt;triad+0x18&gt; shl    r8,0x5
+000000000000001c &lt;triad+0x1c&gt; xor    eax,eax
+000000000000001e &lt;triad+0x1e&gt; xchg   ax,ax
+0000000000000020 &lt;triad+0x20&gt; vmovupd ymm1,YMMWORD PTR [rcx+rax*1]
+0000000000000025 &lt;triad+0x25&gt; vfmadd213pd ymm1,ymm2,YMMWORD PTR [rdx+rax*1]
+000000000000002b &lt;triad+0x2b&gt; vmovupd YMMWORD PTR [rsi+rax*1],ymm1
+0000000000000030 &lt;triad+0x30&gt; add    rax,0x20
+0000000000000034 &lt;triad+0x34&gt; cmp    rax,r8
+0000000000000037 &lt;triad+0x37&gt; jne    0000000000000020 &lt;triad+0x20&gt;
+0000000000000039 &lt;triad+0x39&gt; mov    eax,edi
+000000000000003b &lt;triad+0x3b&gt; and    eax,0xfffffffc
+000000000000003e &lt;triad+0x3e&gt; test   dil,0x3
+0000000000000042 &lt;triad+0x42&gt; je     0000000000000070 &lt;triad+0x70&gt;
+0000000000000044 &lt;triad+0x44&gt; vzeroupper 
+0000000000000047 &lt;triad+0x47&gt; cdqe   
+0000000000000049 &lt;triad+0x49&gt; nop    DWORD PTR [rax+0x0]
+0000000000000050 &lt;triad+0x50&gt; vmovsd xmm1,QWORD PTR [rcx+rax*8]
+0000000000000055 &lt;triad+0x55&gt; vfmadd213sd xmm1,xmm0,QWORD PTR [rdx+rax*8]
+000000000000005b &lt;triad+0x5b&gt; vmovsd QWORD PTR [rsi+rax*8],xmm1
+0000000000000060 &lt;triad+0x60&gt; inc    rax
+0000000000000063 &lt;triad+0x63&gt; cmp    edi,eax
+0000000000000065 &lt;triad+0x65&gt; jg     0000000000000050 &lt;triad+0x50&gt;
+0000000000000067 &lt;triad+0x67&gt; ret    
+0000000000000068 &lt;triad+0x68&gt; nop    DWORD PTR [rax+rax*1+0x0]
+0000000000000070 &lt;triad+0x70&gt; vzeroupper 
+0000000000000073 &lt;triad+0x73&gt; ret    
+0000000000000074 &lt;triad+0x74&gt; xor    eax,eax
+0000000000000076 &lt;triad+0x76&gt; jmp    0000000000000047 &lt;triad+0x47&gt;
+</code></pre>
+
+<ul>
+<li>How do the results change if you go up and replace <code>-march=native</code> with <code>-march=skylake-avx512 -mprefer-vector-width=512</code>?</li>
+<li>Is the assembly qualitatively different without <code>restrict</code> (in which case the compiler &ldquo;versions&rdquo; the loop).</li>
+</ul>
+
+<h3 id="pragma-omp-simd">Pragma <code>omp simd</code></h3>
+
+<p>An alternative (or supplement) to <code>restrict</code> is <code>#pragma omp simd</code>.</p>
+
+<pre><code class="language-python">render_c('triad-omp-simd.c')
+</code></pre>
+
+<pre><code class="language-c">void triad(int N, double *a, const double *b, double scalar, const double *c) {
+#pragma omp simd
+  for (int i=0; i&lt;N; i++)
+    a[i] = b[i] + scalar * c[i];
+}
+</code></pre>
+
+<pre><code class="language-python">!gcc -O2 -march=native -ftree-vectorize -fopenmp -fopt-info-all -c triad-omp-simd.c
+</code></pre>
+
+<pre><code>Unit growth for small function inlining: 15-&gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+triad-omp-simd.c:4:17: optimized: loop vectorized using 32 byte vectors
+triad-omp-simd.c:1:6: note: vectorized 1 loops in function.
+</code></pre>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/intro-parallel-scaling/" rel="prev">Intro to Parallel Scaling</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Sep 11, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/openmp/index.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

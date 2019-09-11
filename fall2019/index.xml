@@ -290,6 +290,345 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>OpenMP Basics</title>
+      <link>https://cucs-hpsc.github.io/fall2019/openmp/</link>
+      <pubDate>Wed, 11 Sep 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/openmp/</guid>
+      <description>
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def render_c(filename):
+    from IPython.display import Markdown
+    with open(filename) as f:
+        contents = f.read()
+    return Markdown(&amp;quot;```c\n&amp;quot; + contents + &amp;quot;```\n&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;what-is-openmp-https-en-wikipedia-org-wiki-openmp&#34;&gt;What is &lt;a href=&#34;https://en.wikipedia.org/wiki/OpenMP&#34; target=&#34;_blank&#34;&gt;OpenMP&lt;/a&gt;?&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/f/f1/Fork_join.svg&#34; alt=&#34;By Wikipedia user A1 - w:en:File:Fork_join.svg, CC BY 3.0, https://commons.wikimedia.org/w/index.php?curid=32004077&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A community-developed standard Application Programming Interface (with &amp;ldquo;directives&amp;rdquo;) for
+* multithreaded programming
+* vectorization
+* offload to coprocessors (such as GPUs)&lt;/p&gt;
+
+&lt;p&gt;OpenMP is available for C, C++, and Fortran.&lt;/p&gt;
+
+&lt;p&gt;Latest version: OpenMP-5.0, released November 2018.  Implementations are still incomplete!&lt;/p&gt;
+
+&lt;h3 id=&#34;openmp-resources&#34;&gt;OpenMP Resources&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.openmp.org/resources/refguides/&#34; target=&#34;_blank&#34;&gt;OpenMP-5.0 Reference Cards&lt;/a&gt; (a few pages, printable)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.openmp.org/spec-html/5.0/openmp.html&#34; target=&#34;_blank&#34;&gt;OpenMP-5.0 Standard&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.openmp.org/wp-content/uploads/openmp-examples-4.5.0.pdf&#34; target=&#34;_blank&#34;&gt;OpenMP-4.5 Examples&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://computing.llnl.gov/tutorials/openMP/&#34; target=&#34;_blank&#34;&gt;LLNL Tutorial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://press3.mcs.anl.gov//atpesc/files/2019/07/ATPESC_2019_Track-2_2_7-31_830am_Mattson-The-OpenMP_Common_Core.pdf&#34; target=&#34;_blank&#34;&gt;Mattson: The OpenMP Common Core&lt;/a&gt; from &lt;a href=&#34;https://extremecomputingtraining.anl.gov/&#34; target=&#34;_blank&#34;&gt;ATPESC&lt;/a&gt; (&lt;a href=&#34;https://www.youtube.com/watch?v=T0csnAirv-U&amp;amp;list=PLGj2a3KTwhRa6Ux64xg5L5ga6Jg8QykoQ&amp;amp;index=2&#34; target=&#34;_blank&#34;&gt;video&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;pragma-omp-parallel&#34;&gt;&lt;code&gt;#pragma omp parallel&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;The standard is &lt;strong&gt;big&lt;/strong&gt;, but most applications only use a few constructs.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;render_c(&#39;omp-hello.c&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;#include &amp;lt;omp.h&amp;gt;
+#include &amp;lt;stdio.h&amp;gt;
+
+int main() {
+  #pragma omp parallel
+  {
+    int num_threads = omp_get_num_threads();
+    int my_thread_num = omp_get_thread_num();
+    printf(&amp;quot;I am %d of %d\n&amp;quot;, my_thread_num, num_threads);
+  }
+  return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!make CFLAGS=&#39;-fopenmp -Wall&#39; -B omp-hello
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;cc -fopenmp -Wall    omp-hello.c   -o omp-hello
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!./omp-hello
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;I am 1 of 4
+I am 2 of 4
+I am 0 of 4
+I am 3 of 4
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!OMP_NUM_THREADS=8 ./omp-hello
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;I am 0 of 8
+I am 7 of 8
+I am 1 of 8
+I am 3 of 8
+I am 4 of 8
+I am 6 of 8
+I am 2 of 8
+I am 5 of 8
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;parallelizing-triad&#34;&gt;Parallelizing &lt;code&gt;triad&lt;/code&gt;&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;void triad(int N, double *a, const double *b, double scalar, const double *c) {
+#pragma omp parallel
+    {
+        for (int i=0; i&amp;lt;N; i++)
+            a[i] = b[i] + scalar * c[i];
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;What does this code do?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;void triad(int N, double *a, const double *b, double scalar, const double *c) {
+#pragma omp parallel
+    {
+        int id = omp_get_thread_num();
+        int num_threads = omp_get_num_threads();
+        for (int i=id; i&amp;lt;N; i+=num_threads)
+            a[i] = b[i] + scalar * c[i];
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;parallelizing-dot&#34;&gt;Parallelizing &lt;code&gt;dot&lt;/code&gt;&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;static double dot_ref(size_t n, const double *a, const double *b) {
+  double sum = 0;
+  for (size_t i=0; i&amp;lt;n; i++)
+    sum += a[i] * b[i];
+  return sum;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!make CFLAGS=&#39;-O3 -march=native -fopenmp&#39; -B dot
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;cc -O3 -march=native -fopenmp    dot.c   -o dot
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!OMP_NUM_THREADS=2 ./dot -r 10 -n 10000
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;  Name      flops   ticks   flops/tick
+ dot_ref    20000   40327       0.50    
+ dot_ref    20000   35717       0.56    
+ dot_ref    20000   36096       0.55    
+ dot_ref    20000   36487       0.55    
+ dot_ref    20000   37157       0.54    
+ dot_ref    20000   36024       0.56    
+ dot_ref    20000   35322       0.57    
+ dot_ref    20000   36601       0.55    
+ dot_ref    20000   72193       0.28    
+ dot_ref    20000   37924       0.53    
+dot_opt1    20000   51256384        0.00    
+dot_opt1    20000   23343145        0.00    
+dot_opt1    20000   4646174     0.00    
+dot_opt1    20000   16710       1.20    
+dot_opt1    20000   15512       1.29    
+dot_opt1    20000   16016       1.25    
+dot_opt1    20000   16982       1.18    
+dot_opt1    20000   452064      0.04    
+dot_opt1    20000   16278       1.23    
+dot_opt1    20000   16311       1.23    
+dot_opt2    20000   24616       0.81    
+dot_opt2    20000   16095       1.24    
+dot_opt2    20000   17561       1.14    
+dot_opt2    20000   16270       1.23    
+dot_opt2    20000   18130       1.10    
+dot_opt2    20000   16831       1.19    
+dot_opt2    20000   16968       1.18    
+dot_opt2    20000   16391       1.22    
+dot_opt2    20000   17063       1.17    
+dot_opt2    20000   16315       1.23    
+dot_opt3    20000   77013       0.26    
+dot_opt3    20000   12419       1.61    
+dot_opt3    20000   12124       1.65    
+dot_opt3    20000   12193       1.64    
+dot_opt3    20000   12051       1.66    
+dot_opt3    20000   12009       1.67    
+dot_opt3    20000   11944       1.67    
+dot_opt3    20000   12032       1.66    
+dot_opt3    20000   12687       1.58    
+dot_opt3    20000   12188       1.64    
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;vectorization&#34;&gt;Vectorization&lt;/h3&gt;
+
+&lt;p&gt;OpenMP-4.0 added the &lt;code&gt;omp simd&lt;/code&gt; construct, which is a portable way to request that the compiler vectorize code.
+An example of a reason why a compiler might fail to vectorize code is aliasing, which we investigate below.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;render_c(&#39;triad.c&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;#include &amp;lt;stdlib.h&amp;gt;
+
+void triad(size_t N, double *a, const double *b, double scalar, const double *c) {
+  for (size_t i=0; i&amp;lt;N; i++)
+    a[i] = b[i] + scalar * c[i];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!gcc -O2 -ftree-vectorize -fopt-info-all -c triad.c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;Unit growth for small function inlining: 15-&amp;gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+triad.c:4:3: optimized: loop vectorized using 16 byte vectors
+triad.c:4:3: optimized:  loop versioned for vectorization because of possible aliasing
+triad.c:3:6: note: vectorized 1 loops in function.
+triad.c:4:3: optimized: loop turned into non-loop; it never loops
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;gcc autovectorization starts at &lt;code&gt;-O3&lt;/code&gt; or if you use &lt;code&gt;-ftree-vectorize&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;options such as &lt;a href=&#34;https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html#index-fopt-info&#34; target=&#34;_blank&#34;&gt;-fopt-info&lt;/a&gt; give useful diagnostics, but are compiler-dependent and sometimes referring to assembly is useful&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;man gcc&lt;/code&gt; with search (&lt;code&gt;/&lt;/code&gt;) is your friend&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;what-is-aliasing&#34;&gt;What is aliasing?&lt;/h3&gt;
+
+&lt;p&gt;Is this valid code?  What xs &lt;code&gt;x&lt;/code&gt; after this call?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;double x[5] = {1, 2, 3, 4, 5};
+triad(2, x+1, x, 10., x);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;C allows memory to overlap arbitrarily.  You can inform the compiler of this using the &lt;a href=&#34;https://en.wikipedia.org/wiki/Restrict&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;restrict&lt;/code&gt; qualifier&lt;/a&gt; (C99/C11; &lt;code&gt;__restrict&lt;/code&gt; or &lt;code&gt;__restrict__&lt;/code&gt; work with most C++ and &lt;a href=&#34;https://devblogs.nvidia.com/cuda-pro-tip-optimize-pointer-aliasing/&#34; target=&#34;_blank&#34;&gt;CUDA&lt;/a&gt; compilers).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;render_c(&#39;triad-restrict.c&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;void triad(int N, double *restrict a, const double *restrict b, double scalar, const double *restrict c) {
+  for (int i=0; i&amp;lt;N; i++)
+    a[i] = b[i] + scalar * c[i];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!gcc -O2 -march=native -ftree-vectorize -fopt-info-all -c triad-restrict.c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;Unit growth for small function inlining: 15-&amp;gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+triad-restrict.c:2:5: optimized: loop vectorized using 32 byte vectors
+triad-restrict.c:1:6: note: vectorized 1 loops in function.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notice how there is no more &lt;code&gt;loop versioned for vectorization because of possible aliasing&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The complexity of checking for aliasing can grow combinatorially in the number of arrays being processed, leading to many loop variants and/or preventing vectorization.&lt;/p&gt;
+
+&lt;h4 id=&#34;aside-warnings&#34;&gt;Aside: Warnings&lt;/h4&gt;
+
+&lt;p&gt;The &lt;code&gt;-Wrestrict&lt;/code&gt; flag (included in &lt;code&gt;-Wall&lt;/code&gt;) can catch some programming errors&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;void foo(double *x) {
+  triad(2, x, x, 10, x);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!gcc -O2 -Wall -c triad-foo.c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The powers of &lt;code&gt;-Wrestrict&lt;/code&gt; are limited, however, and (as of gcc-9) do not even catch&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;void foo(double *x) {
+  triad(2, x+1, x, 10, x);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;check-the-assembly&#34;&gt;Check the assembly&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!objdump -d --prefix-addresses -M intel triad-restrict.o
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;triad-restrict.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+0000000000000000 &amp;lt;triad&amp;gt; test   edi,edi
+0000000000000002 &amp;lt;triad+0x2&amp;gt; jle    0000000000000067 &amp;lt;triad+0x67&amp;gt;
+0000000000000004 &amp;lt;triad+0x4&amp;gt; lea    eax,[rdi-0x1]
+0000000000000007 &amp;lt;triad+0x7&amp;gt; cmp    eax,0x2
+000000000000000a &amp;lt;triad+0xa&amp;gt; jbe    0000000000000074 &amp;lt;triad+0x74&amp;gt;
+000000000000000c &amp;lt;triad+0xc&amp;gt; mov    r8d,edi
+000000000000000f &amp;lt;triad+0xf&amp;gt; shr    r8d,0x2
+0000000000000013 &amp;lt;triad+0x13&amp;gt; vbroadcastsd ymm2,xmm0
+0000000000000018 &amp;lt;triad+0x18&amp;gt; shl    r8,0x5
+000000000000001c &amp;lt;triad+0x1c&amp;gt; xor    eax,eax
+000000000000001e &amp;lt;triad+0x1e&amp;gt; xchg   ax,ax
+0000000000000020 &amp;lt;triad+0x20&amp;gt; vmovupd ymm1,YMMWORD PTR [rcx+rax*1]
+0000000000000025 &amp;lt;triad+0x25&amp;gt; vfmadd213pd ymm1,ymm2,YMMWORD PTR [rdx+rax*1]
+000000000000002b &amp;lt;triad+0x2b&amp;gt; vmovupd YMMWORD PTR [rsi+rax*1],ymm1
+0000000000000030 &amp;lt;triad+0x30&amp;gt; add    rax,0x20
+0000000000000034 &amp;lt;triad+0x34&amp;gt; cmp    rax,r8
+0000000000000037 &amp;lt;triad+0x37&amp;gt; jne    0000000000000020 &amp;lt;triad+0x20&amp;gt;
+0000000000000039 &amp;lt;triad+0x39&amp;gt; mov    eax,edi
+000000000000003b &amp;lt;triad+0x3b&amp;gt; and    eax,0xfffffffc
+000000000000003e &amp;lt;triad+0x3e&amp;gt; test   dil,0x3
+0000000000000042 &amp;lt;triad+0x42&amp;gt; je     0000000000000070 &amp;lt;triad+0x70&amp;gt;
+0000000000000044 &amp;lt;triad+0x44&amp;gt; vzeroupper 
+0000000000000047 &amp;lt;triad+0x47&amp;gt; cdqe   
+0000000000000049 &amp;lt;triad+0x49&amp;gt; nop    DWORD PTR [rax+0x0]
+0000000000000050 &amp;lt;triad+0x50&amp;gt; vmovsd xmm1,QWORD PTR [rcx+rax*8]
+0000000000000055 &amp;lt;triad+0x55&amp;gt; vfmadd213sd xmm1,xmm0,QWORD PTR [rdx+rax*8]
+000000000000005b &amp;lt;triad+0x5b&amp;gt; vmovsd QWORD PTR [rsi+rax*8],xmm1
+0000000000000060 &amp;lt;triad+0x60&amp;gt; inc    rax
+0000000000000063 &amp;lt;triad+0x63&amp;gt; cmp    edi,eax
+0000000000000065 &amp;lt;triad+0x65&amp;gt; jg     0000000000000050 &amp;lt;triad+0x50&amp;gt;
+0000000000000067 &amp;lt;triad+0x67&amp;gt; ret    
+0000000000000068 &amp;lt;triad+0x68&amp;gt; nop    DWORD PTR [rax+rax*1+0x0]
+0000000000000070 &amp;lt;triad+0x70&amp;gt; vzeroupper 
+0000000000000073 &amp;lt;triad+0x73&amp;gt; ret    
+0000000000000074 &amp;lt;triad+0x74&amp;gt; xor    eax,eax
+0000000000000076 &amp;lt;triad+0x76&amp;gt; jmp    0000000000000047 &amp;lt;triad+0x47&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;How do the results change if you go up and replace &lt;code&gt;-march=native&lt;/code&gt; with &lt;code&gt;-march=skylake-avx512 -mprefer-vector-width=512&lt;/code&gt;?&lt;/li&gt;
+&lt;li&gt;Is the assembly qualitatively different without &lt;code&gt;restrict&lt;/code&gt; (in which case the compiler &amp;ldquo;versions&amp;rdquo; the loop).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;pragma-omp-simd&#34;&gt;Pragma &lt;code&gt;omp simd&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;An alternative (or supplement) to &lt;code&gt;restrict&lt;/code&gt; is &lt;code&gt;#pragma omp simd&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;render_c(&#39;triad-omp-simd.c&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;void triad(int N, double *a, const double *b, double scalar, const double *c) {
+#pragma omp simd
+  for (int i=0; i&amp;lt;N; i++)
+    a[i] = b[i] + scalar * c[i];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;!gcc -O2 -march=native -ftree-vectorize -fopenmp -fopt-info-all -c triad-omp-simd.c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;Unit growth for small function inlining: 15-&amp;gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+triad-omp-simd.c:4:17: optimized: loop vectorized using 32 byte vectors
+triad-omp-simd.c:1:6: note: vectorized 1 loops in function.
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Intro to Parallel Scaling</title>
       <link>https://cucs-hpsc.github.io/fall2019/intro-parallel-scaling/</link>
       <pubDate>Fri, 06 Sep 2019 08:07:31 -0600</pubDate>
