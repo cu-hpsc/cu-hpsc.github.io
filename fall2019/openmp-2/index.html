@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Jed Brown">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="What does the compiler do when we add #pragma omp parallel?
+static double dot_opt3(size_t n, const double *a, const double *b) { double sum = 0; omp_set_num_threads(4); #pragma omp parallel { #pragma omp for reduction(&#43;:sum) for (size_t i=0; i&lt;n; i&#43;&#43;) sum &#43;= a[i] * b[i]; } return sum; }  gcc -Os -march=native -fopenmp dot.c -o dot objdump -d --prefix-addresses -M intel dot | grep dot_opt3  000000000000129f &lt;main&#43;0x1af&gt; call 0000000000001779 &lt;dot_opt3&gt; 0000000000001779 &lt;dot_opt3&gt; push r12 000000000000177b &lt;dot_opt3&#43;0x2&gt; mov r12,rdx 000000000000177e &lt;dot_opt3&#43;0x5&gt; push rbp 000000000000177f &lt;dot_opt3&#43;0x6&gt; mov rbp,rsi 0000000000001782 &lt;dot_opt3&#43;0x9&gt; push rbx 0000000000001783 &lt;dot_opt3&#43;0xa&gt; mov rbx,rdi 0000000000001786 &lt;dot_opt3&#43;0xd&gt; mov edi,0x4 000000000000178b &lt;dot_opt3&#43;0x12&gt; sub rsp,0x30 000000000000178f &lt;dot_opt3&#43;0x16&gt; mov rax,QWORD PTR fs:0x28 0000000000001798 &lt;dot_opt3&#43;0x1f&gt; mov QWORD PTR [rsp&#43;0x28],rax 000000000000179d &lt;dot_opt3&#43;0x24&gt; xor eax,eax 000000000000179f &lt;dot_opt3&#43;0x26&gt; call 0000000000001070 &lt;omp_set_num_threads@plt&gt; 00000000000017a4 &lt;dot_opt3&#43;0x2b&gt; xor ecx,ecx 00000000000017a6 &lt;dot_opt3&#43;0x2d&gt; xor edx,edx 00000000000017a8 &lt;dot_opt3&#43;0x2f&gt; lea rsi,[rsp&#43;0x8] 00000000000017ad &lt;dot_opt3&#43;0x34&gt; lea rdi,[rip&#43;0xc1] # 0000000000001875 &lt;dot_opt3.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/openmp-2/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/openmp-2/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@five9a2">
+  <meta property="twitter:creator" content="@five9a2">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/openmp-2/">
+  <meta property="og:title" content="More OpenMP | HPSC">
+  <meta property="og:description" content="What does the compiler do when we add #pragma omp parallel?
+static double dot_opt3(size_t n, const double *a, const double *b) { double sum = 0; omp_set_num_threads(4); #pragma omp parallel { #pragma omp for reduction(&#43;:sum) for (size_t i=0; i&lt;n; i&#43;&#43;) sum &#43;= a[i] * b[i]; } return sum; }  gcc -Os -march=native -fopenmp dot.c -o dot objdump -d --prefix-addresses -M intel dot | grep dot_opt3  000000000000129f &lt;main&#43;0x1af&gt; call 0000000000001779 &lt;dot_opt3&gt; 0000000000001779 &lt;dot_opt3&gt; push r12 000000000000177b &lt;dot_opt3&#43;0x2&gt; mov r12,rdx 000000000000177e &lt;dot_opt3&#43;0x5&gt; push rbp 000000000000177f &lt;dot_opt3&#43;0x6&gt; mov rbp,rsi 0000000000001782 &lt;dot_opt3&#43;0x9&gt; push rbx 0000000000001783 &lt;dot_opt3&#43;0xa&gt; mov rbx,rdi 0000000000001786 &lt;dot_opt3&#43;0xd&gt; mov edi,0x4 000000000000178b &lt;dot_opt3&#43;0x12&gt; sub rsp,0x30 000000000000178f &lt;dot_opt3&#43;0x16&gt; mov rax,QWORD PTR fs:0x28 0000000000001798 &lt;dot_opt3&#43;0x1f&gt; mov QWORD PTR [rsp&#43;0x28],rax 000000000000179d &lt;dot_opt3&#43;0x24&gt; xor eax,eax 000000000000179f &lt;dot_opt3&#43;0x26&gt; call 0000000000001070 &lt;omp_set_num_threads@plt&gt; 00000000000017a4 &lt;dot_opt3&#43;0x2b&gt; xor ecx,ecx 00000000000017a6 &lt;dot_opt3&#43;0x2d&gt; xor edx,edx 00000000000017a8 &lt;dot_opt3&#43;0x2f&gt; lea rsi,[rsp&#43;0x8] 00000000000017ad &lt;dot_opt3&#43;0x34&gt; lea rdi,[rip&#43;0xc1] # 0000000000001875 &lt;dot_opt3."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-09-13T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-09-13T15:04:27-06:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>More OpenMP | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp/">2019-09-11 OpenMP Basics</a>
+      </li>
+      
+      <li class="active">
+        <a href="/fall2019/openmp-2/">2019-09-13 More OpenMP</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#anatomy-of-a-parallel-region">Anatomy of a parallel region</a></li>
+<li><a href="#memory-semantics">Memory semantics</a>
+<ul>
+<li><a href="#programming-style">Programming style</a></li>
+<li><a href="#updating-shared-variables">Updating shared variables</a></li>
+</ul></li>
+<li><a href="#a-quick-demo-of-perf">A quick demo of <code>perf</code></a></li>
+</ul></li>
+</ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">More OpenMP</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<p>What does the compiler do when we add <code>#pragma omp parallel</code>?</p>
+
+<pre><code class="language-c">static double dot_opt3(size_t n, const double *a, const double *b) {
+  double sum = 0;
+  omp_set_num_threads(4);
+  #pragma omp parallel
+  {
+    #pragma omp for reduction(+:sum)
+    for (size_t i=0; i&lt;n; i++)
+      sum += a[i] * b[i];
+  }
+  return sum;
+}
+</code></pre>
+
+<pre><code class="language-bash">gcc -Os -march=native -fopenmp dot.c -o dot
+objdump -d --prefix-addresses -M intel dot | grep dot_opt3
+</code></pre>
+
+<pre><code>000000000000129f &lt;main+0x1af&gt; call   0000000000001779 &lt;dot_opt3&gt;
+0000000000001779 &lt;dot_opt3&gt; push   r12
+000000000000177b &lt;dot_opt3+0x2&gt; mov    r12,rdx
+000000000000177e &lt;dot_opt3+0x5&gt; push   rbp
+000000000000177f &lt;dot_opt3+0x6&gt; mov    rbp,rsi
+0000000000001782 &lt;dot_opt3+0x9&gt; push   rbx
+0000000000001783 &lt;dot_opt3+0xa&gt; mov    rbx,rdi
+0000000000001786 &lt;dot_opt3+0xd&gt; mov    edi,0x4
+000000000000178b &lt;dot_opt3+0x12&gt; sub    rsp,0x30
+000000000000178f &lt;dot_opt3+0x16&gt; mov    rax,QWORD PTR fs:0x28
+0000000000001798 &lt;dot_opt3+0x1f&gt; mov    QWORD PTR [rsp+0x28],rax
+000000000000179d &lt;dot_opt3+0x24&gt; xor    eax,eax
+000000000000179f &lt;dot_opt3+0x26&gt; call   0000000000001070 &lt;omp_set_num_threads@plt&gt;
+00000000000017a4 &lt;dot_opt3+0x2b&gt; xor    ecx,ecx
+00000000000017a6 &lt;dot_opt3+0x2d&gt; xor    edx,edx
+00000000000017a8 &lt;dot_opt3+0x2f&gt; lea    rsi,[rsp+0x8]
+00000000000017ad &lt;dot_opt3+0x34&gt; lea    rdi,[rip+0xc1]        # 0000000000001875 &lt;dot_opt3._omp_fn.0&gt;
+00000000000017b4 &lt;dot_opt3+0x3b&gt; mov    QWORD PTR [rsp+0x18],r12
+00000000000017b9 &lt;dot_opt3+0x40&gt; mov    QWORD PTR [rsp+0x10],rbp
+00000000000017be &lt;dot_opt3+0x45&gt; mov    QWORD PTR [rsp+0x8],rbx
+00000000000017c3 &lt;dot_opt3+0x4a&gt; mov    QWORD PTR [rsp+0x20],0x0
+00000000000017cc &lt;dot_opt3+0x53&gt; call   00000000000010e0 &lt;GOMP_parallel@plt&gt;
+00000000000017d1 &lt;dot_opt3+0x58&gt; mov    rax,QWORD PTR [rsp+0x28]
+00000000000017d6 &lt;dot_opt3+0x5d&gt; xor    rax,QWORD PTR fs:0x28
+00000000000017df &lt;dot_opt3+0x66&gt; vmovsd xmm0,QWORD PTR [rsp+0x20]
+00000000000017e5 &lt;dot_opt3+0x6c&gt; je     00000000000017ec &lt;dot_opt3+0x73&gt;
+00000000000017e7 &lt;dot_opt3+0x6e&gt; call   0000000000001080 &lt;__stack_chk_fail@plt&gt;
+00000000000017ec &lt;dot_opt3+0x73&gt; add    rsp,0x30
+00000000000017f0 &lt;dot_opt3+0x77&gt; pop    rbx
+00000000000017f1 &lt;dot_opt3+0x78&gt; pop    rbp
+00000000000017f2 &lt;dot_opt3+0x79&gt; pop    r12
+00000000000017f4 &lt;dot_opt3+0x7b&gt; ret    
+0000000000001875 &lt;dot_opt3._omp_fn.0&gt; push   r12
+0000000000001877 &lt;dot_opt3._omp_fn.0+0x2&gt; push   rbp
+0000000000001878 &lt;dot_opt3._omp_fn.0+0x3&gt; mov    rbp,rdi
+000000000000187b &lt;dot_opt3._omp_fn.0+0x6&gt; push   rbx
+000000000000187c &lt;dot_opt3._omp_fn.0+0x7&gt; sub    rsp,0x10
+0000000000001880 &lt;dot_opt3._omp_fn.0+0xb&gt; mov    rbx,QWORD PTR [rdi]
+0000000000001883 &lt;dot_opt3._omp_fn.0+0xe&gt; test   rbx,rbx
+0000000000001886 &lt;dot_opt3._omp_fn.0+0x11&gt; jne    00000000000018b5 &lt;dot_opt3._omp_fn.0+0x40&gt;
+0000000000001888 &lt;dot_opt3._omp_fn.0+0x13&gt; vxorpd xmm0,xmm0,xmm0
+000000000000188c &lt;dot_opt3._omp_fn.0+0x17&gt; mov    rax,QWORD PTR [rbp+0x18]
+0000000000001890 &lt;dot_opt3._omp_fn.0+0x1b&gt; lea    rdx,[rbp+0x18]
+0000000000001894 &lt;dot_opt3._omp_fn.0+0x1f&gt; mov    QWORD PTR [rsp],rax
+0000000000001898 &lt;dot_opt3._omp_fn.0+0x23&gt; vaddsd xmm1,xmm0,QWORD PTR [rsp]
+000000000000189d &lt;dot_opt3._omp_fn.0+0x28&gt; vmovsd QWORD PTR [rsp+0x8],xmm1
+00000000000018a3 &lt;dot_opt3._omp_fn.0+0x2e&gt; mov    rdi,QWORD PTR [rsp+0x8]
+00000000000018a8 &lt;dot_opt3._omp_fn.0+0x33&gt; lock cmpxchg QWORD PTR [rdx],rdi
+00000000000018ad &lt;dot_opt3._omp_fn.0+0x38&gt; cmp    QWORD PTR [rsp],rax
+00000000000018b1 &lt;dot_opt3._omp_fn.0+0x3c&gt; je     000000000000190c &lt;dot_opt3._omp_fn.0+0x97&gt;
+00000000000018b3 &lt;dot_opt3._omp_fn.0+0x3e&gt; jmp    0000000000001894 &lt;dot_opt3._omp_fn.0+0x1f&gt;
+00000000000018b5 &lt;dot_opt3._omp_fn.0+0x40&gt; call   00000000000010b0 &lt;omp_get_num_threads@plt&gt;
+00000000000018ba &lt;dot_opt3._omp_fn.0+0x45&gt; mov    r12d,eax
+00000000000018bd &lt;dot_opt3._omp_fn.0+0x48&gt; call   0000000000001060 &lt;omp_get_thread_num@plt&gt;
+00000000000018c2 &lt;dot_opt3._omp_fn.0+0x4d&gt; movsxd rcx,eax
+00000000000018c5 &lt;dot_opt3._omp_fn.0+0x50&gt; movsxd rsi,r12d
+00000000000018c8 &lt;dot_opt3._omp_fn.0+0x53&gt; mov    rax,rbx
+00000000000018cb &lt;dot_opt3._omp_fn.0+0x56&gt; xor    edx,edx
+00000000000018cd &lt;dot_opt3._omp_fn.0+0x58&gt; div    rsi
+00000000000018d0 &lt;dot_opt3._omp_fn.0+0x5b&gt; cmp    rcx,rdx
+00000000000018d3 &lt;dot_opt3._omp_fn.0+0x5e&gt; jb     0000000000001905 &lt;dot_opt3._omp_fn.0+0x90&gt;
+00000000000018d5 &lt;dot_opt3._omp_fn.0+0x60&gt; imul   rcx,rax
+00000000000018d9 &lt;dot_opt3._omp_fn.0+0x64&gt; vxorpd xmm0,xmm0,xmm0
+00000000000018dd &lt;dot_opt3._omp_fn.0+0x68&gt; add    rdx,rcx
+00000000000018e0 &lt;dot_opt3._omp_fn.0+0x6b&gt; add    rax,rdx
+00000000000018e3 &lt;dot_opt3._omp_fn.0+0x6e&gt; cmp    rdx,rax
+00000000000018e6 &lt;dot_opt3._omp_fn.0+0x71&gt; jae    000000000000188c &lt;dot_opt3._omp_fn.0+0x17&gt;
+00000000000018e8 &lt;dot_opt3._omp_fn.0+0x73&gt; mov    rcx,QWORD PTR [rbp+0x10]
+00000000000018ec &lt;dot_opt3._omp_fn.0+0x77&gt; mov    rsi,QWORD PTR [rbp+0x8]
+00000000000018f0 &lt;dot_opt3._omp_fn.0+0x7b&gt; vmovsd xmm2,QWORD PTR [rsi+rdx*8]
+00000000000018f5 &lt;dot_opt3._omp_fn.0+0x80&gt; vfmadd231sd xmm0,xmm2,QWORD PTR [rcx+rdx*8]
+00000000000018fb &lt;dot_opt3._omp_fn.0+0x86&gt; inc    rdx
+00000000000018fe &lt;dot_opt3._omp_fn.0+0x89&gt; cmp    rax,rdx
+0000000000001901 &lt;dot_opt3._omp_fn.0+0x8c&gt; jne    00000000000018f0 &lt;dot_opt3._omp_fn.0+0x7b&gt;
+0000000000001903 &lt;dot_opt3._omp_fn.0+0x8e&gt; jmp    000000000000188c &lt;dot_opt3._omp_fn.0+0x17&gt;
+0000000000001905 &lt;dot_opt3._omp_fn.0+0x90&gt; inc    rax
+0000000000001908 &lt;dot_opt3._omp_fn.0+0x93&gt; xor    edx,edx
+000000000000190a &lt;dot_opt3._omp_fn.0+0x95&gt; jmp    00000000000018d5 &lt;dot_opt3._omp_fn.0+0x60&gt;
+000000000000190c &lt;dot_opt3._omp_fn.0+0x97&gt; add    rsp,0x10
+0000000000001910 &lt;dot_opt3._omp_fn.0+0x9b&gt; pop    rbx
+0000000000001911 &lt;dot_opt3._omp_fn.0+0x9c&gt; pop    rbp
+0000000000001912 &lt;dot_opt3._omp_fn.0+0x9d&gt; pop    r12
+0000000000001914 &lt;dot_opt3._omp_fn.0+0x9f&gt; ret    
+</code></pre>
+
+<h2 id="anatomy-of-a-parallel-region">Anatomy of a parallel region</h2>
+
+<div class="mermaid">
+graph LR;
+  A[<tt>dot_opt3</tt>]-->B[<tt>GOMP_parallel</tt>];
+  B-- id=0_ -->C{<tt>dot_opt3._omp_fn.0</tt>};
+  B-- id=1_ -->C{<tt>dot_opt3._omp_fn.0</tt>};
+  B-- id=2_ -->C{<tt>dot_opt3._omp_fn.0</tt>};
+  A-. "Body inside__" .->C;
+  C-->D[<tt>omp_get_num_threads</tt>];
+  C-->E[<tt>omp_get_thread_num</tt>];
+  style A fill:#9b9,stroke:#686,stroke-width:4px;
+  style C fill:#9b9,stroke:#668,stroke-width:8px;
+</div>
+
+<h2 id="memory-semantics">Memory semantics</h2>
+
+<p>For each variable accessed within the parallel region, we can specify
+whether it is</p>
+
+<ul>
+<li><code>private</code> to the thread, with value undefined inside the region</li>
+<li><code>firstprivate</code>, which is like private, but initialized by the value
+upon entering the parallel region</li>
+
+<li><p><code>shared</code>, meaning that every thread accesses the same value in
+memory (but changes are not immediately visible)</p>
+
+<pre><code class="language-c">int a=0, b=1, c=2;
+#pragma omp parallel private(a) firstprivate(b) shared(c)
+{
+int id = omp_get_thread_num();
+a++;
+b++;
+c++;
+printf(&quot;[%d] %d %d %d\n&quot;, id, a, b, c);
+}
+printf(&quot;END: %d %d %d\n&quot;, a, b, c);
+</code></pre>
+
+<pre><code class="language-bash">make CFLAGS='-fopenmp -Wall' -B omp-mem
+</code></pre>
+
+<pre><code>cc -fopenmp -Wall    omp-mem.c   -o omp-mem
+omp-mem.c: In function ‘main._omp_fn.0’:
+omp-mem.c:8:6: warning: ‘a’ is used uninitialized in this function [-Wuninitialized]
+8 |     a++;
+  |     ~^~
+omp-mem.c:5:7: note: ‘a’ was declared here
+5 |   int a=1, b=2, c=3;
+  |       ^
+</code></pre></li>
+</ul>
+
+<p><strong>Question:</strong> How could the compiler get <code>firstprivate</code> and <code>shared</code> variables into
+the scope of <code>dot_opt3._omp_fn.0</code>?</p>
+
+<h3 id="programming-style">Programming style</h3>
+
+<p>I find <code>private</code> semantics unnecessary and error-prone.  We can just
+declare those variables at inner-most scope.</p>
+
+<pre><code class="language-c">  int b=1, c=2;
+  #pragma omp parallel firstprivate(b) shared(c)
+  {
+    int a = 0;
+    int id = omp_get_thread_num();
+    a++;
+    b++;
+    c++;
+    printf(&quot;[%d] %d %d %d\n&quot;, id, a, b, c);
+  }
+  printf(&quot;END: %d %d %d\n&quot;, a, b, c); // Error: a not in scope here
+</code></pre>
+
+<h3 id="updating-shared-variables">Updating shared variables</h3>
+
+<p>We see that the shared variable <code>c</code> has lots of opportunities for conflict.</p>
+
+<div class="mermaid">
+sequenceDiagram
+Thread0-->Memory: load c=2
+Thread1-->Memory: load c=2
+Note left of Thread0: c++ (=3)
+Note right of Thread1: c++ (=3)
+Note right of Thread1: print c
+Thread0-->Memory: store c=3
+Thread1-->Memory: store c=3
+Note left of Thread0: print c
+</div>
+
+<p>If we run the above many times, we may sometimes find that multiple
+processes have the same value of <code>c</code>, each thread observes different
+increments from others, and the total number of increments may vary.</p>
+
+<p>We can define ordering semantics using <code>atomic</code>, <code>critical</code>, and <code>barrier</code>.</p>
+
+<pre><code class="language-c">  int b=1, c=2;
+  #pragma omp parallel firstprivate(b) shared(c)
+  {
+    int a = 1;
+    int id = omp_get_thread_num();
+    b++;
+    #pragma omp critical
+    c++;
+    #pragma omp barrier
+    printf(&quot;[%d] %d %d %d\n&quot;, id, a, b, c);
+  }
+  printf(&quot;END: _ %d %d\n&quot;, b, c);
+</code></pre>
+
+<h2 id="a-quick-demo-of-perf">A quick demo of <code>perf</code></h2>
+
+<p>Linux <code>perf</code> is a kernel interrupt-based profiling tool.  It uses
+performance counters and interrupts to diagnose all sorts of
+bottlenecks.</p>
+
+<pre><code>$ perf stat ./dot -n 10000 &gt; /dev/null
+
+ Performance counter stats for './dot -n 10000':
+
+              1.56 msec task-clock:u              #    1.201 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+               124      page-faults:u             #    0.079 M/sec                  
+         3,041,706      cycles:u                  #    1.947 GHz                    
+         2,272,231      instructions:u            #    0.75  insn per cycle         
+           410,889      branches:u                #  262.962 M/sec                  
+             7,911      branch-misses:u           #    1.93% of all branches        
+
+       0.001301176 seconds time elapsed
+
+       0.001970000 seconds user
+       0.000000000 seconds sys
+</code></pre>
+
+<pre><code>$ perf record -g ./dot -n 10000 -r 1000 &gt; /dev/null
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.075 MB perf.data (1098 samples) ]
+</code></pre>
+
+<pre><code>$ perf report -M intel
+</code></pre>
+
+<p><img src="perf-report.png" alt="perf report" /></p>
+
+<p>Note how GOMP overhead dominates the cost in this experiment.  We need
+more work (longer arrays, etc.) to justify the overhead of
+distributing and collecting the parallel work.</p>
+
+<p>We can drill down into particular functions (especially ours, which we
+have hopefully compiled with <code>-g</code> to include debugging information).</p>
+
+<p><img src="perf-report-ann.png" alt="perf report annotation" /></p>
+
+<p>From this, we see specific instructions, and their corresponding lines
+of code, that are most frequently being processed when the kernel
+interrupts to check.  In this experiment, we see <code>*sd</code> &ldquo;scalar double&rdquo;
+instructions, indicating lack of vectorization.</p>
+
+<p>In contrast, the following annotation shows use of <code>*pd</code> &ldquo;packed
+double&rdquo; instructions, indicating that the &ldquo;hot&rdquo; loop has been
+vectorized.</p>
+
+<p><img src="perf-report-ann-vec.png" alt="perf report annotation with vectorization" /></p>
+
+<p>(The reason for vectorization can sometimes be determined by
+<code>-fopt-info -fopt-info-missed</code>, and can be encouraged by techniques
+like manually splitting accumulators, preventing aliasing by using
+<code>restrict</code>, directives like <code>#pragma omp simd</code>, and global compiler
+flags like <code>-ffast-math</code>.)</p>
+
+<p>For more on <code>perf</code>, see <a href="http://www.brendangregg.com/linuxperf.html" target="_blank">Brendan Gregg&rsquo;s Linux Performance site</a>.</p>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/openmp/" rel="prev">OpenMP Basics</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Sep 13, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/openmp-2/index.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
