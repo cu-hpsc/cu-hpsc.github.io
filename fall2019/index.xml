@@ -290,6 +290,166 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Parallel Reductions and Scans</title>
+      <link>https://cucs-hpsc.github.io/fall2019/strategies/</link>
+      <pubDate>Wed, 18 Sep 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/strategies/</guid>
+      <description>
+
+&lt;h2 id=&#34;reductions&#34;&gt;Reductions&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;double reduce(int n, double x[]) {
+    double y = 0;
+    for (int i=0; i&amp;lt;n; i++)
+        y += x[i];
+    return y;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;abtin-reduction-iterative.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;dag-properties&#34;&gt;DAG properties&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Work $W(n) = n$&lt;/li&gt;
+&lt;li&gt;Depth $D(n) = n$&lt;/li&gt;
+&lt;li&gt;Parallelism $P(n) = \frac{W(n)}{D(n)} = 1$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;a-2-level-method&#34;&gt;A 2-level method&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;double reduce(int n, double x[]) {
+    int P = sqrt(n); // ways of parallelism
+    double y[P];
+    #pragma omp parallel for shared(y)
+    for (int p=0; p&amp;lt;P; p++) {
+        y[p] = 0;
+        for (int i=0; i&amp;lt;n/P; i++)
+            y[p] += x[p*(n/P) + i];
+    }
+    double sum = 0;
+    for (int p=0; p&amp;lt;P; p++)
+        sum += y[p];
+    return sum;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;dag-properties-1&#34;&gt;DAG properties&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Work $W(n) = n + \sqrt{n}$&lt;/li&gt;
+&lt;li&gt;Depth $D(n) = 2 \sqrt{n}$&lt;/li&gt;
+&lt;li&gt;Parallelism $P(n) = \sqrt{n}$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;pram-performance-model&#34;&gt;PRAM performance model&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Processing units (e.g., OpenMP threads) execute local programs&lt;/li&gt;
+&lt;li&gt;Communication through shared memory with no access cost&lt;/li&gt;
+&lt;li&gt;Synchronous operation on a common clock
+
+&lt;ul&gt;
+&lt;li&gt;Barrier-like constructs are free&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Multiple Instruction, Multiple Data (MIMD)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;scheduling&#34;&gt;Scheduling&lt;/h4&gt;
+
+&lt;p&gt;How much time does it take to execute a DAG on $p$ processors?&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Sum work of each node $i$ along critical path of length $D(n)$
+$$ \sum_{i=1}^{D(n)} W_i $$&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Partition total work $W(n)$ over $p \le P(n)$ processors (as though there were no data dependencies)
+$$ \left\lceil \frac{W(n)}{p} \right\rceil $$&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Total time must be at least as large as either of these
+$$ T(n,p) \ge \max\left( D(n), \left\lceil \frac{W(n)}{p} \right\rceil \right) $$&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;more-levels&#34;&gt;More levels?&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;double reduce(int n, double x[]) {
+    if (n == 1) return x[0];
+    double y[n/2];
+    #pragma omp parallel for shared(y)
+    for (int i=0; i&amp;lt;n/2; i++)
+        y[i] = x[2*i] + x[2*i+1];
+    return reduce(n/2, y);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;abtin-reduction-recursive.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;dag-properties-2&#34;&gt;DAG properties&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;$W(n) = n/2 + n/4 + n/8 + \dotsb = n$&lt;/li&gt;
+&lt;li&gt;$D(n) = \log_2 n$&lt;/li&gt;
+&lt;li&gt;$P(n) = n/2$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;parallel-scans&#34;&gt;Parallel scans&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;void scan(int n, double x[], double y[]) {
+    y[0] = x[0];
+    for (int i=1; i&amp;lt;n; i++)
+        y[i] = y[i-1] + x[i];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;What are the DAG properties of this algorithm?&lt;/li&gt;
+&lt;li&gt;How fast can we make it?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;abtin-scan-recursive.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;void scan_inplace(int n, double y[], int stride) {
+    if (2*stride &amp;gt; n) return;
+    #pragma omp parallel for
+    for (int i=2*stride-1; i&amp;lt;n; i+=2*stride)
+        y[i] += [i - stride];
+
+    scan(n, y, 2*stride);
+
+    #pragma omp parallel for
+    for (int i=3*stride-1; i&amp;lt;n; i+=2*stride)
+        y[i] += y[i - stride];
+}
+
+// call like
+scan_inplace(n, x, 1);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;application-of-scans-parallel-select&#34;&gt;Application of scans: parallel select&lt;/h3&gt;
+
+&lt;p&gt;Select elements of array &lt;code&gt;x[]&lt;/code&gt; that satisfy a condition.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;int c[n];
+#pragma omp parallel for
+for (int i=0; i&amp;lt;n; i++)
+    c[i] = cond(x[i]); // returns 1 or 0
+
+scan_inplace(n, c, 1);
+
+double results[c[n-1]]; // allocate array with total number of items
+#pragma omp parallel for
+for (int i=0; i&amp;lt;n; i++)
+    if (cond(x[i])) // Can use `c[i] - c[i-1]` to avoid recomputing
+        results[c[i]-1] = x[i];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Figures courtesy Abtin Rahimian&amp;rsquo;s course notes.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>OpenMP Tasks</title>
       <link>https://cucs-hpsc.github.io/fall2019/openmp-3/</link>
       <pubDate>Mon, 16 Sep 2019 06:49:25 -0600</pubDate>
