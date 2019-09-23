@@ -28,11 +28,12 @@
   
     
   
-  <meta name="description" content="Cores, caches, and memory A von Neumann Architecture A contemporary architecture My laptop We can get this kind of information for our machine using hwloc, which provides a library as well as the command-line tool lstopo.
-!lstopo --output-format svg &gt; lstopo-local.svg  A double-socket compute node with two GPUs 2x Xeon Ivy-Bridge-EP E5-2680v2 &#43; 2x NVIDIA GPUs (from 2013, with hwloc v1.11). GPUs are reported as CUDA devices and X11 display :1.">
+  <meta name="description" content="%matplotlib inline import matplotlib.pyplot as plt import pandas import numpy as np import itertools plt.style.use(&#39;seaborn&#39;)  Bitonic sorting Definition: bitonic sequence A bitonic sequence of length $n$ satisfies $$ x_0 \le x_1 \le \dotsb \le xk \ge x{k&#43;1} \ge \dotsb \ge x_{n-1} $$ or a cyclic shift thereof, $$\hat xi = x{i&#43;c \bmod n} .$$
+sorting relies on the bitonic swapping operation,
+def bitonic_split(x): L = len(x) // 2 for i in range(L): # each pair is independent if (x[i] &gt; x[L &#43; i]): x[i], x[L &#43; i] = x[L &#43; i], x[i]  after which the resulting subsequences x[:L] and x[L:] are bitonic and max(x[:L]) &lt;= min(x[L:]).">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/sorting-graphs/">
 
   
 
@@ -99,7 +100,7 @@
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/sorting-graphs/">
 
   
   
@@ -115,16 +116,17 @@
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/intro-architecture/">
-  <meta property="og:title" content="Intro to Architecture | HPSC">
-  <meta property="og:description" content="Cores, caches, and memory A von Neumann Architecture A contemporary architecture My laptop We can get this kind of information for our machine using hwloc, which provides a library as well as the command-line tool lstopo.
-!lstopo --output-format svg &gt; lstopo-local.svg  A double-socket compute node with two GPUs 2x Xeon Ivy-Bridge-EP E5-2680v2 &#43; 2x NVIDIA GPUs (from 2013, with hwloc v1.11). GPUs are reported as CUDA devices and X11 display :1."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/sorting-graphs/">
+  <meta property="og:title" content="More bitonic sorting, graphs | HPSC">
+  <meta property="og:description" content="%matplotlib inline import matplotlib.pyplot as plt import pandas import numpy as np import itertools plt.style.use(&#39;seaborn&#39;)  Bitonic sorting Definition: bitonic sequence A bitonic sequence of length $n$ satisfies $$ x_0 \le x_1 \le \dotsb \le xk \ge x{k&#43;1} \ge \dotsb \ge x_{n-1} $$ or a cyclic shift thereof, $$\hat xi = x{i&#43;c \bmod n} .$$
+sorting relies on the bitonic swapping operation,
+def bitonic_split(x): L = len(x) // 2 for i in range(L): # each pair is independent if (x[i] &gt; x[L &#43; i]): x[i], x[L &#43; i] = x[L &#43; i], x[i]  after which the resulting subsequences x[:L] and x[L:] are bitonic and max(x[:L]) &lt;= min(x[L:])."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-08-28T08:10:18-06:00">
+      <meta property="article:published_time" content="2019-09-23T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-08-30T17:08:25-06:00">
+    <meta property="article:modified_time" content="2019-09-23T12:09:42-06:00">
   
 
   
@@ -136,7 +138,7 @@
 
 
 
-  <title>Intro to Architecture | HPSC</title>
+  <title>More bitonic sorting, graphs | HPSC</title>
 
 </head>
 
@@ -279,7 +281,7 @@
     <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
     <ul class="nav docs-sidenav">
       
-      <li class="active">
+      <li >
         <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
       </li>
       
@@ -311,7 +313,7 @@
         <a href="/fall2019/strategies/">2019-09-18 Reductions and Scans</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/sorting-graphs/">2019-09-23 More bitonic sorting, graphs</a>
       </li>
       
@@ -346,33 +348,31 @@
 
       <nav id="TableOfContents">
 <ul>
-<li><a href="#cores-caches-and-memory">Cores, caches, and memory</a>
+<li>
+<ul>
+<li><a href="#bitonic-sorting">Bitonic sorting</a>
+<ul>
+<li><a href="#definition-bitonic-sequence">Definition: bitonic sequence</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#putting-it-together">Putting it together</a></li>
+<li><a href="#demo">Demo</a></li>
+</ul></li>
+<li><a href="#further-resources-on-sorting">Further resources on Sorting</a></li>
+</ul></li>
+<li><a href="#graphs">Graphs</a>
 <ul>
 <li>
 <ul>
-<li><a href="#a-von-neumann-architecture-https-en-wikipedia-org-wiki-von-neumann-architecture">A <a href="https://en.wikipedia.org/wiki/Von_Neumann_architecture" target="_blank">von Neumann Architecture</a></a></li>
-<li><a href="#a-contemporary-architecture">A contemporary architecture</a></li>
-<li><a href="#my-laptop">My laptop</a></li>
-<li><a href="#a-double-socket-compute-node-with-two-gpus">A double-socket compute node with two GPUs</a></li>
-<li><a href="#block-diagrams">Block diagrams</a>
+<li><a href="#compressed-representation">Compressed representation</a></li>
+</ul></li>
+<li><a href="#maximal-independent-set-mis">Maximal independent set (MIS)</a>
 <ul>
-<li><a href="#ring-bus-xeon-e5-2600-family">Ring bus (Xeon E5-2600 family)</a></li>
-<li><a href="#mesh-bus-xeon-scalable-family">Mesh bus (Xeon Scalable family)</a></li>
-<li><a href="#multi-socket-configurations">Multi-socket configurations</a></li>
-</ul></li>
-<li><a href="#multiple-nodes-go-into-racks-or-cabinets">Multiple nodes go into <strong>racks</strong> or <strong>cabinets</strong></a></li>
-<li><a href="#terminology">Terminology</a></li>
-<li><a href="#how-expensive-is-it-to-access-memory">How expensive is it to access memory?</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#how-your-program-accesses-memory">How your program accesses memory</a>
+<li><a href="#greedy-algorithms">Greedy Algorithms</a></li>
+<li><a href="#tiebreaking">Tiebreaking</a>
 <ul>
-<li>
-<ul>
-<li><a href="#let-s-compare-three-code-samples">Let&rsquo;s compare three code samples</a></li>
-<li><a href="#what-happens-when-you-request-a-cache-line">What happens when you request a cache line?</a></li>
+<li><a href="#hash-variant">Hash variant</a></li>
 </ul></li>
-<li><a href="#operating-system-effects">Operating system effects</a></li>
+</ul></li>
 <li><a href="#further-resources">Further resources</a></li>
 </ul></li>
 </ul>
@@ -387,135 +387,250 @@
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Intro to Architecture</h1>
+          <h1 itemprop="name">More bitonic sorting, graphs</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<h1 id="cores-caches-and-memory">Cores, caches, and memory</h1>
-
-<h3 id="a-von-neumann-architecture-https-en-wikipedia-org-wiki-von-neumann-architecture">A <a href="https://en.wikipedia.org/wiki/Von_Neumann_architecture" target="_blank">von Neumann Architecture</a></h3>
-
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Von_Neumann_Architecture.svg/2880px-Von_Neumann_Architecture.svg.png" alt="von Neumann architecture" /></p>
-
-<h3 id="a-contemporary-architecture">A contemporary architecture</h3>
-
-<p><img src="http://static.duartes.org/img/blogPosts/physicalMemoryAccess.png" alt="Core 2" /></p>
-
-<h3 id="my-laptop">My laptop</h3>
-
-<p>We can get this kind of information for our machine using <a href="https://www.open-mpi.org/projects/hwloc/" target="_blank">hwloc</a>, which provides a library as well as the command-line tool <code>lstopo</code>.</p>
-
-<pre><code class="language-python">!lstopo --output-format svg &gt; lstopo-local.svg
+<pre><code class="language-python">%matplotlib inline
+import matplotlib.pyplot as plt
+import pandas
+import numpy as np
+import itertools
+plt.style.use('seaborn')
 </code></pre>
 
-<p><img src="lstopo-local.svg" alt="lstopo" /></p>
+<h2 id="bitonic-sorting">Bitonic sorting</h2>
 
-<h3 id="a-double-socket-compute-node-with-two-gpus">A double-socket compute node with two GPUs</h3>
+<h3 id="definition-bitonic-sequence">Definition: bitonic sequence</h3>
 
-<p>2x Xeon Ivy-Bridge-EP <a href="https://ark.intel.com/content/www/us/en/ark/products/75277/intel-xeon-processor-e5-2680-v2-25m-cache-2-80-ghz.html" target="_blank">E5-2680v2</a> + 2x NVIDIA GPUs (from 2013, with hwloc v1.11).
-GPUs are reported as CUDA devices and X11 display :1.0: (from the <a href="https://www-lb.open-mpi.org/projects/hwloc/lstopo/" target="_blank">hwloc gallery</a>)
-<img src="https://www-lb.open-mpi.org/projects/hwloc/lstopo/images/2XeonE5v2+2cuda+1display_v1.11.png" alt="" /></p>
+<p>A bitonic sequence of length $n$ satisfies
+$$ x_0 \le x_1 \le \dotsb \le x<em>k \ge x</em>{k+1} \ge \dotsb \ge x_{n-1} $$
+<strong>or a cyclic shift</strong> thereof,
+$$\hat x<em>i = x</em>{i+c \bmod n} .$$</p>
 
-<h3 id="block-diagrams">Block diagrams</h3>
+<p>sorting relies on the bitonic swapping operation,</p>
 
-<p>A block diagram from a vendor can include additional information about how cores are physically connected.</p>
+<pre><code class="language-python">def bitonic_split(x):
+    L = len(x) // 2
+    for i in range(L):    # each pair is independent
+        if (x[i] &gt; x[L + i]):
+            x[i], x[L + i] = x[L + i], x[i]
+</code></pre>
 
-<h4 id="ring-bus-xeon-e5-2600-family">Ring bus (Xeon E5-2600 family)</h4>
+<p>after which the resulting subsequences <code>x[:L]</code> and <code>x[L:]</code> are bitonic and <code>max(x[:L]) &lt;= min(x[L:])</code>. (It is beyond the scope of this class to formally prove this property, but we&rsquo;ll show examples.)</p>
 
-<p><img src="https://software.intel.com/sites/default/files/managed/e3/a4/xeon-processor-scalable-family-tech-overview-fig04.png" alt="Intel Xeon E5-2600" /></p>
+<h3 id="example">Example</h3>
 
-<h4 id="mesh-bus-xeon-scalable-family">Mesh bus (Xeon Scalable family)</h4>
+<pre><code class="language-python">x = list(range(10, 22)) + [16, 13, 10, 7]
+idx = np.arange(len(x))
+plt.plot(x, 's', label='orig')
+bitonic_split(x)
+plt.plot(x, '^k', label='swapped')
+plt.legend();
+</code></pre>
 
-<p><img src="https://software.intel.com/sites/default/files/managed/5a/03/xeon-processor-scalable-family-tech-overview-fig05.png" alt="Intel Xeon Scalable" /></p>
+<p><img src="./lecture_4_0.png" alt="png" /></p>
 
-<h4 id="multi-socket-configurations">Multi-socket configurations</h4>
+<p>Note that the bitonic sequence on the right side is cyclicly permuted.</p>
 
-<p><img src="https://software.intel.com/sites/default/files/managed/77/f2/xeon-processor-scalable-family-tech-overview-fig07.png" alt="4-socket ring" /></p>
+<h3 id="putting-it-together">Putting it together</h3>
 
-<p><a href="https://software.intel.com/en-us/articles/intel-xeon-processor-scalable-family-technical-overview" target="_blank">https://software.intel.com/en-us/articles/intel-xeon-processor-scalable-family-technical-overview</a></p>
-
-<h3 id="multiple-nodes-go-into-racks-or-cabinets">Multiple nodes go into <strong>racks</strong> or <strong>cabinets</strong></h3>
-
-<p><img src="BlueGenePRacks.png" alt="Blue Gene/P Racks" /></p>
-
-<p><img src="https://www.olcf.ornl.gov/wp-content/uploads/2018/06/summit-1.jpg" alt="OLCF Summit" /></p>
-
-<h3 id="terminology">Terminology</h3>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/b/bd/BitonicSort1.svg" alt="Bitonic sort from Wikipedia" /></p>
 
 <ul>
-<li><strong>Core</strong> (virtual and physical): has a single program counter (logically sequential processing of instructions)</li>
-<li><strong>Memory channel</strong>: e.g., DDR4-2400: transfers 64 bits (8 bytes) at a rate of 2400 MHz = 15.36 GB/s</li>
-<li><strong>Socket</strong> or <strong>CPU</strong>: contains multiple cores in a single piece* of silicon</li>
-<li><strong>Non-Uniform Memory Access (NUMA)</strong>: different channels may be different distances from a core</li>
-<li><strong>Compute node</strong>: one or more sockets, plus memory, network card, etc.</li>
+<li>The blue blocks are forward bitonic merge networks, consisting of <code>bitonic_split</code> followed by recursive splits.</li>
+<li>The green blocks are reverse networks.</li>
+<li>The left half of the diagram constructs a global bitonic sequence that is increasing in the top half and decreasing in the bottom half. This bitonic sequence is balanced and not &ldquo;shifted&rdquo;.</li>
+<li>The right half of the diagram merges a global bitonic sequence. The bitonic sequences produced in each stage of the merge may be unbalanced and/or cyclicly shifted.</li>
 </ul>
 
-<h3 id="how-expensive-is-it-to-access-memory">How expensive is it to access memory?</h3>
+<h3 id="demo">Demo</h3>
 
-<p>What does that mean?  How would we measure?</p>
+<pre><code class="language-python">def bitonic_sort(up, x, start=0, end=None, plot=[]):
+    if end is None:
+        end = len(x)
+    if end - start &lt;= 1:
+        return
+    mid = start + (end - start) // 2
+    bitonic_sort(True, x, start, mid)
+    bitonic_sort(False, x, mid, end)
+    if (start, end) in plot:
+        bitonic_plot(x, start, end, 'sort')
+    bitonic_merge(up, x, start, end, plot=plot)
 
-<p><a href="http://www.rdrop.com/~paulmck/RCU/RCU.2013.01.22d.PLMW.pdf" target="_blank">McKenney (2013): Laws of Physics</a></p>
+def bitonic_merge(up, x, start, end, plot=False): 
+    # assume input x is bitonic, and sorted list is returned 
+    if end - start == 1:
+        return
+    bitonic_split2(up, x, start, end)
+    if (start, end) in plot:
+        bitonic_plot(x, start, end, 'merge')
+    mid = start + (end - start) // 2
+    bitonic_merge(up, x, start, mid, plot=plot)
+    bitonic_merge(up, x, mid, end, plot=plot)
 
-<p><a href="https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank">Interactive</a></p>
+def bitonic_split2(up, x, start, end):
+    L = (end - start) // 2
+    for i in range(start, start + L):
+        if (x[i] &gt; x[L + i]) == up:
+            x[i], x[L + i] = x[L + i], x[i] # swap
 
-<p><a href="https://www.anandtech.com/show/14694/amd-rome-epyc-2nd-gen/7" target="_blank">Variation by vendor</a></p>
-
-<h1 id="how-your-program-accesses-memory">How your program accesses memory</h1>
-
-<pre><code class="language-c">double a[1000];
-
-void foo() {
-    for (int i=0; i&lt;1000; i++)
-        a[i] = 1.234 * i;
-}
+def bitonic_plot(x, start, end, phase):
+    plt.plot(range(start, end), x[start:end], next(marker), label=f'{phase} {start}:{end}')
+            
+marker = itertools.cycle(['s', 'o', '^', '&lt;', '*'])
+x = list(range(10, 38)) + [16, 13, 10, 7]
+plt.plot(x, next(marker), label='orig')
+bitonic_sort(True, x, plot=[(0, 32), (0,16), (8,16)])
+#plt.plot(x, next(marker), label='sorted')
+plt.legend();
 </code></pre>
 
-<p>The compiler turns the loop body into instructions, which we can examine using <a href="https://gcc.godbolt.org/z/gbhuZR" target="_blank">Godbolt</a>.</p>
+<p><img src="./lecture_7_0.png" alt="png" /></p>
 
-<pre><code>pxor xmm0, xmm0                  ; zero the xmm0 register
-cvtsi2sd xmm0, eax               ; convert the integer i to double
-mulsd xmm0, xmm1                 ; multiply by 1.234 (held in xmm1)
-movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
+<h2 id="further-resources-on-sorting">Further resources on Sorting</h2>
+
+<ul>
+<li>Chapter 9 of <a href="https://www-users.cs.umn.edu/~karypis/parbook/" target="_blank">Grama, Gupta, Karypis, Kumar (2003), <strong>Introduction to Parallel Computing</strong></a></li>
+<li><a href="https://www-users.cs.umn.edu/~karypis/parbook/Lectures/AG/chap9_slides.pdf" target="_blank">Grama slides</a></li>
+</ul>
+
+<h1 id="graphs">Graphs</h1>
+
+<p>An (undirected) graph $(V, E)$ is a set of vertices $V$ and unordered pairs $(u,v) = (v,u) \in E$ of vertices $u,v \in V$.</p>
+
+<p>Graphs are often expressed by their adjacency matrix of dimension $n\times n$ where $n = |V|$,
+$$ A_{ij} = \begin{cases}
+    1, &amp; \text{if } (i,j) \in E <br />
+    0,              &amp; \text{otherwise}
+\end{cases}
+$$</p>
+
+<pre><code class="language-python">import networkx as nx
+
+G = nx.grid_2d_graph(3, 3)
+nx.draw(G, with_labels=True)
 </code></pre>
 
-<p>Only one instruction here accesses memory, and the performance will be affected greatly by where that memory resides (which level of cache, where in DRAM).</p>
+<p><img src="./lecture_10_0.png" alt="png" /></p>
 
-<p>Most architectures today have <strong>64-byte cache lines</strong>: all transfers from main memory (DRAM) to and from cache operate in units of 64 bytes.</p>
-
-<p><img src="http://static.duartes.org/img/blogPosts/L1CacheExample.png" alt="" /></p>
-
-<h3 id="let-s-compare-three-code-samples">Let&rsquo;s compare three code samples</h3>
-
-<pre><code class="language-c">for (int i=0; i&lt;N; i++)
-    a[i] = b[i];
+<pre><code class="language-python">A = nx.adjacency_matrix(G)
+A.todense()
 </code></pre>
 
-<pre><code class="language-c">for (int i=0; i&lt;N; i++)
-    a[i] = b[(i*8) % N];
+<pre><code>matrix([[0, 1, 0, 1, 0, 0, 0, 0, 0],
+        [1, 0, 1, 0, 1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 0, 0, 0],
+        [1, 0, 0, 0, 1, 0, 1, 0, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 0, 1, 0, 1, 0, 0, 0, 1],
+        [0, 0, 0, 1, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 1, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0, 1, 0, 1, 0]], dtype=int64)
 </code></pre>
 
-<pre><code class="language-c">for (int i=0; i&lt;N; i++)
-    a[i] = b[random() % N];
+<h3 id="compressed-representation">Compressed representation</h3>
+
+<p>Adjacency matrices often have many zeros so it&rsquo;s common to store a compressed representation.
+We&rsquo;ll revisit such formats for sparse matrices.</p>
+
+<pre><code class="language-python">A.indptr, A.indices
 </code></pre>
 
-<h3 id="what-happens-when-you-request-a-cache-line">What happens when you request a cache line?</h3>
+<pre><code>(array([ 0,  2,  5,  7, 10, 14, 17, 19, 22, 24], dtype=int32),
+ array([1, 3, 0, 2, 4, 1, 5, 0, 4, 6, 1, 3, 5, 7, 2, 4, 8, 3, 7, 4, 6, 8,
+        5, 7], dtype=int32))
+</code></pre>
 
-<p><img src="http://static.duartes.org/img/blogPosts/memoryRead.png" alt="" /></p>
+<pre><code class="language-python">for row in range(A.shape[0]):
+    print(A.indices[A.indptr[row]:A.indptr[row+1]])
+</code></pre>
 
-<h2 id="operating-system-effects">Operating system effects</h2>
+<pre><code>[1 3]
+[0 2 4]
+[1 5]
+[0 4 6]
+[1 3 5 7]
+[2 4 8]
+[3 7]
+[4 6 8]
+[5 7]
+</code></pre>
 
-<p>Most systems today use virtual addressing, so every address in your program needs to be translated to a physical address before looking for it (in cache or memory).  Fortunately, there is hardware to assist with this: the Translation Lookaside Buffer (TLB).</p>
+<h2 id="maximal-independent-set-mis">Maximal independent set (MIS)</h2>
 
-<p><img src="https://drawings.jvns.ca/drawings/pagetable.svg" alt="Virtual memory and the page table" /></p>
+<p>An independent set is a set of vertices $S \subset V$ such that $(u,v) \notin E$ for any pair $u,v \in S$.</p>
+
+<pre><code class="language-python">mis = nx.maximal_independent_set(G)
+mis
+</code></pre>
+
+<pre><code>[(2, 0), (1, 2), (0, 0)]
+</code></pre>
+
+<pre><code class="language-python">def plot_mis(G, mis):
+    node_colors = ['red' if n in mis else '#1f78b4' for n in G.nodes()]
+    nx.draw_networkx(G, node_color = node_colors)
+plot_mis(G, mis)
+</code></pre>
+
+<p><img src="./lecture_17_0.png" alt="png" /></p>
+
+<pre><code class="language-python"># Maximal independent sets are not unique
+plot_mis(G, [(0,0), (0,2), (1,1), (2,0), (2,2)])
+</code></pre>
+
+<p><img src="./lecture_18_0.png" alt="png" /></p>
+
+<pre><code class="language-python"># We can coax the greedy algorithm to give a better MIS by specifying
+# some nodes to include
+plot_mis(G, nx.maximal_independent_set(G, [(1,1)]))
+</code></pre>
+
+<p><img src="./lecture_19_0.png" alt="png" /></p>
+
+<h3 id="greedy-algorithms">Greedy Algorithms</h3>
+
+<ol>
+<li>Start with all vertices in candidate set $C = V$, empty $S$</li>
+<li>While $C \ne \emptyset$: Choose a vertex $v \in C$
+
+<ul>
+<li>Add $v$ to $S$</li>
+<li>Remove $v$ and all neighbors of $v$ from $C$</li>
+</ul></li>
+</ol>
+
+<p>Algorithms differ in how they choose the next vertex $v \in C$.</p>
+
+<h3 id="tiebreaking">Tiebreaking</h3>
+
+<p>Suppose we index the vertices by integer and allow parallel selection of any $v$ for which
+$$ v &lt; \mathcal N(v) . $$</p>
+
+<h4 id="hash-variant">Hash variant</h4>
+
+<p>Consider a hash function $h(v)$ and allow any time</p>
+
+<p>$$ h(v) &lt; \min_{u\in \mathcal N(v)} h(u). $$</p>
+
+<pre><code class="language-python">G = nx.karate_club_graph()
+plot_mis(G, nx.maximal_independent_set(G))
+</code></pre>
+
+<pre><code>/usr/lib/python3.7/site-packages/networkx/drawing/nx_pylab.py:579: MatplotlibDeprecationWarning: 
+The iterable function was deprecated in Matplotlib 3.1 and will be removed in 3.3. Use np.iterable instead.
+  if not cb.iterable(width):
+</code></pre>
+
+<p><img src="./lecture_21_1.png" alt="png" /></p>
 
 <h2 id="further-resources">Further resources</h2>
 
 <ul>
-<li><a href="https://jvns.ca/blog/2016/12/03/how-much-memory-is-my-process-using-/" target="_blank">Julia Evans (2016): How much memory is my process using?</a></li>
-<li><a href="https://manybutfinite.com/post/intel-cpu-caches/" target="_blank">Gustavo Duarte (2009): Cache: a place for concealment and safekeeping</a></li>
-<li><a href="https://manybutfinite.com/post/getting-physical-with-memory/" target="_blank">Gustavo Duarte (2009): Getting Physical With Memory</a></li>
-<li><a href="https://www.akkadia.org/drepper/cpumemory.pdf" target="_blank">Ulrich Drepper (2007): What Every Programmer Should Know About Memory</a></li>
+<li>Chapter 10 of <a href="https://www-users.cs.umn.edu/~karypis/parbook/" target="_blank">Grama, Gupta, Karypis, Kumar (2003), <strong>Introduction to Parallel Computing</strong></a></li>
+<li><a href="https://www-users.cs.umn.edu/~karypis/parbook/Lectures/AG/chap10_slides.pdf" target="_blank">Grama slides</a></li>
 </ul>
 
           </div>
@@ -533,14 +648,14 @@ movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/intro-vectorization/" rel="next">Vectorization and Instruction-Level Parallelism</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/trends/" rel="prev">Trends</a>
+    <a href="/fall2019/strategies/" rel="prev">Parallel Reductions and Scans</a>
   </div>
   
 </div>
@@ -550,11 +665,11 @@ movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Aug 30, 2019</p>
+          <p>Last updated on Sep 23, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/intro-architecture/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/sorting-graphs/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

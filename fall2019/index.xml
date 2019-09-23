@@ -290,6 +290,256 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>More bitonic sorting, graphs</title>
+      <link>https://cucs-hpsc.github.io/fall2019/sorting-graphs/</link>
+      <pubDate>Mon, 23 Sep 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/sorting-graphs/</guid>
+      <description>
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import matplotlib.pyplot as plt
+import pandas
+import numpy as np
+import itertools
+plt.style.use(&#39;seaborn&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;bitonic-sorting&#34;&gt;Bitonic sorting&lt;/h2&gt;
+
+&lt;h3 id=&#34;definition-bitonic-sequence&#34;&gt;Definition: bitonic sequence&lt;/h3&gt;
+
+&lt;p&gt;A bitonic sequence of length $n$ satisfies
+$$ x_0 \le x_1 \le \dotsb \le x&lt;em&gt;k \ge x&lt;/em&gt;{k+1} \ge \dotsb \ge x_{n-1} $$
+&lt;strong&gt;or a cyclic shift&lt;/strong&gt; thereof,
+$$\hat x&lt;em&gt;i = x&lt;/em&gt;{i+c \bmod n} .$$&lt;/p&gt;
+
+&lt;p&gt;sorting relies on the bitonic swapping operation,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def bitonic_split(x):
+    L = len(x) // 2
+    for i in range(L):    # each pair is independent
+        if (x[i] &amp;gt; x[L + i]):
+            x[i], x[L + i] = x[L + i], x[i]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;after which the resulting subsequences &lt;code&gt;x[:L]&lt;/code&gt; and &lt;code&gt;x[L:]&lt;/code&gt; are bitonic and &lt;code&gt;max(x[:L]) &amp;lt;= min(x[L:])&lt;/code&gt;. (It is beyond the scope of this class to formally prove this property, but we&amp;rsquo;ll show examples.)&lt;/p&gt;
+
+&lt;h3 id=&#34;example&#34;&gt;Example&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;x = list(range(10, 22)) + [16, 13, 10, 7]
+idx = np.arange(len(x))
+plt.plot(x, &#39;s&#39;, label=&#39;orig&#39;)
+bitonic_split(x)
+plt.plot(x, &#39;^k&#39;, label=&#39;swapped&#39;)
+plt.legend();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_4_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Note that the bitonic sequence on the right side is cyclicly permuted.&lt;/p&gt;
+
+&lt;h3 id=&#34;putting-it-together&#34;&gt;Putting it together&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/b/bd/BitonicSort1.svg&#34; alt=&#34;Bitonic sort from Wikipedia&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The blue blocks are forward bitonic merge networks, consisting of &lt;code&gt;bitonic_split&lt;/code&gt; followed by recursive splits.&lt;/li&gt;
+&lt;li&gt;The green blocks are reverse networks.&lt;/li&gt;
+&lt;li&gt;The left half of the diagram constructs a global bitonic sequence that is increasing in the top half and decreasing in the bottom half. This bitonic sequence is balanced and not &amp;ldquo;shifted&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;The right half of the diagram merges a global bitonic sequence. The bitonic sequences produced in each stage of the merge may be unbalanced and/or cyclicly shifted.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;demo&#34;&gt;Demo&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def bitonic_sort(up, x, start=0, end=None, plot=[]):
+    if end is None:
+        end = len(x)
+    if end - start &amp;lt;= 1:
+        return
+    mid = start + (end - start) // 2
+    bitonic_sort(True, x, start, mid)
+    bitonic_sort(False, x, mid, end)
+    if (start, end) in plot:
+        bitonic_plot(x, start, end, &#39;sort&#39;)
+    bitonic_merge(up, x, start, end, plot=plot)
+
+def bitonic_merge(up, x, start, end, plot=False): 
+    # assume input x is bitonic, and sorted list is returned 
+    if end - start == 1:
+        return
+    bitonic_split2(up, x, start, end)
+    if (start, end) in plot:
+        bitonic_plot(x, start, end, &#39;merge&#39;)
+    mid = start + (end - start) // 2
+    bitonic_merge(up, x, start, mid, plot=plot)
+    bitonic_merge(up, x, mid, end, plot=plot)
+
+def bitonic_split2(up, x, start, end):
+    L = (end - start) // 2
+    for i in range(start, start + L):
+        if (x[i] &amp;gt; x[L + i]) == up:
+            x[i], x[L + i] = x[L + i], x[i] # swap
+
+def bitonic_plot(x, start, end, phase):
+    plt.plot(range(start, end), x[start:end], next(marker), label=f&#39;{phase} {start}:{end}&#39;)
+            
+marker = itertools.cycle([&#39;s&#39;, &#39;o&#39;, &#39;^&#39;, &#39;&amp;lt;&#39;, &#39;*&#39;])
+x = list(range(10, 38)) + [16, 13, 10, 7]
+plt.plot(x, next(marker), label=&#39;orig&#39;)
+bitonic_sort(True, x, plot=[(0, 32), (0,16), (8,16)])
+#plt.plot(x, next(marker), label=&#39;sorted&#39;)
+plt.legend();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_7_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;further-resources-on-sorting&#34;&gt;Further resources on Sorting&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Chapter 9 of &lt;a href=&#34;https://www-users.cs.umn.edu/~karypis/parbook/&#34; target=&#34;_blank&#34;&gt;Grama, Gupta, Karypis, Kumar (2003), &lt;strong&gt;Introduction to Parallel Computing&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www-users.cs.umn.edu/~karypis/parbook/Lectures/AG/chap9_slides.pdf&#34; target=&#34;_blank&#34;&gt;Grama slides&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;graphs&#34;&gt;Graphs&lt;/h1&gt;
+
+&lt;p&gt;An (undirected) graph $(V, E)$ is a set of vertices $V$ and unordered pairs $(u,v) = (v,u) \in E$ of vertices $u,v \in V$.&lt;/p&gt;
+
+&lt;p&gt;Graphs are often expressed by their adjacency matrix of dimension $n\times n$ where $n = |V|$,
+$$ A_{ij} = \begin{cases}
+    1, &amp;amp; \text{if } (i,j) \in E &lt;br /&gt;
+    0,              &amp;amp; \text{otherwise}
+\end{cases}
+$$&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import networkx as nx
+
+G = nx.grid_2d_graph(3, 3)
+nx.draw(G, with_labels=True)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_10_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;A = nx.adjacency_matrix(G)
+A.todense()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;matrix([[0, 1, 0, 1, 0, 0, 0, 0, 0],
+        [1, 0, 1, 0, 1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 0, 0, 0],
+        [1, 0, 0, 0, 1, 0, 1, 0, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 0, 1, 0, 1, 0, 0, 0, 1],
+        [0, 0, 0, 1, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 1, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0, 1, 0, 1, 0]], dtype=int64)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;compressed-representation&#34;&gt;Compressed representation&lt;/h3&gt;
+
+&lt;p&gt;Adjacency matrices often have many zeros so it&amp;rsquo;s common to store a compressed representation.
+We&amp;rsquo;ll revisit such formats for sparse matrices.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;A.indptr, A.indices
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(array([ 0,  2,  5,  7, 10, 14, 17, 19, 22, 24], dtype=int32),
+ array([1, 3, 0, 2, 4, 1, 5, 0, 4, 6, 1, 3, 5, 7, 2, 4, 8, 3, 7, 4, 6, 8,
+        5, 7], dtype=int32))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;for row in range(A.shape[0]):
+    print(A.indices[A.indptr[row]:A.indptr[row+1]])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;[1 3]
+[0 2 4]
+[1 5]
+[0 4 6]
+[1 3 5 7]
+[2 4 8]
+[3 7]
+[4 6 8]
+[5 7]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;maximal-independent-set-mis&#34;&gt;Maximal independent set (MIS)&lt;/h2&gt;
+
+&lt;p&gt;An independent set is a set of vertices $S \subset V$ such that $(u,v) \notin E$ for any pair $u,v \in S$.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;mis = nx.maximal_independent_set(G)
+mis
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;[(2, 0), (1, 2), (0, 0)]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def plot_mis(G, mis):
+    node_colors = [&#39;red&#39; if n in mis else &#39;#1f78b4&#39; for n in G.nodes()]
+    nx.draw_networkx(G, node_color = node_colors)
+plot_mis(G, mis)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_17_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Maximal independent sets are not unique
+plot_mis(G, [(0,0), (0,2), (1,1), (2,0), (2,2)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_18_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# We can coax the greedy algorithm to give a better MIS by specifying
+# some nodes to include
+plot_mis(G, nx.maximal_independent_set(G, [(1,1)]))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_19_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;greedy-algorithms&#34;&gt;Greedy Algorithms&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Start with all vertices in candidate set $C = V$, empty $S$&lt;/li&gt;
+&lt;li&gt;While $C \ne \emptyset$: Choose a vertex $v \in C$
+
+&lt;ul&gt;
+&lt;li&gt;Add $v$ to $S$&lt;/li&gt;
+&lt;li&gt;Remove $v$ and all neighbors of $v$ from $C$&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Algorithms differ in how they choose the next vertex $v \in C$.&lt;/p&gt;
+
+&lt;h3 id=&#34;tiebreaking&#34;&gt;Tiebreaking&lt;/h3&gt;
+
+&lt;p&gt;Suppose we index the vertices by integer and allow parallel selection of any $v$ for which
+$$ v &amp;lt; \mathcal N(v) . $$&lt;/p&gt;
+
+&lt;h4 id=&#34;hash-variant&#34;&gt;Hash variant&lt;/h4&gt;
+
+&lt;p&gt;Consider a hash function $h(v)$ and allow any time&lt;/p&gt;
+
+&lt;p&gt;$$ h(v) &amp;lt; \min_{u\in \mathcal N(v)} h(u). $$&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;G = nx.karate_club_graph()
+plot_mis(G, nx.maximal_independent_set(G))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;/usr/lib/python3.7/site-packages/networkx/drawing/nx_pylab.py:579: MatplotlibDeprecationWarning: 
+The iterable function was deprecated in Matplotlib 3.1 and will be removed in 3.3. Use np.iterable instead.
+  if not cb.iterable(width):
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_21_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;further-resources&#34;&gt;Further resources&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Chapter 10 of &lt;a href=&#34;https://www-users.cs.umn.edu/~karypis/parbook/&#34; target=&#34;_blank&#34;&gt;Grama, Gupta, Karypis, Kumar (2003), &lt;strong&gt;Introduction to Parallel Computing&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www-users.cs.umn.edu/~karypis/parbook/Lectures/AG/chap10_slides.pdf&#34; target=&#34;_blank&#34;&gt;Grama slides&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Parallel Reductions and Scans</title>
       <link>https://cucs-hpsc.github.io/fall2019/strategies/</link>
       <pubDate>Wed, 18 Sep 2019 06:49:25 -0600</pubDate>
