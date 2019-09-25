@@ -325,6 +325,268 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Introduction to MPI</title>
+      <link>https://cucs-hpsc.github.io/fall2019/intro-mpi/</link>
+      <pubDate>Tue, 24 Sep 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/intro-mpi/</guid>
+      <description>
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def render_c(filename):
+    from IPython.display import Markdown
+    with open(filename) as f:
+        contents = f.read()
+    return Markdown(&amp;quot;```c\n&amp;quot; + contents + &amp;quot;```\n&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;processes-and-threads&#34;&gt;Processes and Threads&lt;/h2&gt;
+
+&lt;p&gt;Threads and processes are very similar
+* Both created via &lt;a href=&#34;https://linux.die.net/man/2/clone&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;clone&lt;/code&gt; system call&lt;/a&gt; on Linux
+* Scheduled in the same way by the operating system
+* Separate stacks (automatic variables)
+* Access to same memory before &lt;code&gt;fork()&lt;/code&gt; or &lt;code&gt;clone()&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;with some important distinctions&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Threads set &lt;code&gt;CLONE_VM&lt;/code&gt;
+
+&lt;ul&gt;
+&lt;li&gt;threads share the same virtual-to-physical address mapping&lt;/li&gt;
+&lt;li&gt;threads can access the same data at the same addresses; private data is private only because other threads don&amp;rsquo;t know its address&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Threads set &lt;code&gt;CLONE_FILES&lt;/code&gt;
+
+&lt;ul&gt;
+&lt;li&gt;threads share file descriptors&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Threads set &lt;code&gt;CLONE_THREAD&lt;/code&gt;, &lt;code&gt;CLONE_SIGHAND&lt;/code&gt;
+
+&lt;ul&gt;
+&lt;li&gt;process id and signal handlers shared&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;myths&#34;&gt;Myths&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Processes can&amp;rsquo;t share memory
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mmap()&lt;/code&gt;, &lt;code&gt;shm_open()&lt;/code&gt;, and &lt;code&gt;MPI_Win_allocate_shared()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Processes are &amp;ldquo;heavy&amp;rdquo;
+
+&lt;ul&gt;
+&lt;li&gt;same data structures and kernel scheduling; no difference in context switching&lt;/li&gt;
+&lt;li&gt;data from parent is inherited copy-on-write at very low overhead&lt;/li&gt;
+&lt;li&gt;startup costs ~100 microseconds to duplicate page tables&lt;/li&gt;
+&lt;li&gt;caches are physically tagged; processes can share L1 cache&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;mpi-message-passing-interface&#34;&gt;MPI: Message Passing Interface&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Just a library: plain C, C++, or Fortran compiler
+
+&lt;ul&gt;
+&lt;li&gt;Two active open source libraries: &lt;a href=&#34;https://www.mpich.org/&#34; target=&#34;_blank&#34;&gt;MPICH&lt;/a&gt; and &lt;a href=&#34;https://www.open-mpi.org/&#34; target=&#34;_blank&#34;&gt;Open MPI&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Numerous vendor implementations modify/extend these open source implementations&lt;/li&gt;
+&lt;li&gt;MVAPICH is an MPICH-derived open source implementation for InfiniBand and related networks&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Bindings from many other languages; &lt;a href=&#34;https://mpi4py.readthedocs.io/en/stable/&#34; target=&#34;_blank&#34;&gt;mpi4py&lt;/a&gt; is popular&lt;/li&gt;
+&lt;li&gt;Scales to millions of processes across ~100k nodes
+
+&lt;ul&gt;
+&lt;li&gt;Shared memory systems can be scaled up to &lt;a href=&#34;https://www.uvhpc.com/sgi-uv-3000&#34; target=&#34;_blank&#34;&gt;~4000 cores&lt;/a&gt;, but latency and price ($) increase&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Standard usage: processes are separate on startup&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Timeline&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;MPI-1 (1994) point-to-point messaging, collectives&lt;/li&gt;
+&lt;li&gt;MPI-2 (1997) parallel IO, dynamic processes, one-sided&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;MPI-3 (2012) nonblocking collectives, neighborhood collectives, improved one-sided&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;render_c(&#39;mpi-demo.c&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;#include &amp;lt;mpi.h&amp;gt;
+#include &amp;lt;stdio.h&amp;gt;
+
+int main(int argc, char **argv) {
+MPI_Init(&amp;amp;argc, &amp;amp;argv);   // Must call before any other MPI functions
+int size, rank, sum;
+MPI_Comm_rank(MPI_COMM_WORLD, &amp;amp;rank);
+MPI_Comm_size(MPI_COMM_WORLD, &amp;amp;size);
+MPI_Allreduce(&amp;amp;rank, &amp;amp;sum, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+printf(&amp;quot;I am rank %d of %d: sum=%d\n&amp;quot;, rank, size, sum);
+MPI_Finalize();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This may remind you of the top-level OpenMP strategy&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;int main() {
+    #pragma omp parallel
+    {
+        int rank = omp_get_thread_num();
+        int size = omp_get_num_threads();
+        // your code
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;We use the compiler wrapper &lt;code&gt;mpicc&lt;/code&gt;, but it just passes some flags to the real compiler.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! mpicc -show
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;gcc -pthread -Wl,-rpath -Wl,/usr/lib/openmpi -Wl,&amp;ndash;enable-new-dtags -L/usr/lib/openmpi -lmpi&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! make CC=mpicc CFLAGS=-Wall mpi-demo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;mpicc -Wall    mpi-demo.c   -o mpi-demo&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;We use &lt;code&gt;mpiexec&lt;/code&gt; to run locally.  Clusters/supercomputers often have different job launching programs.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! mpiexec -n 2 ./mpi-demo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I am rank 0 of 2: sum=1
+I am rank 1 of 2: sum=1&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;We can run more MPI processes than cores (or hardware threads), but you might need to use the &lt;code&gt;--oversubscribe&lt;/code&gt; option because &lt;strong&gt;oversubscription is usually expensive&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! mpiexec -n 6 --oversubscribe ./mpi-demo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I am rank 1 of 6: sum=15
+I am rank 3 of 6: sum=15
+I am rank 4 of 6: sum=15
+I am rank 5 of 6: sum=15
+I am rank 0 of 6: sum=15
+I am rank 2 of 6: sum=15&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;You can use OpenMP within ranks of MPI (but use &lt;code&gt;MPI_Init_thread()&lt;/code&gt;)&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Everything is private by default&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;advice-from-bill-gropp&#34;&gt;Advice from Bill Gropp&lt;/h4&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You want to think about how you decompose your data structures, how
+    you think about them globally.  [&amp;hellip;]  If you were building a house,
+    you&amp;rsquo;d start with a set of blueprints that give you a picture of what
+    the whole house looks like.  You wouldn&amp;rsquo;t start with a bunch of
+    tiles and say. &amp;ldquo;Well I&amp;rsquo;ll put this tile down on the ground, and
+    then I&amp;rsquo;ll find a tile to go next to it.&amp;rdquo;  But all too many people
+    try to build their parallel programs by creating the smallest
+    possible tiles and then trying to have the structure of their code
+    emerge from the chaos of all these little pieces.  You have to have
+    an organizing principle if you&amp;rsquo;re going to survive making your code
+    parallel.
+    &amp;ndash; &lt;a href=&#34;https://www.rce-cast.com/Podcast/rce-28-mpich2.html&#34; target=&#34;_blank&#34;&gt;https://www.rce-cast.com/Podcast/rce-28-mpich2.html&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;communicators&#34;&gt;Communicators&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;MPI_COMM_WORLD&lt;/code&gt; contains all ranks in the &lt;code&gt;mpiexec&lt;/code&gt;.  Those ranks may be on different nodes, even in different parts of the world.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MPI_COMM_SELF&lt;/code&gt; contains only one rank&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Can create new communicators from existing ones&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;int MPI_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm);
+int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *newcomm);
+int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Can spawn new processes (but not supported on all machines)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;int MPI_Comm_spawn(const char *command, char *argv[], int maxprocs,
+        MPI_Info info, int root, MPI_Comm comm,
+        MPI_Comm *intercomm, int array_of_errcodes[]);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Can attach &lt;em&gt;attributes&lt;/em&gt; to communicators (useful for library composition)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;collective-operations&#34;&gt;Collective operations&lt;/h3&gt;
+
+&lt;p&gt;MPI has a rich set of collective operations scoped by communicator, including the following.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;int MPI_Allreduce(const void *sendbuf, void *recvbuf, int count,
+        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+int MPI_Reduce(const void *sendbuf, void *recvbuf, int count,
+        MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
+int MPI_Scan(const void *sendbuf, void *recvbuf, int count,
+        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+int MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+        void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+        void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Implementations are optimized by vendors for their custom networks, and can be very fast.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://www.mcs.anl.gov/~fischer/gop/bgp_gop_png.png&#34; alt=&#34;Fischer BGP&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Notice how the time is basically independent of number of processes $P$, and only a small multiple of the cost to send a single message. Not all networks are this good.&lt;/p&gt;
+
+&lt;h3 id=&#34;point-to-point-messaging&#34;&gt;Point-to-point messaging&lt;/h3&gt;
+
+&lt;p&gt;In addition to collectives, MPI supports messaging directly between individual ranks.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;mpi-send-recv.png&#34; alt=&#34;send-recv&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Interfaces can be:
+
+&lt;ul&gt;
+&lt;li&gt;blocking like &lt;code&gt;MPI_Send()&lt;/code&gt; and &lt;code&gt;MPI_Recv()&lt;/code&gt;, or&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;immediate&amp;rdquo; (asynchronous), like &lt;code&gt;MPI_Isend()&lt;/code&gt; and &lt;code&gt;MPI_Irecv()&lt;/code&gt;.  The immediate varliants return an &lt;code&gt;MPI_Request&lt;/code&gt;, which must be waited on to complete the send or receive.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Be careful of deadlock when using blocking interfaces.
+
+&lt;ul&gt;
+&lt;li&gt;I never use blocking send/recv.&lt;/li&gt;
+&lt;li&gt;There are also &amp;ldquo;synchronous&amp;rdquo; &lt;code&gt;MPI_Ssend&lt;/code&gt; and &amp;ldquo;buffered&amp;rdquo; &lt;code&gt;MPI_Bsend&lt;/code&gt;, and nonblocking variants of these, &lt;code&gt;MPI_Issend&lt;/code&gt;, etc.&lt;/li&gt;
+&lt;li&gt;I never use these either (with one cool exception that we&amp;rsquo;ll talk about).&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Point-to-point messaging is like the assembly of parallel computing
+
+&lt;ul&gt;
+&lt;li&gt;It can be good for building libraries, but it&amp;rsquo;s a headache to use directly for most purposes&lt;/li&gt;
+&lt;li&gt;Better to use collectives when possible, or higher level libraries&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;neighbors&#34;&gt;Neighbors&lt;/h3&gt;
+
+&lt;p&gt;A common pattern involves communicating with neighbors, often many times in sequence (such as each iteration or time step).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;mpi-neighbor-grid.png&#34; alt=&#34;Neighbor comm&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This can be achieved with
+* Point-to-point: &lt;code&gt;MPI_Isend&lt;/code&gt;, &lt;code&gt;MPI_Irecv&lt;/code&gt;, &lt;code&gt;MPI_Waitall&lt;/code&gt;
+* Persistent: &lt;code&gt;MPI_Send_init&lt;/code&gt; (once), &lt;code&gt;MPI_Startall&lt;/code&gt;, &lt;code&gt;MPI_Waitall&lt;/code&gt;.
+* Neighborhood collectives (need to create special communicator)
+* One-sided (need to manage safety yourself)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>More bitonic sorting, graphs</title>
       <link>https://cucs-hpsc.github.io/fall2019/sorting-graphs/</link>
       <pubDate>Mon, 23 Sep 2019 06:49:25 -0600</pubDate>
