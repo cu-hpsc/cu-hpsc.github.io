@@ -28,11 +28,12 @@
   
     
   
-  <meta name="description" content="Programs with more than one part So far, we&rsquo;ve focused on simple programs with only one part, but real programs have several different parts, often with data dependencies. Some parts will be amenable to optimization and/or parallelism and others will not. This principle is called Amdahl&rsquo;s Law.
-def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total work is amenable to optimization # We run a problem size n with parallelization factor p return latency &#43; (1-f)*n &#43; f*n/p  %matplotlib inline import matplotlib.">
+  <meta name="description" content="Inner products $$ x^T y = \sum_{i=1}^N x_i y_i $$
+OpenMP The vectors x and y of length N are stored in a contiguous array in shared memory.
+double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt;N; i&#43;&#43;) sum &#43;= x[i] * y[i];  MPI The vectors x and y are partitioned into $P$ parts of length $np$ such that $$ N = \sum{p=1}^P n_p .">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/intro-parallel-scaling/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
 
   
 
@@ -99,7 +100,7 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/intro-parallel-scaling/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
 
   
   
@@ -115,16 +116,17 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/intro-parallel-scaling/">
-  <meta property="og:title" content="Intro to Parallel Scaling | HPSC">
-  <meta property="og:description" content="Programs with more than one part So far, we&rsquo;ve focused on simple programs with only one part, but real programs have several different parts, often with data dependencies. Some parts will be amenable to optimization and/or parallelism and others will not. This principle is called Amdahl&rsquo;s Law.
-def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total work is amenable to optimization # We run a problem size n with parallelization factor p return latency &#43; (1-f)*n &#43; f*n/p  %matplotlib inline import matplotlib."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
+  <meta property="og:title" content="Dense Linear Algebra and Networks | HPSC">
+  <meta property="og:description" content="Inner products $$ x^T y = \sum_{i=1}^N x_i y_i $$
+OpenMP The vectors x and y of length N are stored in a contiguous array in shared memory.
+double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt;N; i&#43;&#43;) sum &#43;= x[i] * y[i];  MPI The vectors x and y are partitioned into $P$ parts of length $np$ such that $$ N = \sum{p=1}^P n_p ."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-09-06T08:07:31-06:00">
+      <meta property="article:published_time" content="2019-09-30T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-09-06T12:46:03-06:00">
+    <meta property="article:modified_time" content="2019-09-30T14:50:54-06:00">
   
 
   
@@ -136,7 +138,7 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
 
 
 
-  <title>Intro to Parallel Scaling | HPSC</title>
+  <title>Dense Linear Algebra and Networks | HPSC</title>
 
 </head>
 
@@ -291,7 +293,7 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
         <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
       </li>
       
@@ -319,7 +321,7 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
         <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
       </li>
       
@@ -356,25 +358,27 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
 <ul>
 <li>
 <ul>
-<li><a href="#programs-with-more-than-one-part">Programs with more than one part</a></li>
-<li><a href="#strong-scaling-fixed-total-problem-size">Strong scaling: fixed total problem size</a>
-<ul>
-<li><a href="#cost-time-p">Cost = <code>time * p</code></a></li>
-<li><a href="#efficiency">Efficiency</a></li>
-<li><a href="#speedup">Speedup</a></li>
-</ul></li>
-<li><a href="#stunt-1-report-speedup-not-absolute-performance">Stunt 1: Report speedup, not absolute performance!</a></li>
-<li><a href="#efficiency-time-spectrum-my-preference">Efficiency-Time spectrum (my preference)</a>
+<li><a href="#inner-products">Inner products</a>
 <ul>
 <li>
 <ul>
-<li><a href="#principles">Principles</a></li>
+<li><a href="#openmp">OpenMP</a></li>
+<li><a href="#mpi">MPI</a></li>
+</ul></li>
+<li><a href="#torus-topology">Torus topology</a></li>
+<li><a href="#dragonfly-topology">Dragonfly topology</a></li>
+<li><a href="#today-s-research-reducing-contention-and-interference">Today&rsquo;s research: reducing contention and interference</a>
+<ul>
+<li><a href="#compare-to-bg-q">Compare to BG/Q</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#weak-scaling-fixed-work-per-processor">Weak Scaling: Fixed work per processor</a></li>
-<li><a href="#fuhrer-et-al-2018-near-global-climate-simulation-at-1-km-resolution-https-www-geosci-model-dev-net-11-1665-2018-gmd-11-1665-2018-pdf"><a href="https://www.geosci-model-dev.net/11/1665/2018/gmd-11-1665-2018.pdf" target="_blank">Fuhrer et al (2018): Near-global climate simulation at 1 km resolution</a></a></li>
+<li><a href="#outer-product">Outer product</a></li>
+<li><a href="#matrix-vector-products">Matrix-vector products</a>
+<ul>
+<li><a href="#1d-row-partition">1D row partition</a></li>
+<li><a href="#2d-partition">2D partition</a></li>
 </ul></li>
-<li><a href="#further-resources">Further resources</a></li>
+</ul></li>
 </ul>
 </nav>
 
@@ -387,162 +391,153 @@ def exec_time(f, p, n=10, latency=1): # Suppose that a fraction f of the total w
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Intro to Parallel Scaling</h1>
+          <h1 itemprop="name">Dense Linear Algebra and Networks</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<h2 id="programs-with-more-than-one-part">Programs with more than one part</h2>
+<h2 id="inner-products">Inner products</h2>
 
-<p>So far, we&rsquo;ve focused on simple programs with only one part, but real programs have several different parts, often with data dependencies.
-Some parts will be amenable to optimization and/or parallelism and others will not.
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Optimizing-different-parts.svg/2880px-Optimizing-different-parts.svg.png" alt="Diminishing returns" />
-This principle is called <a href="https://en.wikipedia.org/wiki/Amdahl%27s_law" target="_blank">Amdahl&rsquo;s Law</a>.</p>
+<p>$$ x^T y = \sum_{i=1}^N x_i y_i $$</p>
 
-<pre><code class="language-python">def exec_time(f, p, n=10, latency=1):
-    # Suppose that a fraction f of the total work is amenable to optimization
-    # We run a problem size n with parallelization factor p
-    return latency + (1-f)*n + f*n/p
+<h4 id="openmp">OpenMP</h4>
+
+<p>The vectors <code>x</code> and <code>y</code> of length <code>N</code> are stored in a contiguous array in shared memory.</p>
+
+<pre><code class="language-c">double sum = 0;
+#pragma omp parallel for reduction(+:sum)
+for (int i=0; i&lt;N; i++)
+    sum += x[i] * y[i];
 </code></pre>
+
+<h4 id="mpi">MPI</h4>
+
+<p>The vectors <code>x</code> and <code>y</code> are partitioned into $P$ parts of length $n<em>p$ such that
+$$ N = \sum</em>{p=1}^P n_p . $$
+The inner product is computed via</p>
+
+<pre><code class="language-c">double sum = 0;
+for (int i=0; i&lt;n; i++)
+    sum += x[i] * y[i];
+MPI_Allreduce(MPI_IN_PLACE, &amp;sum, 1, MPI_DOUBLE, MPI_SUM, comm);
+</code></pre>
+
+<ul>
+<li>Work: $2N$ flops processed rate $R$</li>
+<li>Execution time: $\frac{2N}{RP} + \text{latency}$</li>
+
+<li><p>How big is latency?</p>
 
 <pre><code class="language-python">%matplotlib inline
 import matplotlib.pyplot as plt
-import pandas
-import numpy as np
 plt.style.use('seaborn')
+import numpy as np
 
-ps = np.geomspace(1, 1000)
+P = np.geomspace(2, 1e6)
+N = 1e9       # length of vectors
+R = 10e9/8    # (10 GB/s per core) (2 flops/16 bytes) = 10/8 GF/s per core
+t1 = 2e-6     # 2 µs message latency
 
-plt.loglog(ps, exec_time(.99, ps, latency=0))
-plt.loglog(ps, exec_time(1, ps, latency=0))
-plt.title('Strong scaling')
-plt.xlabel('p')
-plt.ylabel('time');
-</code></pre>
+def time_compute(P):
+return 2*N / (R*P)
 
-<p><img src="./lecture_2_0.png" alt="png" /></p>
+plt.loglog(P, time_compute(P) + t1*(P-1), label='linear')
+plt.loglog(P, time_compute(P) + t1*2*(np.sqrt(P)-1), label='2D mesh')
+plt.loglog(P, time_compute(P) + t1*np.log2(P), label='hypercube')
+plt.xlabel('P processors')
+plt.ylabel('Execution time')
+plt.legend();
+</code></pre></li>
+</ul>
 
-<h2 id="strong-scaling-fixed-total-problem-size">Strong scaling: fixed total problem size</h2>
+<p><img src="./lecture_1_0.png" alt="png" /></p>
 
-<h3 id="cost-time-p">Cost = <code>time * p</code></h3>
+<p><img src="FischerBGQAllReduce.png" alt="" /></p>
 
-<pre><code class="language-python">def exec_cost(f, p, **kwargs):
-    return exec_time(f, p, **kwargs) * p
+<h3 id="torus-topology">Torus topology</h3>
 
-plt.loglog(ps, exec_cost(.99, ps))
-plt.title('Strong scaling')
-plt.xlabel('p')
-plt.ylabel('cost');
-</code></pre>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Torus_from_rectangle.gif" alt="" /></p>
 
-<p><img src="./lecture_4_0.png" alt="png" /></p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/3d_torus.png" width="800px" /></p>
 
-<h3 id="efficiency">Efficiency</h3>
+<ul>
+<li>3D torus: IBM BlueGene/L (2004) and BlueGene/P (2007)</li>
+<li>5D torus: IBM BlueGene/Q (2011)</li>
+<li>6D torus: Fujitsu K computer (2011)</li>
+</ul>
 
-<pre><code class="language-python">plt.semilogx(ps, 1/exec_cost(.99, ps, latency=1))
-plt.title('Strong scaling')
-plt.xlabel('p')
-plt.ylabel('efficiency')
-plt.ylim(bottom=0);
-</code></pre>
+<h3 id="dragonfly-topology">Dragonfly topology</h3>
 
-<p><img src="./lecture_6_0.png" alt="png" /></p>
+<p><img src="CrayAriesDragonfly.png" alt="" /></p>
 
-<h3 id="speedup">Speedup</h3>
+<h3 id="today-s-research-reducing-contention-and-interference">Today&rsquo;s research: reducing contention and interference</h3>
 
-<p>$$ S(p) = \frac{T(1)}{T(p)} $$</p>
+<p><img src="https://3s81si1s5ygj3mzby34dq6qf-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/cray-slingshot-congestion-control.png" alt="" /></p>
 
-<pre><code class="language-python">plt.plot(ps, exec_time(.99, 1, latency=1) / exec_time(.99, ps, latency=1))
-plt.title('Strong scaling')
-plt.xlabel('p')
-plt.ylabel('speedup')
-plt.ylim(bottom=0);
+<p><img src="https://3s81si1s5ygj3mzby34dq6qf-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/cray-slingshot-trace-latency.png" alt="" /></p>
+
+<p>Images from <a href="https://www.nextplatform.com/2019/08/16/how-cray-makes-ethernet-suited-for-hpc-and-ai-with-slingshot/" target="_blank">this article</a>.</p>
+
+<h4 id="compare-to-bg-q">Compare to BG/Q</h4>
+
+<ul>
+<li>Each job gets an electrically isolated 5D torus</li>
+<li>Excellent performance and reproducibility</li>
+<li>Awkward constraints on job size, lower system utilization.</li>
+</ul>
+
+<h2 id="outer-product">Outer product</h2>
+
+<p>$$ C_{ij} = x_i y_j $$</p>
+
+<ul>
+<li>Data in: $2N$</li>
+<li>Data out: $N^2$</li>
+</ul>
+
+<h2 id="matrix-vector-products">Matrix-vector products</h2>
+
+<p>$$ y<em>i = \sum</em>{j} A_{ij} x_j $$</p>
+
+<p>How to partition the matrix $A$ across $P$ processors?</p>
+
+<h3 id="1d-row-partition">1D row partition</h3>
+
+<ul>
+<li>Every process needs entire vector $x$: <code>MPI_Allgather</code></li>
+<li>Matrix data does not move</li>
+<li>Execution time
+$$ \underbrace{\frac{2N^2}{RP}}_{\text{compute}} + \underbrace{t_1 \log<em>2 P}</em>{\text{latency}} + \underbrace{t<em>b N \frac{P-1}{P}}</em>{\text{bandwidth}} $$</li>
+</ul>
+
+<p><img src="05-matvec-row.png" alt="Thanks to Abtin Rahimian" /></p>
+
+<h3 id="2d-partition">2D partition</h3>
+
+<ul>
+<li>Blocks of size $N/\sqrt{P}$</li>
+<li>&ldquo;diagonal&rdquo; ranks hold the input vector</li>
+<li>Broadcast $x$ along columns: <code>MPI_Bcast</code></li>
+<li>Perform local compute</li>
+<li>Sum <code>y</code> along rows: <code>MPI_Reduce</code> with roots on diagonal</li>
+<li>Execution time
+$$ \underbrace{\frac{2N^2}{RP}}_{\text{compute}} + \underbrace{2 t_1 \log<em>2 P}</em>{\text{latency}} + \underbrace{\frac{2 t<em>b N}{\sqrt{P}}}</em>{\text{bandwidth}} $$</li>
+</ul>
+
+<p><img src="05-matvec-block.png" alt="Thanks to Abtin Rahimian" /></p>
+
+<pre><code class="language-python">N = 1e4
+tb = 8 / 1e9 # 8 bytes / (1 GB/s) ~ bandwidth per core in units of double
+tb *= 100
+
+plt.loglog(P, (2*N**2)/(R*P) + t1*np.log2(P) + tb*N*(P-1)/P, label='1D distribution')
+plt.loglog(P, (2*N**2)/(R*P) + 2*t1*np.log2(P) + 2*tb*N/np.sqrt(P), label='2D distribution')
+plt.xlabel('P processors')
+plt.ylabel('Execution time')
+plt.legend();
 </code></pre>
 
 <p><img src="./lecture_8_0.png" alt="png" /></p>
-
-<h2 id="stunt-1-report-speedup-not-absolute-performance">Stunt 1: Report speedup, not absolute performance!</h2>
-
-<p><img src="stunt1.jpg" alt="Hager" /></p>
-
-<h2 id="efficiency-time-spectrum-my-preference">Efficiency-Time spectrum (my preference)</h2>
-
-<p>People care about two observable properties
-* <strong>Time</strong> until job completes
-* <strong>Cost</strong> in core-hours or dollars to do job</p>
-
-<p>Most HPC applications have access to large machines, so don&rsquo;t really care how many processes they use for any given job.</p>
-
-<pre><code class="language-python">plt.plot(exec_time(.99, ps), 1/exec_cost(.99, ps), 'o-')
-plt.title('Strong scaling')
-plt.xlabel('time')
-plt.ylabel('efficiency')
-plt.ylim(bottom=0);
-plt.xlim(left=0);
-</code></pre>
-
-<p><img src="./lecture_11_0.png" alt="png" /></p>
-
-<h4 id="principles">Principles</h4>
-
-<ul>
-<li><a href="https://blogs.fau.de/hager/archives/5835" target="_blank">No &ldquo;soft&rdquo; <code>log</code> scale</a></li>
-<li>Both axes have tangible units</li>
-<li>Bigger is better on the $y$ axis</li>
-</ul>
-
-<h2 id="weak-scaling-fixed-work-per-processor">Weak Scaling: Fixed work per processor</h2>
-
-<p>We&rsquo;ve kept the problem size $n$ fixed thus far, but parallel computers are also used to solve large problems.  If we keep the amount of work per processor fixed, we are <a href="https://en.wikipedia.org/wiki/Gustafson's_law" target="_blank">weak/Gustafson scaling</a>.</p>
-
-<pre><code class="language-python">ns = 10*ps
-plt.semilogx(ps, ns/exec_cost(.99, ps, n=ns, latency=1), 'o-')
-ns = 100*ps
-plt.semilogx(ps, ns/exec_cost(.99, ps, n=ns, latency=1), 's-')
-plt.title('Weak scaling')
-plt.xlabel('procs')
-plt.ylabel('efficiency')
-plt.ylim(bottom=0);
-</code></pre>
-
-<p><img src="./lecture_14_0.png" alt="png" /></p>
-
-<pre><code class="language-python">for w in np.geomspace(0.1, 1e3, 20):
-    ns = w*ps
-    plt.semilogx(exec_time(.99, ps, n=ns, latency=1),
-                 ns/exec_cost(.99, ps, n=ns, latency=1), 'o-')
-plt.title('Weak scaling')
-plt.xlabel('time')
-plt.ylabel('efficiency')
-plt.ylim(bottom=0);
-</code></pre>
-
-<p><img src="./lecture_15_0.png" alt="png" /></p>
-
-<h2 id="fuhrer-et-al-2018-near-global-climate-simulation-at-1-km-resolution-https-www-geosci-model-dev-net-11-1665-2018-gmd-11-1665-2018-pdf"><a href="https://www.geosci-model-dev.net/11/1665/2018/gmd-11-1665-2018.pdf" target="_blank">Fuhrer et al (2018): Near-global climate simulation at 1 km resolution</a></h2>
-
-<p><img src="fuhrer2018-fig4.png" alt="Fuhrer (2018)" /></p>
-
-<p>I replotted these data for <a href="https://jedbrown.org/files/20190822-Latsis.pdf" target="_blank">my talk</a> at the <a href="https://latsis2019.ethz.ch/" target="_blank">Latsis Symposium</a> last month.</p>
-
-<p><img src="fuhrer2018-scaling-time-ann4.png" alt="Fuhrer (2018) replotted" /></p>
-
-<h1 id="further-resources">Further resources</h1>
-
-<ul>
-<li><a href="https://blogs.fau.de/hager/archives/5260" target="_blank">Hager: Fooling the masses</a>
-
-<ul>
-<li>Learn by counter-examples</li>
-</ul></li>
-<li><a href="https://htor.inf.ethz.ch/publications/index.php?pub=222" target="_blank">Hoefler and Belli: Scientific Benchmarking of Parallel Computing Systems</a>
-
-<ul>
-<li>Recommended best practices, especially for dealing with performance variability</li>
-</ul></li>
-</ul>
-
-<p>Please read/watch something from this list and be prepared to share on Monday.</p>
 
           </div>
 
@@ -559,14 +554,14 @@ plt.ylim(bottom=0);
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/openmp/" rel="next">OpenMP Basics</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/intro-modeling/" rel="prev">Introduction to Performance Modeling</a>
+    <a href="/fall2019/intro-mpi/" rel="prev">Introduction to MPI</a>
   </div>
   
 </div>
@@ -576,11 +571,11 @@ plt.ylim(bottom=0);
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Sep 6, 2019</p>
+          <p>Last updated on Sep 30, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/intro-parallel-scaling/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/dense-linalg/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

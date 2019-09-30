@@ -290,6 +290,158 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Dense Linear Algebra and Networks</title>
+      <link>https://cucs-hpsc.github.io/fall2019/dense-linalg/</link>
+      <pubDate>Mon, 30 Sep 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/dense-linalg/</guid>
+      <description>
+
+&lt;h2 id=&#34;inner-products&#34;&gt;Inner products&lt;/h2&gt;
+
+&lt;p&gt;$$ x^T y = \sum_{i=1}^N x_i y_i $$&lt;/p&gt;
+
+&lt;h4 id=&#34;openmp&#34;&gt;OpenMP&lt;/h4&gt;
+
+&lt;p&gt;The vectors &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; of length &lt;code&gt;N&lt;/code&gt; are stored in a contiguous array in shared memory.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;double sum = 0;
+#pragma omp parallel for reduction(+:sum)
+for (int i=0; i&amp;lt;N; i++)
+    sum += x[i] * y[i];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;mpi&#34;&gt;MPI&lt;/h4&gt;
+
+&lt;p&gt;The vectors &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; are partitioned into $P$ parts of length $n&lt;em&gt;p$ such that
+$$ N = \sum&lt;/em&gt;{p=1}^P n_p . $$
+The inner product is computed via&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;double sum = 0;
+for (int i=0; i&amp;lt;n; i++)
+    sum += x[i] * y[i];
+MPI_Allreduce(MPI_IN_PLACE, &amp;amp;sum, 1, MPI_DOUBLE, MPI_SUM, comm);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Work: $2N$ flops processed rate $R$&lt;/li&gt;
+&lt;li&gt;Execution time: $\frac{2N}{RP} + \text{latency}$&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;How big is latency?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import matplotlib.pyplot as plt
+plt.style.use(&#39;seaborn&#39;)
+import numpy as np
+
+P = np.geomspace(2, 1e6)
+N = 1e9       # length of vectors
+R = 10e9/8    # (10 GB/s per core) (2 flops/16 bytes) = 10/8 GF/s per core
+t1 = 2e-6     # 2 µs message latency
+
+def time_compute(P):
+return 2*N / (R*P)
+
+plt.loglog(P, time_compute(P) + t1*(P-1), label=&#39;linear&#39;)
+plt.loglog(P, time_compute(P) + t1*2*(np.sqrt(P)-1), label=&#39;2D mesh&#39;)
+plt.loglog(P, time_compute(P) + t1*np.log2(P), label=&#39;hypercube&#39;)
+plt.xlabel(&#39;P processors&#39;)
+plt.ylabel(&#39;Execution time&#39;)
+plt.legend();
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_1_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;FischerBGQAllReduce.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;torus-topology&#34;&gt;Torus topology&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/6/60/Torus_from_rectangle.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/1/1f/3d_torus.png&#34; width=&#34;800px&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;3D torus: IBM BlueGene/L (2004) and BlueGene/P (2007)&lt;/li&gt;
+&lt;li&gt;5D torus: IBM BlueGene/Q (2011)&lt;/li&gt;
+&lt;li&gt;6D torus: Fujitsu K computer (2011)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;dragonfly-topology&#34;&gt;Dragonfly topology&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;CrayAriesDragonfly.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;today-s-research-reducing-contention-and-interference&#34;&gt;Today&amp;rsquo;s research: reducing contention and interference&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://3s81si1s5ygj3mzby34dq6qf-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/cray-slingshot-congestion-control.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://3s81si1s5ygj3mzby34dq6qf-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/cray-slingshot-trace-latency.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Images from &lt;a href=&#34;https://www.nextplatform.com/2019/08/16/how-cray-makes-ethernet-suited-for-hpc-and-ai-with-slingshot/&#34; target=&#34;_blank&#34;&gt;this article&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;compare-to-bg-q&#34;&gt;Compare to BG/Q&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Each job gets an electrically isolated 5D torus&lt;/li&gt;
+&lt;li&gt;Excellent performance and reproducibility&lt;/li&gt;
+&lt;li&gt;Awkward constraints on job size, lower system utilization.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;outer-product&#34;&gt;Outer product&lt;/h2&gt;
+
+&lt;p&gt;$$ C_{ij} = x_i y_j $$&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Data in: $2N$&lt;/li&gt;
+&lt;li&gt;Data out: $N^2$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;matrix-vector-products&#34;&gt;Matrix-vector products&lt;/h2&gt;
+
+&lt;p&gt;$$ y&lt;em&gt;i = \sum&lt;/em&gt;{j} A_{ij} x_j $$&lt;/p&gt;
+
+&lt;p&gt;How to partition the matrix $A$ across $P$ processors?&lt;/p&gt;
+
+&lt;h3 id=&#34;1d-row-partition&#34;&gt;1D row partition&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Every process needs entire vector $x$: &lt;code&gt;MPI_Allgather&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Matrix data does not move&lt;/li&gt;
+&lt;li&gt;Execution time
+$$ \underbrace{\frac{2N^2}{RP}}_{\text{compute}} + \underbrace{t_1 \log&lt;em&gt;2 P}&lt;/em&gt;{\text{latency}} + \underbrace{t&lt;em&gt;b N \frac{P-1}{P}}&lt;/em&gt;{\text{bandwidth}} $$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;05-matvec-row.png&#34; alt=&#34;Thanks to Abtin Rahimian&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;2d-partition&#34;&gt;2D partition&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Blocks of size $N/\sqrt{P}$&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;diagonal&amp;rdquo; ranks hold the input vector&lt;/li&gt;
+&lt;li&gt;Broadcast $x$ along columns: &lt;code&gt;MPI_Bcast&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Perform local compute&lt;/li&gt;
+&lt;li&gt;Sum &lt;code&gt;y&lt;/code&gt; along rows: &lt;code&gt;MPI_Reduce&lt;/code&gt; with roots on diagonal&lt;/li&gt;
+&lt;li&gt;Execution time
+$$ \underbrace{\frac{2N^2}{RP}}_{\text{compute}} + \underbrace{2 t_1 \log&lt;em&gt;2 P}&lt;/em&gt;{\text{latency}} + \underbrace{\frac{2 t&lt;em&gt;b N}{\sqrt{P}}}&lt;/em&gt;{\text{bandwidth}} $$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;05-matvec-block.png&#34; alt=&#34;Thanks to Abtin Rahimian&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;N = 1e4
+tb = 8 / 1e9 # 8 bytes / (1 GB/s) ~ bandwidth per core in units of double
+tb *= 100
+
+plt.loglog(P, (2*N**2)/(R*P) + t1*np.log2(P) + tb*N*(P-1)/P, label=&#39;1D distribution&#39;)
+plt.loglog(P, (2*N**2)/(R*P) + 2*t1*np.log2(P) + 2*tb*N/np.sqrt(P), label=&#39;2D distribution&#39;)
+plt.xlabel(&#39;P processors&#39;)
+plt.ylabel(&#39;Execution time&#39;)
+plt.legend();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_8_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Introduction to MPI</title>
       <link>https://cucs-hpsc.github.io/fall2019/intro-mpi/</link>
       <pubDate>Tue, 24 Sep 2019 06:49:25 -0600</pubDate>
