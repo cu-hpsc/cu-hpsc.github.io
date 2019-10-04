@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Jed Brown">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="%matplotlib inline import numpy as np import matplotlib.pyplot as plt plt.style.use(&#39;seaborn&#39;)  Orthogonalization and QR factorization Given a collection of vectors (columns of a matrix), we can find an orthogonal basis by applying the above procedure one column at a time and saving the result. Let&rsquo;s think of the first two columns, $$ \Bigg[ a_0 \, \Bigg| \, a_1 \Bigg] = \Bigg[ q_0 \,\Bigg|\, q1 \Bigg] \begin{bmatrix} r{00} &amp; r{01} \ 0 &amp; r{11} \end{bmatrix} .">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/dense-linalg-3/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/dense-linalg-3/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@five9a2">
+  <meta property="twitter:creator" content="@five9a2">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/dense-linalg-3/">
+  <meta property="og:title" content="Orthogonality and Conditioning | HPSC">
+  <meta property="og:description" content="%matplotlib inline import numpy as np import matplotlib.pyplot as plt plt.style.use(&#39;seaborn&#39;)  Orthogonalization and QR factorization Given a collection of vectors (columns of a matrix), we can find an orthogonal basis by applying the above procedure one column at a time and saving the result. Let&rsquo;s think of the first two columns, $$ \Bigg[ a_0 \, \Bigg| \, a_1 \Bigg] = \Bigg[ q_0 \,\Bigg|\, q1 \Bigg] \begin{bmatrix} r{00} &amp; r{01} \ 0 &amp; r{11} \end{bmatrix} ."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-10-04T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-10-04T17:17:50-06:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>Orthogonality and Conditioning | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp/">2019-09-11 OpenMP Basics</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-2/">2019-09-13 More OpenMP</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-3/">2019-09-16 OpenMP Tasks</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/strategies/">2019-09-18 Reductions and Scans</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/sorting-graphs/">2019-09-23 More bitonic sorting, graphs</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-2/">2019-10-02 Dense Linear Algebra and Orthogonality</a>
+      </li>
+      
+      <li class="active">
+        <a href="/fall2019/dense-linalg-3/">2019-10-04 Orthogonality and Conditioning</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#orthogonalization-and-qr-factorization">Orthogonalization and QR factorization</a>
+<ul>
+<li>
+<ul>
+<li><a href="#column-0">Column 0</a></li>
+<li><a href="#column-1">Column 1</a></li>
+</ul></li>
+<li><a href="#theorem-all-full-rank-m-times-n-matrices-m-ge-n-have-a-unique-q-r-factorization-with-r-j-j-0">Theorem: all full-rank $m\times n$ matrices ($m \ge n$) have a unique $Q R$ factorization with $R_{j,j} &gt; 0$.</a></li>
+</ul></li>
+<li><a href="#left-looking-algorithms-reducing-the-number-of-inner-products">Left-looking algorithms: reducing the number of inner products</a>
+<ul>
+<li><a href="#right-looking-algorithms">Right-looking algorithms</a></li>
+<li><a href="#stability">Stability</a></li>
+<li><a href="#householder-triangularization">Householder triangularization</a></li>
+<li><a href="#choice-of-two-projections">Choice of two projections</a></li>
+</ul></li>
+<li><a href="#conditioning">Conditioning</a>
+<ul>
+<li><a href="#absolute-condition-number">Absolute condition number</a></li>
+<li><a href="#floating-point-arithmetic">Floating point arithmetic</a></li>
+<li><a href="#relative-condition-number">Relative condition number</a>
+<ul>
+<li><a href="#take-home-message">Take-home message</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#stability-1">Stability</a>
+<ul>
+<li><a href="#forward-stability">(Forward) Stability</a></li>
+<li><a href="#backward-stability">Backward Stability</a></li>
+<li><a href="#accuracy-of-backward-stable-algorithms-theorem">Accuracy of backward stable algorithms (Theorem)</a></li>
+<li><a href="#condition-number-of-a-matrix">Condition number of a matrix</a></li>
+<li><a href="#stack-push-matrix-norms">Stack push: Matrix norms</a></li>
+<li><a href="#stack-pop">Stack pop</a></li>
+<li><a href="#cost-of-householder-factorization">Cost of Householder factorization</a></li>
+<li><a href="#backward-stability-of-housholder">Backward Stability of Housholder</a></li>
+</ul></li>
+<li><a href="#back-to-parallelism-cholesky-qr-one-reduction">Back to parallelism: Cholesky QR (one reduction)</a></li>
+<li><a href="#tsqr-tall-skinny-qr">TSQR: Tall-Skinny QR</a></li>
+</ul></li>
+</ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">Orthogonality and Conditioning</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<pre><code class="language-python">%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('seaborn')
+</code></pre>
+
+<h2 id="orthogonalization-and-qr-factorization">Orthogonalization and QR factorization</h2>
+
+<p>Given a collection of vectors (columns of a matrix), we can find an orthogonal basis by applying the above procedure one column at a time and saving the result.  Let&rsquo;s think of the first two columns,
+$$ \Bigg[ a_0 \, \Bigg| \, a_1 \Bigg] = \Bigg[ q_0 \,\Bigg|\, q<em>1 \Bigg]
+\begin{bmatrix} r</em>{00} &amp; r<em>{01} \ 0 &amp; r</em>{11} \end{bmatrix} . $$</p>
+
+<h4 id="column-0">Column 0</h4>
+
+<p>The equation for column 0 reads
+$$ a_0 = q<em>0 r</em>{00} $$
+and we require that $\lVert q<em>0 \rVert = 1$, thus
+$$ r</em>{00} = \lVert a_0 \rVert $$
+and
+$$ q_0 = a<em>0 / r</em>{00} . $$</p>
+
+<h4 id="column-1">Column 1</h4>
+
+<p>This equation reads
+$$ a_1 = q<em>0 r</em>{01} + q<em>1 r</em>{11} $$
+where $a_1$ and $q_0$ are known and we will require that $q_0^T q_1 = 0$.
+We can find the part of $a_1$ that is orthogonal to $q_0$ via
+$$ (I - q_0 q_0^T) a_1 = a_1 - q_0 \underbrace{q_0^T a<em>1}</em>{r_{01}} $$
+leaving a sub-problem equivalent to that of column 0.</p>
+
+<pre><code class="language-python">def gram_schmidt_naive(A):
+    &quot;&quot;&quot;Compute a QR factorization of A using the Gram-Schmidt algorithm&quot;&quot;&quot;
+    Q = np.zeros_like(A)
+    R = np.zeros((A.shape[1], A.shape[1]))
+    for i in range(len(Q.T)):
+        v = A[:,i].copy()
+        for j in range(i):
+            r = Q[:,j] @ v
+            R[j,i] = r
+            v -= Q[:,j] * r # &quot;modified Gram-Schmidt&quot;
+        R[i,i] = np.linalg.norm(v)
+        Q[:,i] = v / R[i,i]
+    return Q, R
+
+x = np.linspace(-1, 1)
+A = np.vander(x, 4, increasing=True)
+Q, R = gram_schmidt_naive(A)
+print(Q.T @ Q)
+print(np.linalg.norm(Q @ R - A))
+plt.plot(x, Q);
+</code></pre>
+
+<pre><code>[[ 1.00000000e+00  2.06727448e-17 -7.22457952e-17 -2.05232865e-16]
+ [ 2.06727448e-17  1.00000000e+00  1.13635722e-16 -5.08904737e-16]
+ [-7.22457952e-17  1.13635722e-16  1.00000000e+00  4.66276733e-17]
+ [-2.05232865e-16 -5.08904737e-16  4.66276733e-17  1.00000000e+00]]
+4.744563050812836e-16
+</code></pre>
+
+<p><img src="./lecture_3_1.png" alt="png" /></p>
+
+<h3 id="theorem-all-full-rank-m-times-n-matrices-m-ge-n-have-a-unique-q-r-factorization-with-r-j-j-0">Theorem: all full-rank $m\times n$ matrices ($m \ge n$) have a unique $Q R$ factorization with $R_{j,j} &gt; 0$.</h3>
+
+<pre><code class="language-python">m = 20
+V = np.vander(np.linspace(-1,1,m), increasing=True)
+Q, R = gram_schmidt_naive(V)
+
+def qr_test(qr, V):
+    Q, R = qr(V)
+    m = len(Q.T)
+    print('{:20} {:.2e} {:.2e}'.format(
+        qr.__name__,
+        np.linalg.norm(Q @ R - V),
+        np.linalg.norm(Q.T @ Q - np.eye(m))))
+    
+qr_test(gram_schmidt_naive, V)
+qr_test(np.linalg.qr, V)
+</code></pre>
+
+<pre><code>gram_schmidt_naive   9.52e-16 3.04e-09
+qr                   2.74e-15 2.39e-15
+</code></pre>
+
+<h2 id="left-looking-algorithms-reducing-the-number-of-inner-products">Left-looking algorithms: reducing the number of inner products</h2>
+
+<pre><code class="language-python">def gram_schmidt_classical(A):
+    Q = np.zeros_like(A)
+    R = np.zeros((len(A.T),len(A.T)))
+    for i in range(len(Q.T)):
+        v = A[:,i].copy()
+        R[:i,i] = Q[:,:i].T @ v
+        v -= Q[:,:i] @ R[:i,i]
+        R[i,i] = np.linalg.norm(v)
+        Q[:,i] = v / R[i,i]
+    return Q, R
+
+qr_test(gram_schmidt_classical, V)
+</code></pre>
+
+<pre><code>gram_schmidt_classical 9.14e-16 1.42e+00
+</code></pre>
+
+<p>Classical Gram-Schmidt is highly parallel, but unstable, as evidenced by the lack of orthogonality in $Q$.</p>
+
+<h3 id="right-looking-algorithms">Right-looking algorithms</h3>
+
+<p>The implementations above have been &ldquo;left-looking&rdquo;; when working on column $i$, we compare it only to columns to the left (i.e., $j &lt; i$).  We can reorder the algorithm to look to the right by projecting $q_i$ out of all columns $j &gt; i$.  This algorithm is stable while being just as parallel as <code>gram_schmidt_classical</code>.</p>
+
+<pre><code class="language-python">def gram_schmidt_modified(A):
+    Q = A.copy()
+    R = np.zeros((len(A.T), len(A.T)))
+    for i in range(len(Q.T)):
+        R[i,i] = np.linalg.norm(Q[:,i])
+        Q[:,i] /= R[i,i]
+        R[i,i+1:] = Q[:,i].T @ Q[:,i+1:]
+        Q[:,i+1:] -= np.outer(Q[:,i], R[i,i+1:])
+    return Q, R
+
+qr_test(gram_schmidt_modified, V)
+</code></pre>
+
+<pre><code>gram_schmidt_modified 8.32e-16 1.32e-08
+</code></pre>
+
+<h3 id="stability">Stability</h3>
+
+<p>Since QR factorization is unique (with positive diagonal of $R$), if we were to work in exact arithmetic, classical and modified Gram-Schmidt would produce the same result.  Note that modified Gram-Schmidt sequentially applies the projections into the orthogonal complement of each column $q_j$ of $Q$.  That is, given a vector $x$, we sequentially project $(I - q_j q_j^T) x$ for each column $j &lt; i$.  This is equivalent to projecting all those columns at once due to
+\begin{align}
+  (I - q_1 q_1^T) (I - q_0 q_0^T) x &amp;= \big(I - q_0 q_0^T - q_1 q_1^T + q_1 \underbrace{q_1^T q<em>0}</em>{=0} q_0^T \big) x <br />
+  &amp;= (I - q_0 q_0^T - q_1 q_1^T) x <br />
+  &amp;= (I - Q Q^T) x
+\end{align}
+where $Q = [q_0 | q_1 ]$.  This identity can be applied recursively to convert modified Gram-Schmidt to classical, but the identity is not exact in finite precision arithmetic.</p>
+
+<pre><code class="language-python">v = V[:,-1]
+print('norm(v)', np.linalg.norm(v))
+print('r', R[-1,-1])
+plt.semilogy(np.abs(Q.T @ v), 'o')
+plt.title('Inner products of v with Q');
+</code></pre>
+
+<pre><code>norm(v) 1.4245900685395503
+r 1.7146698318004178e-07
+</code></pre>
+
+<p><img src="./lecture_11_1.png" alt="png" /></p>
+
+<pre><code class="language-python">def test_sum(n):
+    def gen(first, n, factor=2/3):
+        l = [first]
+        ifactor = 1-factor
+        for i in range(n):
+            l.append(-first * factor * ifactor**i)
+        return l, first * ifactor**n
+    def sum_seq(numbers):
+        s = 0
+        for a in numbers:
+            s += a
+        return s
+    def sum_block(numbers):
+        s = 0
+        for a in numbers[1:]:
+            s += a
+        return numbers[0] + s
+    numbers, exact = gen(1, n)
+    print(numbers)
+    plt.semilogy(np.abs(numbers), 'o')
+    seq_err = sum_seq(numbers) - exact
+    block_err = sum_block(numbers) - exact
+    numpy_err = np.sum(numbers) - exact
+    print('seq   abs {:.4e}  rel {:.4e}'.format(seq_err, seq_err/exact))
+    print('block abs {:.4e}  rel {:.4e}'.format(block_err, block_err/exact))
+    print('numpy abs {:.4e}  rel {:.4e}'.format(numpy_err, numpy_err/exact))
+    
+test_sum(20)
+</code></pre>
+
+<pre><code>[1, -0.6666666666666666, -0.22222222222222224, -0.07407407407407408, -0.024691358024691364, -0.008230452674897124, -0.0027434842249657075, -0.0009144947416552361, -0.0003048315805517454, -0.00010161052685058181, -3.3870175616860605e-05, -1.1290058538953536e-05, -3.763352846317846e-06, -1.2544509487726156e-06, -4.181503162575385e-07, -1.3938343875251286e-07, -4.6461146250837626e-08, -1.548704875027921e-08, -5.162349583426404e-09, -1.7207831944754682e-09, -5.735943981584894e-10]
+seq   abs 5.9562e-22  rel 2.0768e-12
+block abs 5.3534e-17  rel 1.8666e-07
+numpy abs 7.4670e-17  rel 2.6036e-07
+</code></pre>
+
+<p><img src="./lecture_12_1.png" alt="png" /></p>
+
+<h3 id="householder-triangularization">Householder triangularization</h3>
+
+<p>Gram-Schmidt methods perform triangular transformations to build an orthogonal matrix.  As we have seen, $X = QR$ is satisfied accurately, but $Q$ may not be orthogonal when $X$ is ill-conditioned.  Householder triangularization instead applies a sequence of orthogonal transformations to build a triangular matrix.</p>
+
+<p>$$ \underbrace{Q_{n-1} \dotsb Q<em>0}</em>{Q^T} A = R $$</p>
+
+<p>The structure of the algorithm is</p>
+
+<p>$$ \underbrace{\begin{bmatrix} * &amp; * &amp; * \ * &amp; * &amp; * \ * &amp; * &amp; * \ * &amp; * &amp; * \ * &amp; * &amp; * \ \end{bmatrix}}<em>{A} \to
+\underbrace{\begin{bmatrix} * &amp; * &amp; * \ 0 &amp; * &amp; * \ 0 &amp; * &amp; * \ 0 &amp; * &amp; * \ 0 &amp; * &amp; * \ \end{bmatrix}}</em>{Q<em>0 A} \to
+\underbrace{\begin{bmatrix} * &amp; * &amp; * \ 0 &amp; * &amp; * \ 0 &amp; 0 &amp; * \ 0 &amp; 0 &amp; * \ 0 &amp; 0 &amp; * \ \end{bmatrix}}</em>{Q_1 Q<em>0 A} \to
+\underbrace{\begin{bmatrix} * &amp; * &amp; * \ 0 &amp; * &amp; * \ 0 &amp; 0 &amp; * \ 0 &amp; 0 &amp; 0 \ 0 &amp; 0 &amp; 0 \ \end{bmatrix}}</em>{Q_2 Q_1 Q_0 A}
+$$</p>
+
+<p>where the elementary orthogonal matrices $Q_i$ chosen to introduce zeros below the diagonal in the $i$th column of $R$.
+Each of these transformations will have the form
+$$Q_i = \begin{bmatrix} I_i &amp; 0 \ 0 &amp; F \end{bmatrix}$$
+where $F$ is a &ldquo;reflection&rdquo; that achieves
+$$ F x = \begin{bmatrix} \lVert x \rVert \ 0 \ 0 \ \vdots \end{bmatrix} $$
+where $x$ is the column of $R$ from the diagonal down.
+This transformation is a reflection across a plane with normal $v = Fx - x = \lVert x \rVert e_1 - x$.</p>
+
+<p><img src="TB-Householder.png" alt="Householder Reflector (Trefethen and Bau, 1999)" /></p>
+
+<p>The reflection, as depected above by Trefethen and Bau (1999) can be written $F = I - 2 \frac{v v^T}{v^T v}$.</p>
+
+<pre><code class="language-python">A = np.random.rand(4, 4)
+A = A + A.T # Random symmetric matrix
+A
+</code></pre>
+
+<pre><code>array([[1.71984228, 0.68338128, 1.12543662, 0.59188991],
+       [0.68338128, 1.5609485 , 1.03109546, 1.4707089 ],
+       [1.12543662, 1.03109546, 0.02375504, 0.71686222],
+       [0.59188991, 1.4707089 , 0.71686222, 0.88113581]])
+</code></pre>
+
+<pre><code class="language-python">A.T - A
+</code></pre>
+
+<pre><code>array([[0., 0., 0., 0.],
+       [0., 0., 0., 0.],
+       [0., 0., 0., 0.],
+       [0., 0., 0., 0.]])
+</code></pre>
+
+<pre><code class="language-python">from scipy.linalg import block_diag
+np.set_printoptions(precision=4)
+
+def reflector(v):
+    return np.eye(len(v)) - 2*np.outer(v, v)
+
+v = A[1:,0].copy()
+v[0] -= np.linalg.norm(v)
+v = v / np.linalg.norm(v)
+F = reflector(v)
+Q_0 = block_diag(np.eye(1), F)
+Q_0
+</code></pre>
+
+<pre><code>array([[ 1.    ,  0.    ,  0.    ,  0.    ],
+       [ 0.    ,  0.4734,  0.7796,  0.41  ],
+       [ 0.    ,  0.7796, -0.1542, -0.607 ],
+       [ 0.    ,  0.41  , -0.607 ,  0.6808]])
+</code></pre>
+
+<pre><code class="language-python">Q_0 @ A
+</code></pre>
+
+<pre><code>array([[ 1.7198e+00,  6.8338e-01,  1.1254e+00,  5.9189e-01],
+       [ 1.4436e+00,  2.1458e+00,  8.0055e-01,  1.6164e+00],
+       [-6.8853e-17,  1.6526e-01,  3.6506e-01,  5.0122e-01],
+       [-2.8229e-17,  1.0154e+00,  8.9636e-01,  7.6773e-01]])
+</code></pre>
+
+<pre><code class="language-python">A @ Q_0
+</code></pre>
+
+<pre><code>array([[ 1.7198e+00,  1.4436e+00, -6.8853e-17, -2.8229e-17],
+       [ 6.8338e-01,  2.1458e+00,  1.6526e-01,  1.0154e+00],
+       [ 1.1254e+00,  8.0055e-01,  3.6506e-01,  8.9636e-01],
+       [ 5.9189e-01,  1.6164e+00,  5.0122e-01,  7.6773e-01]])
+</code></pre>
+
+<pre><code class="language-python">def householder_Q_times(V, x):
+    &quot;&quot;&quot;Apply orthogonal matrix represented as list of Householder reflectors&quot;&quot;&quot;
+    y = x.copy()
+    for i in reversed(range(len(V))):
+        y[i:] -= 2 * V[i] * V[i].dot(y[i:])
+    return y
+
+def qr_householder1(A):
+    &quot;Compute QR factorization using naive Householder reflection&quot;
+    m, n = A.shape
+    R = A.copy()
+    V = []
+    for i in range(n):
+        x = R[i:,i]
+        v = -x
+        v[0] += np.linalg.norm(x)
+        v = v/np.linalg.norm(v)     # Normalized reflector plane
+        R[i:,i:] -= 2 * np.outer(v, v @ R[i:,i:])
+        V.append(v)                    # Storing reflectors is equivalent to storing orthogonal matrix
+    Q = np.eye(m, n)
+    for i in range(n):
+        Q[:,i] = householder_Q_times(V, Q[:,i])
+    return Q, np.triu(R[:n,:])
+
+qr_test(qr_householder1, np.array([[1.,2],[3,4],[5,6]]))
+</code></pre>
+
+<pre><code>qr_householder1      1.88e-15 3.17e-16
+</code></pre>
+
+<pre><code class="language-python">qr_test(qr_householder1, V)
+qr_test(np.linalg.qr, V)
+</code></pre>
+
+<pre><code>qr_householder1      3.15e-15 3.48e-15
+qr                   2.74e-15 2.39e-15
+</code></pre>
+
+<h3 id="choice-of-two-projections">Choice of two projections</h3>
+
+<p>It turns out our implementation has a nasty deficiency.</p>
+
+<pre><code class="language-python">qr_test(qr_householder1, np.eye(1))
+</code></pre>
+
+<pre><code>qr_householder1      nan nan
+
+
+/usr/lib/python3.7/site-packages/ipykernel_launcher.py:17: RuntimeWarning: invalid value encountered in true_divide
+</code></pre>
+
+<pre><code class="language-python">qr_test(qr_householder1, np.eye(3,2))
+</code></pre>
+
+<pre><code>qr_householder1      nan nan
+
+
+/usr/lib/python3.7/site-packages/ipykernel_launcher.py:17: RuntimeWarning: invalid value encountered in true_divide
+</code></pre>
+
+<p>Inside <code>qr_householder1</code>, we have the lines</p>
+
+<pre><code>        x = R[i:,i]
+        v = -x
+        v[0] += numpy.linalg.norm(x)
+        v = v/numpy.linalg.norm(v)     # Normalized reflector plane
+</code></pre>
+
+<p>What happens when $$x = \begin{bmatrix}1 \ 0 \end{bmatrix}$$
+(i.e., the column of $R$ is already upper triangular)?</p>
+
+<p>We are trying to define a reflector plane (via its normal vector) from the zero vector,
+$$v = \lVert x \rVert e_0 - x .$$
+When we try to normalize this vector, we divide zero by zero and the algorithm breaks down (<code>nan</code>).  Maybe we just need to test for this special case and &ldquo;skip ahead&rdquo; when no reflection is needed?  And if so, how would we define $Q$?</p>
+
+<pre><code class="language-python">qr_test(qr_householder1, np.array([[1.,1], [2e-8,1]]))
+print(qr_householder1(np.array([[1.,1], [2e-8,1]])))
+</code></pre>
+
+<pre><code>qr_householder1      2.20e-09 4.44e-16
+(array([[ 1.0000e+00, -2.2204e-08],
+       [ 2.2204e-08,  1.0000e+00]]), array([[1., 1.],
+       [0., 1.]]))
+</code></pre>
+
+<p>The error $QR - A$ is still $10^{-8}$ for this very well-conditioned matrix so something else must be at play here.</p>
+
+<p><img src="TB-Householder2.png" alt="Choosing the better of two Householder reflectors (Trefethen and Bau, 1999)." /></p>
+
+<pre><code class="language-python">def qr_householder2(A):
+    &quot;Compute QR factorization using Householder reflection&quot;
+    m, n = A.shape
+    R = A.copy()
+    V = []
+    for i in range(n):
+        v = R[i:,i].copy()
+        v[0] += np.sign(v[0]) * np.linalg.norm(v) # Choose the further of the two reflections
+        v = v/np.linalg.norm(v)     # Normalized reflector plane
+        R[i:,i:] -= np.outer(v, 2 * (v.T @ R[i:,i:]))
+        V.append(v)                    # Storing reflectors is equivalent to storing orthogonal matrix
+    Q = np.eye(m, n)
+    for i in range(n):
+        Q[:,i] = householder_Q_times(V, Q[:,i])
+    return Q, np.triu(R[:n,:])
+
+qr_test(qr_householder2, np.eye(3,2))
+qr_test(qr_householder2, np.array([[1.,1], [1e-8,1]]))
+for mat in qr_householder2(np.array([[1.,1], [1e-8,1]])):
+    print(mat)
+
+qr_test(qr_householder2, V)
+</code></pre>
+
+<pre><code>qr_householder2      0.00e+00 0.00e+00
+qr_householder2      0.00e+00 0.00e+00
+[[-1.e+00  1.e-08]
+ [-1.e-08 -1.e+00]]
+[[-1. -1.]
+ [ 0. -1.]]
+qr_householder2      5.20e-15 3.58e-15
+</code></pre>
+
+<p>We now have a usable implementation of Householder QR.  There are some further concerns for factoring rank-deficient matrices.  We will visit the concept of pivoting later, in the context of LU and Cholesky factorization.</p>
+
+<h2 id="conditioning">Conditioning</h2>
+
+<h3 id="absolute-condition-number">Absolute condition number</h3>
+
+<p>Consider a function $f: X \to Y$ and define the <em>absolute condition number</em>
+$$ \hat\kappa = \lim<em>{\delta \to 0} \max</em>{|\delta x| &lt; \delta} \frac{|f(x + \delta x) - f(x)|}{|\delta x|} = \max_{\delta x} \frac{|\delta f|}{|\delta x|}. $$
+If $f$ is differentiable, then $\hat\kappa = |f&rsquo;(x)|$.</p>
+
+<h3 id="floating-point-arithmetic">Floating point arithmetic</h3>
+
+<p>Floating point arithmetic $x \circledast y := \text{float}(x * y)$ is exact within a relative accuracy $\epsilon<em>{\text{machine}}$.  Formally,
+$$ x \circledast y = (x * y) (1 + \epsilon) $$
+for some $|\epsilon| \le \epsilon</em>{\text{machine}}$.</p>
+
+<pre><code class="language-python">eps = 1
+while 1 + eps &gt; 1:
+    eps /= 2
+eps_machine = eps
+print('Machine epsilon = {}'.format(eps_machine))
+(1 + 1.12e-16) - 1
+</code></pre>
+
+<pre><code>Machine epsilon = 1.1102230246251565e-16
+
+
+
+
+
+2.220446049250313e-16
+</code></pre>
+
+<pre><code class="language-python">def plot_neighborhood(f, x0, atol=1e-10, rtol=1e-10):
+    width = atol + rtol * np.abs(x0)
+    x = np.linspace(x0 - width, x0 + width, 201)
+    plt.plot(x, f(x))
+    plt.xlabel('x')
+    plt.ylabel('f(x)')
+
+plot_neighborhood(lambda x: (x + 1) - 1, 0, 1e-15)
+</code></pre>
+
+<p><img src="./lecture_30_0.png" alt="png" /></p>
+
+<p>This function $f(x) = (x + 1) - 1 = x$ is well conditioned for all $x$, but this numerical algorithm is unstable (we&rsquo;ll discuss this below).</p>
+
+<pre><code class="language-python">plot_neighborhood(np.log, 1, .5)
+</code></pre>
+
+<p><img src="./lecture_32_0.png" alt="png" /></p>
+
+<p>The function $f(x) = \log x$ has $f&rsquo;(1) = 1$.  The conditioning is good in an absolute sense, $\hat \kappa = 1$.  However, the outputs from <code>np.log(1+x)</code> have large relative error relative to the exact value, provided here by the function <code>np.log1p(x)</code>.</p>
+
+<pre><code class="language-python">plot_neighborhood(lambda x: np.log(1+x), 0, atol=1e-15)
+plot_neighborhood(np.log1p, 0, atol=1e-15)
+</code></pre>
+
+<p><img src="./lecture_34_0.png" alt="png" /></p>
+
+<h3 id="relative-condition-number">Relative condition number</h3>
+
+<p>Given the relative nature of floating point arithmetic, it is more useful to discuss <strong>relative condition number</strong>,
+$$ \kappa = \max<em>{\delta x} \frac{|\delta f|/|f|}{|\delta x|/|x|}
+= \max</em>{\delta x} \Big[ \frac{|\delta f|/|\delta x|}{|f| / |x|} \Big] $$
+or, if $f$ is differentiable,
+$$ \kappa = |f&rsquo;(x)| \frac{|x|}{|f|} . $$</p>
+
+<p>How does a condition number get big?</p>
+
+<h4 id="take-home-message">Take-home message</h4>
+
+<p>The relative accuracy of the best-case algorithm will not be reliably better than $\epsilon<em>{\text{machine}}$ times the condition number.
+$$ \max</em>{\delta x} \frac{|\delta f|}{|f|} \ge \kappa \cdot \epsilon_{\text{machine}} .$$</p>
+
+<h2 id="stability-1">Stability</h2>
+
+<p>We use the notation $\tilde f(x)$ to mean a numerical algorithm for approximating $f(x)$.  Additionally, $\tilde x = x (1 + \epsilon)$ is some &ldquo;good&rdquo; approximation of the exact input $x$.</p>
+
+<h3 id="forward-stability">(Forward) Stability</h3>
+
+<p><strong>&ldquo;nearly the right answer to nearly the right question&rdquo;</strong>
+$$ \frac{\lvert \tilde f(x) - f(\tilde x) \rvert}{| f(\tilde x) |} \in O(\epsilon_{\text{machine}}) $$
+for some $\tilde x$ that is close to $x$</p>
+
+<h3 id="backward-stability">Backward Stability</h3>
+
+<p><strong>&ldquo;exactly the right answer to nearly the right question&rdquo;</strong>
+$$ \tilde f(x) = f(\tilde x) $$
+for some $\tilde x$ that is close to $x$</p>
+
+<ul>
+<li>Every backward stable algorithm is stable.</li>
+<li>Not every stable algorithm is backward stable.</li>
+</ul>
+
+<h3 id="accuracy-of-backward-stable-algorithms-theorem">Accuracy of backward stable algorithms (Theorem)</h3>
+
+<p>A backward stable algorithm for computing $f(x)$ has relative accuracy
+$$ \left\lvert \frac{\tilde f(x) - f(x)}{f(x)} \right\rvert \in O(\kappa(f) \epsilon_{\text{machine}}) . $$
+This is a rewording of a statement made earlier &ndash; backward stability is the best case.</p>
+
+<h3 id="condition-number-of-a-matrix">Condition number of a matrix</h3>
+
+<p>We may have informally referred to a matrix as &ldquo;ill-conditioned&rdquo; when the columns are nearly linearly dependent, but let&rsquo;s make this concept for precise.  Recall the definition of (relative) condition number from the Rootfinding notes,</p>
+
+<p>$$ \kappa = \max_{\delta x} \frac{|\delta f|/|f|}{|\delta x|/|x|} . $$</p>
+
+<p>We understood this definition for scalar problems, but it also makes sense when the inputs and/or outputs are vectors (or matrices, etc.) and absolute value is replaced by vector (or matrix) norms.  Let&rsquo;s consider the case of matrix-vector multiplication, for which $f(x) = A x$.</p>
+
+<p>$$ \kappa(A) = \max<em>{\delta x} \frac{\lVert A (x+\delta x) - A x \rVert/\lVert A x \rVert}{\lVert \delta x\rVert/\lVert x \rVert}
+= \max</em>{\delta x} \frac{\lVert A \delta x \rVert}{\lVert \delta x \rVert} \, \frac{\lVert x \rVert}{\lVert A x \rVert} = \lVert A \rVert \frac{\lVert x \rVert}{\lVert A x \rVert} . $$</p>
+
+<p>There are two problems here:</p>
+
+<ul>
+<li>I wrote $\kappa(A)$ but my formula depends on $x$.</li>
+<li>What is that $\lVert A \rVert$ beastie?</li>
+</ul>
+
+<h3 id="stack-push-matrix-norms">Stack push: Matrix norms</h3>
+
+<p>Vector norms are built into the linear space (and defined in term of the inner product).  Matrix norms are <em>induced</em> by vector norms, according to</p>
+
+<p>$$ \lVert A \rVert = \max_{x \ne 0} \frac{\lVert A x \rVert}{\lVert x \rVert} . $$</p>
+
+<ul>
+<li>This equation makes sense for non-square matrices &ndash; the vector norms of the input and output spaces may differ.</li>
+<li>Due to linearity, all that matters is direction of $x$, so it could equivalently be written</li>
+</ul>
+
+<p>$$ \lVert A \rVert = \max_{\lVert x \rVert = 1} \lVert A x \rVert . $$</p>
+
+<h3 id="stack-pop">Stack pop</h3>
+
+<p>Now we understand the formula for condition number, but it depends on $x$.  Consider the matrix</p>
+
+<p>$$ A = \begin{bmatrix} 1 &amp; 0 \ 0 &amp; 0 \end{bmatrix} . $$</p>
+
+<ul>
+<li>What is the norm of this matrix?</li>
+<li>What is the condition number when $x = [1,0]^T$?</li>
+<li>What is the condition number when $x = [0,1]^T$?</li>
+</ul>
+
+<p>The condition number of matrix-vector multiplication depends on the vector.  The condition number of the matrix is the worst case (maximum) of the condition number for any vector, i.e.,</p>
+
+<p>$$ \kappa(A) = \max_{x \ne 0} \lVert A \rVert \frac{\lVert x \rVert}{\lVert A x \rVert} .$$</p>
+
+<p>If $A$ is invertible, then we can rephrase as</p>
+
+<p>$$ \kappa(A) = \max<em>{x \ne 0} \lVert A \rVert \frac{\lVert A^{-1} (A x) \rVert}{\lVert A x \rVert} =
+\max</em>{A x \ne 0} \lVert A \rVert \frac{\lVert A^{-1} (A x) \rVert}{\lVert A x \rVert} = \lVert A \rVert \lVert A^{-1} \rVert . $$</p>
+
+<p>Evidently multiplying by a matrix is just as ill-conditioned of an operation as solving a linear system using that matrix.</p>
+
+<pre><code class="language-python">def R_solve(R, b):
+    &quot;&quot;&quot;Solve Rx = b using back substitution.&quot;&quot;&quot;
+    x = b.copy()
+    m = len(b)
+    for i in reversed(range(m)):
+        x[i] -= R[i,i+1:].dot(x[i+1:])
+        x[i] /= R[i,i]
+    return x
+
+Q, R = np.linalg.qr(A)
+x = np.array([1,2,3,4])
+bfull = A @ x
+breduced = Q.T @ bfull
+print(np.linalg.norm(R_solve(R, breduced)
+                     - np.linalg.solve(R, breduced)))
+R_solve(R, breduced)
+</code></pre>
+
+<pre><code>4.440892098500626e-16
+
+
+
+
+
+array([1., 2., 3., 4.])
+</code></pre>
+
+<h3 id="cost-of-householder-factorization">Cost of Householder factorization</h3>
+
+<p>The dominant cost comes from the line</p>
+
+<pre><code class="language-Python">    R[i:,i:] -= 2 * numpy.outer(v, v.dot(R[i:,i:]))
+</code></pre>
+
+<p>were <code>R[i:,i:]</code> is an $(m-i)\times(n-i)$ matrix.
+This line performs $2(m-i)(n-i)$ operations in <code>v.dot(R[i:,i:])</code>, another $(m-i)(n-i)$ in the &ldquo;outer&rdquo; product and again in subtraction.  As written, multiplication by 2 would be another $(m-i)(n-i)$ operations, but is only $m-i$ operations if we rewrite as</p>
+
+<pre><code class="language-Python">    w = 2*v
+    R[i:,i:] -= numpy.outer(w, v.dot(R[i:,i:]))
+</code></pre>
+
+<p>in which case the leading order cost is $4(m-i)(n-i)$.  To compute the total cost, we need to sum over all columns $i$,
+$$\begin{split} \sum<em>{i=1}^n 4(m-i)(n-i) &amp;= 4 \Big[ \sum</em>{i=1}^n (m-n)(n-i) + \sum<em>{i=1}^n (n-i)^2 \Big] <br />
+&amp;= 4 (m-n) \sum</em>{i=1}^n i + 4 \sum_{i=1}^n i^2 <br />
+&amp;\approx 2 (m-n) n^2 + 4 n^<sup>3</sup>&frasl;<sub>3</sub> <br />
+&amp;= 2 m n^2 - \frac 2 3 n^3 .
+\end{split}$$
+Recall that Gram-Schmidt QR cost $2 m n^2$, so Householder costs about the same when $m \gg n$ and is markedly less expensive when $m \approx n$.</p>
+
+<h3 id="backward-stability-of-housholder">Backward Stability of Housholder</h3>
+
+<pre><code class="language-python">def qr_test_backward(qr, n):
+    from numpy.linalg import norm
+    from numpy.random import randn
+    R = np.triu(randn(n,n))
+    Q, _ = np.linalg.qr(randn(n,n))
+    A = Q @ R
+    Q2, R2 = qr(A)
+    print('# Forward error')
+    print('Q error', norm(Q2 - Q))
+    print('R error', norm(R2 - R) / norm(R))
+    print('# Backward error')
+    A2 = Q2 @ R2
+    print('Q2.T @ Q2 - I', norm(Q2.T @ Q2 - np.eye(n)))
+    print('Q2*R2 - A', norm(A2 - A) / norm(A))
+    Q3, R3 = Q + 1e-5*randn(n,n), R + 1e-5*np.triu(randn(n,n))
+    A3 = Q3 @ R3
+    print('Q3*R3 - A', norm(A3 - A) / norm(A))
+
+qr_test_backward(gram_schmidt_modified, 50)
+#qr_test_backward(np.linalg.qr, 50)
+</code></pre>
+
+<pre><code># Forward error
+Q error 9.380829776561018
+R error 1.3114908995362393
+# Backward error
+Q2.T @ Q2 - I 0.008203364853000912
+Q2*R2 - A 2.797766695296299e-16
+Q3*R3 - A 7.070141269858638e-05
+</code></pre>
+
+<h2 id="back-to-parallelism-cholesky-qr-one-reduction">Back to parallelism: Cholesky QR (one reduction)</h2>
+
+<pre><code class="language-python">def chol_qr(A):
+    import scipy.linalg as la
+    B = A.T @ A
+    R = la.cholesky(B)
+    Q = A @ la.inv(R)
+    return Q, R
+    
+qr_test(chol_qr, V)
+</code></pre>
+
+<pre><code>chol_qr              8.12e-15 1.07e-01
+</code></pre>
+
+<pre><code class="language-python">def chol_qr2(A):
+    import scipy.linalg as la
+    B = A.T @ A
+    R = la.cholesky(B)
+    Q = A @ la.inv(R)
+    R2 = la.cholesky(Q.T @ Q)
+    Q = Q @ la.inv(R2)
+    R = R2 @ R
+    return Q, R
+
+qr_test(chol_qr2, V)
+</code></pre>
+
+<pre><code>chol_qr2             8.36e-15 1.29e-15
+</code></pre>
+
+<h2 id="tsqr-tall-skinny-qr">TSQR: Tall-Skinny QR</h2>
+
+<p><img src="ballard-tsqr.png" alt="" />
+Figure from <a href="https://www.sandia.gov/~gmballa/talks/SIAMPP14.pdf" target="_blank">Ballard et al</a>.</p>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/dense-linalg-2/" rel="prev">Dense Linear Algebra and Orthogonality</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Oct 4, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/dense-linalg-3/index.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
