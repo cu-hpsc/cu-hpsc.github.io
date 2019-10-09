@@ -28,12 +28,10 @@
   
     
   
-  <meta name="description" content="Inner products $$ x^T y = \sum_{i=1}^N x_i y_i $$
-OpenMP The vectors x and y of length N are stored in a contiguous array in shared memory.
-double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt;N; i&#43;&#43;) sum &#43;= x[i] * y[i];  MPI The vectors x and y are partitioned into $P$ parts of length $np$ such that $$ N = \sum{p=1}^P n_p .">
+  <meta name="description" content=" FLAME diagram for Cholesky $A[M_C, M_R]$ distribution The $A[,]$ distribution References  Poulson et al. (2013) Elemental: A New Framework for Distributed Memory Dense Matrix Computations doi:10.1145&frasl;2427023.2427030  ">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/elemental/">
 
   
 
@@ -100,7 +98,7 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/elemental/">
 
   
   
@@ -116,17 +114,15 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
-  <meta property="og:title" content="Dense Linear Algebra and Networks | HPSC">
-  <meta property="og:description" content="Inner products $$ x^T y = \sum_{i=1}^N x_i y_i $$
-OpenMP The vectors x and y of length N are stored in a contiguous array in shared memory.
-double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt;N; i&#43;&#43;) sum &#43;= x[i] * y[i];  MPI The vectors x and y are partitioned into $P$ parts of length $np$ such that $$ N = \sum{p=1}^P n_p ."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/elemental/">
+  <meta property="og:title" content="Elemental for distributed dense linear algebra | HPSC">
+  <meta property="og:description" content=" FLAME diagram for Cholesky $A[M_C, M_R]$ distribution The $A[,]$ distribution References  Poulson et al. (2013) Elemental: A New Framework for Distributed Memory Dense Matrix Computations doi:10.1145&frasl;2427023.2427030  "><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-09-30T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-10-04T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-09-30T14:50:54-06:00">
+    <meta property="article:modified_time" content="2019-10-08T21:52:08-06:00">
   
 
   
@@ -138,7 +134,7 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
 
 
 
-  <title>Dense Linear Algebra and Networks | HPSC</title>
+  <title>Elemental for distributed dense linear algebra | HPSC</title>
 
 </head>
 
@@ -321,7 +317,7 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
         <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
       </li>
       
@@ -333,7 +329,7 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
         <a href="/fall2019/dense-linalg-3/">2019-10-04 Orthogonality and Conditioning</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/elemental/">2019-10-07 Elemental</a>
       </li>
       
@@ -370,26 +366,10 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
 <ul>
 <li>
 <ul>
-<li><a href="#inner-products">Inner products</a>
-<ul>
-<li>
-<ul>
-<li><a href="#openmp">OpenMP</a></li>
-<li><a href="#mpi">MPI</a></li>
-</ul></li>
-<li><a href="#torus-topology">Torus topology</a></li>
-<li><a href="#dragonfly-topology">Dragonfly topology</a></li>
-<li><a href="#today-s-research-reducing-contention-and-interference">Today&rsquo;s research: reducing contention and interference</a>
-<ul>
-<li><a href="#compare-to-bg-q">Compare to BG/Q</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#outer-product">Outer product</a></li>
-<li><a href="#matrix-vector-products">Matrix-vector products</a>
-<ul>
-<li><a href="#1d-row-partition">1D row partition</a></li>
-<li><a href="#2d-partition">2D partition</a></li>
-</ul></li>
+<li><a href="#flame-diagram-for-cholesky">FLAME diagram for Cholesky</a></li>
+<li><a href="#a-m-c-m-r-distribution">$A[M_C, M_R]$ distribution</a></li>
+<li><a href="#the-a-distribution">The $A[<em>,</em>]$ distribution</a></li>
+<li><a href="#references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -403,153 +383,28 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Dense Linear Algebra and Networks</h1>
+          <h1 itemprop="name">Elemental for distributed dense linear algebra</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<h2 id="inner-products">Inner products</h2>
+<h2 id="flame-diagram-for-cholesky">FLAME diagram for Cholesky</h2>
 
-<p>$$ x^T y = \sum_{i=1}^N x_i y_i $$</p>
+<p><img src="elemental-chol.png" alt="" /></p>
 
-<h4 id="openmp">OpenMP</h4>
+<h2 id="a-m-c-m-r-distribution">$A[M_C, M_R]$ distribution</h2>
 
-<p>The vectors <code>x</code> and <code>y</code> of length <code>N</code> are stored in a contiguous array in shared memory.</p>
+<p><img src="elemental-cyclic.png" alt="" /></p>
 
-<pre><code class="language-c">double sum = 0;
-#pragma omp parallel for reduction(+:sum)
-for (int i=0; i&lt;N; i++)
-    sum += x[i] * y[i];
-</code></pre>
+<h2 id="the-a-distribution">The $A[<em>,</em>]$ distribution</h2>
 
-<h4 id="mpi">MPI</h4>
+<p><img src="elemental-star.png" alt="" /></p>
 
-<p>The vectors <code>x</code> and <code>y</code> are partitioned into $P$ parts of length $n<em>p$ such that
-$$ N = \sum</em>{p=1}^P n_p . $$
-The inner product is computed via</p>
-
-<pre><code class="language-c">double sum = 0;
-for (int i=0; i&lt;n; i++)
-    sum += x[i] * y[i];
-MPI_Allreduce(MPI_IN_PLACE, &amp;sum, 1, MPI_DOUBLE, MPI_SUM, comm);
-</code></pre>
+<h2 id="references">References</h2>
 
 <ul>
-<li>Work: $2N$ flops processed rate $R$</li>
-<li>Execution time: $\frac{2N}{RP} + \text{latency}$</li>
-
-<li><p>How big is latency?</p>
-
-<pre><code class="language-python">%matplotlib inline
-import matplotlib.pyplot as plt
-plt.style.use('seaborn')
-import numpy as np
-
-P = np.geomspace(2, 1e6)
-N = 1e9       # length of vectors
-R = 10e9/8    # (10 GB/s per core) (2 flops/16 bytes) = 10/8 GF/s per core
-t1 = 2e-6     # 2 µs message latency
-
-def time_compute(P):
-return 2*N / (R*P)
-
-plt.loglog(P, time_compute(P) + t1*(P-1), label='linear')
-plt.loglog(P, time_compute(P) + t1*2*(np.sqrt(P)-1), label='2D mesh')
-plt.loglog(P, time_compute(P) + t1*np.log2(P), label='hypercube')
-plt.xlabel('P processors')
-plt.ylabel('Execution time')
-plt.legend();
-</code></pre></li>
+<li>Poulson et al. (2013) <a href="https://wiki.alcf.anl.gov/parts/images/1/14/Elemental.pdf" target="_blank">Elemental: A New Framework for Distributed Memory Dense Matrix Computations</a> doi:<a href="https://doi.org/10.1145/2427023.2427030" target="_blank">10.<sup>1145</sup>&frasl;<sub>2427023</sub>.2427030</a></li>
 </ul>
-
-<p><img src="./lecture_1_0.png" alt="png" /></p>
-
-<p><img src="FischerBGQAllReduce.png" alt="" /></p>
-
-<h3 id="torus-topology">Torus topology</h3>
-
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Torus_from_rectangle.gif" alt="" /></p>
-
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/3d_torus.png" width="800px" /></p>
-
-<ul>
-<li>3D torus: IBM BlueGene/L (2004) and BlueGene/P (2007)</li>
-<li>5D torus: IBM BlueGene/Q (2011)</li>
-<li>6D torus: Fujitsu K computer (2011)</li>
-</ul>
-
-<h3 id="dragonfly-topology">Dragonfly topology</h3>
-
-<p><img src="CrayAriesDragonfly.png" alt="" /></p>
-
-<h3 id="today-s-research-reducing-contention-and-interference">Today&rsquo;s research: reducing contention and interference</h3>
-
-<p><img src="https://3s81si1s5ygj3mzby34dq6qf-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/cray-slingshot-congestion-control.png" alt="" /></p>
-
-<p><img src="https://3s81si1s5ygj3mzby34dq6qf-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/cray-slingshot-trace-latency.png" alt="" /></p>
-
-<p>Images from <a href="https://www.nextplatform.com/2019/08/16/how-cray-makes-ethernet-suited-for-hpc-and-ai-with-slingshot/" target="_blank">this article</a>.</p>
-
-<h4 id="compare-to-bg-q">Compare to BG/Q</h4>
-
-<ul>
-<li>Each job gets an electrically isolated 5D torus</li>
-<li>Excellent performance and reproducibility</li>
-<li>Awkward constraints on job size, lower system utilization.</li>
-</ul>
-
-<h2 id="outer-product">Outer product</h2>
-
-<p>$$ C_{ij} = x_i y_j $$</p>
-
-<ul>
-<li>Data in: $2N$</li>
-<li>Data out: $N^2$</li>
-</ul>
-
-<h2 id="matrix-vector-products">Matrix-vector products</h2>
-
-<p>$$ y<em>i = \sum</em>{j} A_{ij} x_j $$</p>
-
-<p>How to partition the matrix $A$ across $P$ processors?</p>
-
-<h3 id="1d-row-partition">1D row partition</h3>
-
-<ul>
-<li>Every process needs entire vector $x$: <code>MPI_Allgather</code></li>
-<li>Matrix data does not move</li>
-<li>Execution time
-$$ \underbrace{\frac{2N^2}{RP}}_{\text{compute}} + \underbrace{t_1 \log<em>2 P}</em>{\text{latency}} + \underbrace{t<em>b N \frac{P-1}{P}}</em>{\text{bandwidth}} $$</li>
-</ul>
-
-<p><img src="05-matvec-row.png" alt="Thanks to Abtin Rahimian" /></p>
-
-<h3 id="2d-partition">2D partition</h3>
-
-<ul>
-<li>Blocks of size $N/\sqrt{P}$</li>
-<li>&ldquo;diagonal&rdquo; ranks hold the input vector</li>
-<li>Broadcast $x$ along columns: <code>MPI_Bcast</code></li>
-<li>Perform local compute</li>
-<li>Sum <code>y</code> along rows: <code>MPI_Reduce</code> with roots on diagonal</li>
-<li>Execution time
-$$ \underbrace{\frac{2N^2}{RP}}_{\text{compute}} + \underbrace{2 t_1 \log<em>2 P}</em>{\text{latency}} + \underbrace{\frac{2 t<em>b N}{\sqrt{P}}}</em>{\text{bandwidth}} $$</li>
-</ul>
-
-<p><img src="05-matvec-block.png" alt="Thanks to Abtin Rahimian" /></p>
-
-<pre><code class="language-python">N = 1e4
-tb = 8 / 1e9 # 8 bytes / (1 GB/s) ~ bandwidth per core in units of double
-tb *= 100
-
-plt.loglog(P, (2*N**2)/(R*P) + t1*np.log2(P) + tb*N*(P-1)/P, label='1D distribution')
-plt.loglog(P, (2*N**2)/(R*P) + 2*t1*np.log2(P) + 2*tb*N/np.sqrt(P), label='2D distribution')
-plt.xlabel('P processors')
-plt.ylabel('Execution time')
-plt.legend();
-</code></pre>
-
-<p><img src="./lecture_8_0.png" alt="png" /></p>
 
           </div>
 
@@ -566,14 +421,14 @@ plt.legend();
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/dense-linalg-2/" rel="next">Dense Linear Algebra and Orthogonality</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/intro-mpi/" rel="prev">Introduction to MPI</a>
+    <a href="/fall2019/dense-linalg-3/" rel="prev">Orthogonality and Conditioning</a>
   </div>
   
 </div>
@@ -583,11 +438,11 @@ plt.legend();
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Sep 30, 2019</p>
+          <p>Last updated on Oct 8, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/dense-linalg/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/elemental/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

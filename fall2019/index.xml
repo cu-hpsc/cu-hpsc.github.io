@@ -290,6 +290,33 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Elemental for distributed dense linear algebra</title>
+      <link>https://cucs-hpsc.github.io/fall2019/elemental/</link>
+      <pubDate>Fri, 04 Oct 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/elemental/</guid>
+      <description>
+
+&lt;h2 id=&#34;flame-diagram-for-cholesky&#34;&gt;FLAME diagram for Cholesky&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;elemental-chol.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;a-m-c-m-r-distribution&#34;&gt;$A[M_C, M_R]$ distribution&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;elemental-cyclic.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-a-distribution&#34;&gt;The $A[&lt;em&gt;,&lt;/em&gt;]$ distribution&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;elemental-star.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Poulson et al. (2013) &lt;a href=&#34;https://wiki.alcf.anl.gov/parts/images/1/14/Elemental.pdf&#34; target=&#34;_blank&#34;&gt;Elemental: A New Framework for Distributed Memory Dense Matrix Computations&lt;/a&gt; doi:&lt;a href=&#34;https://doi.org/10.1145/2427023.2427030&#34; target=&#34;_blank&#34;&gt;10.&lt;sup&gt;1145&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2427023&lt;/sub&gt;.2427030&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Orthogonality and Conditioning</title>
       <link>https://cucs-hpsc.github.io/fall2019/dense-linalg-3/</link>
       <pubDate>Fri, 04 Oct 2019 06:49:25 -0600</pubDate>
