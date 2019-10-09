@@ -325,6 +325,208 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Sparse and iterative linear algebra</title>
+      <link>https://cucs-hpsc.github.io/fall2019/iterative-solvers/</link>
+      <pubDate>Wed, 09 Oct 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/iterative-solvers/</guid>
+      <description>
+
+&lt;h1 id=&#34;sparse-and-iterative-linear-algebra&#34;&gt;Sparse and iterative linear algebra&lt;/h1&gt;
+
+&lt;p&gt;Many matrices in applications, particularly the study of physical systems and graphs/networks, have the property that most entries are zero.  We can more efficiently store such systems by storing only the nonzero elements.  We will discuss storage and optimized implementations later.  Many of the methods for sparse systems apply to solving systems with matrices $A$ that can be applied to a vector ($y \gets A x$) in significantly less than $O(n^2)$ complexity, or that are &amp;ldquo;well-conditioned&amp;rdquo; such that an iterative method converges in significantly less than $n$ iterations.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://mcs.anl.gov/petsc&#34; target=&#34;_blank&#34;&gt;PETSc&lt;/a&gt;, the Portable Extensible Toolkit for Scientific computing, is an open source software package for the parallel solution of algebraic and differential-algebraic equations.  This includes linear algebra, for which PETSc offers a broad variety of implementations.  For general information about PETSc, I refer to &lt;a href=&#34;https://jedbrown.org/files/20150924-PETScPrimer.pdf&#34; target=&#34;_blank&#34;&gt;this primer&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;direct-solves&#34;&gt;Direct solves&lt;/h2&gt;
+
+&lt;p&gt;The complexity of this solve is potentially dominant, so we should understand its cost in terms of the problem size.  The standard method for a direct solve is $LU$ (or Cholesky) factorization.  Given a $2\times 2$ block matrix, the algorithm proceeds as
+\begin{split}
+  \begin{bmatrix} A &amp;amp; B \ C &amp;amp; D \end{bmatrix} &amp;amp;=
+  \begin{bmatrix} L_A &amp;amp; \ C U_A^{-1} &amp;amp; S \end{bmatrix}
+  \begin{bmatrix} U_A &amp;amp; L_A^{-1} B \ &amp;amp; 1 \end{bmatrix}
+\end{split}
+where $L_A U_A = A$ and $S = D - C A^{-1} B$.  The factorization continues by factoring the Schur complement, which may be more dense than its original entries $D$.&lt;/p&gt;
+
+&lt;p&gt;For a sparse operator, the complexity depends on the ordering of degrees of freedom.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&amp;ldquo;natural&amp;rdquo; ordering&lt;/li&gt;
+&lt;li&gt;low-bandwidth ordering&lt;/li&gt;
+&lt;li&gt;nested dissection ordering&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For a structured grid, the &amp;ldquo;natural&amp;rdquo; ordering is the ordering of the original operator.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;sparse-natural.png&#34; alt=&#34;Original operator in the natural ordering&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The red values represent positive entries, blue negative, and cyan stored zeros.&lt;/p&gt;
+
+&lt;p&gt;A sparse direct solve of this system will result in fill up to the bandwidth (showing lower triangular factor here).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;factor-natural.png&#34; alt=&#34;Fill in natural ordering&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;These plots can be produced in PETSc using &lt;code&gt;-mat_view draw&lt;/code&gt; and &lt;code&gt;-pc_type lu -pc_factor_mat_ordering_type natural -mat_factor_view draw&lt;/code&gt; (e.g., with &lt;code&gt;-draw_pause 2&lt;/code&gt; to wait 2 seconds for the viewer).&lt;/p&gt;
+
+&lt;p&gt;The Reverse Cuthill-McKee (&lt;code&gt;rcm&lt;/code&gt;) ordering applies a breadth-first search to produce a low-bandwidth ordering.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;factor-rcm.png&#34; alt=&#34;Fill in RCM ordering&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;costs-for-banded-solves&#34;&gt;Costs for banded solves&lt;/h4&gt;
+
+&lt;p&gt;Suppose we have a grid containing $N = n^d$ points in $d$ dimensions.  The corresponding matrix is $N\times N$.  The furthest band is $k = n^{d-1}$ off the diagonal, and factorization creates
+* Space: $kN = n^{2d-1} = N^{2-1/d}$
+* Compute: $k^2N = n^{3d-2} = N^{3-2/d}$&lt;/p&gt;
+
+&lt;h3 id=&#34;nested-dissection&#34;&gt;Nested dissection&lt;/h3&gt;
+
+&lt;p&gt;The nested dissection (&lt;code&gt;nd&lt;/code&gt;) ordering recursively bisects the domain by finding vertex separators.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/d/d9/Grid_separator.svg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The separator is ordered last so that each side can be factored independently.  That factorization is done by recursive bisection.  The Schur complement $S$ on the vertex separator is dense, and its factorization dominates the cost.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;factor-nd.png&#34; alt=&#34;Fill in ND ordering&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;costs-for-nested-dissection&#34;&gt;Costs for nested dissection&lt;/h4&gt;
+
+&lt;p&gt;The size of the vertex separator is $n^{d-1}$ so its factorization costs $n^{3(d-1)}$.  This leads to
+* $d=3$
+  * Space: $N^{&lt;sup&gt;4&lt;/sup&gt;&amp;frasl;&lt;sub&gt;3&lt;/sub&gt;}$
+  * Time: $N^2$
+* $d=2$
+  * Space: $N \log N$
+  * Time: $N^{&lt;sup&gt;3&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2&lt;/sub&gt;}$&lt;/p&gt;
+
+&lt;h2 id=&#34;convergence-of-stationary-iterative-methods&#34;&gt;Convergence of stationary iterative methods&lt;/h2&gt;
+
+&lt;h3 id=&#34;richardson-iteration&#34;&gt;Richardson iteration&lt;/h3&gt;
+
+&lt;p&gt;The simplest iterative method is &lt;a href=&#34;https://en.wikipedia.org/wiki/Modified_Richardson_iteration&#34; target=&#34;_blank&#34;&gt;Richardson&amp;rsquo;s method&lt;/a&gt;, which solves $A x = b$ by the iteration
+$$ x_{k+1} = x_k + \omega (b - A x_k) $$
+where $\omega &amp;gt; 0$ is a damping parameter and $x&lt;em&gt;0$ is an initial guess (possibly the zero vector).  If $b = A x&lt;/em&gt;&lt;em&gt;$, this iteration is equivalent to
+$$ x&lt;em&gt;{k+1} - x&lt;/em&gt;&lt;/em&gt; = (x&lt;em&gt;k - x&lt;/em&gt;&lt;em&gt;) - \omega A (x&lt;em&gt;k - x&lt;/em&gt;&lt;/em&gt;) = (I - \omega A) (x&lt;em&gt;k - x&lt;/em&gt;&lt;em&gt;) .$$
+It is convenient for convergence analysis to identify the &amp;ldquo;error&amp;rdquo; $e_k = x&lt;em&gt;k - x&lt;/em&gt;&lt;/em&gt;$, in which this becomes
+$$ e_{k+1} = (I - \omega A) e_k $$
+or
+$$ e_k = (I - \omega A)^k e_0 $$
+in terms of the initial error.  Evidently powers of the &lt;em&gt;iteration matrix&lt;/em&gt; $I - \omega A$ tell the whole story.
+Suppose that the eigendecomposition
+$$ X \Lambda X^{-1} = I - \omega A $$
+exists.  Then
+$$ (I - \omega A)^k = (X \Lambda X^{-1})^k = X \Lambda^k X^{-1} $$
+and the convergence (or divergence) rate depends only on the largest magnitude eigenvalue.
+This analysis isn&amp;rsquo;t great for two reasons:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Not all matrices are diagonalizable.&lt;/li&gt;
+&lt;li&gt;The matrix $X$ may be very ill-conditioned.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;We can repair these weaknesses by using the &lt;a href=&#34;https://en.wikipedia.org/wiki/Schur_decomposition&#34; target=&#34;_blank&#34;&gt;Schur decomposition&lt;/a&gt;
+$$ Q R Q^h = I - \omega A $$
+where $R$ is right-triangular and $Q$ is unitary (i.e., orthogonal if real-valued; $Q^h$ is the Hermitian conjugate of $Q$).
+The Schur decomposition always exists and $Q$ has a condition number of 1.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Where are the eigenvalues in $R$?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Evidently we must find $\omega$ to minimize the maximum eigenvalue of $I - \omega A$.  We can do this if $A$ is well conditioned, but not in general.&lt;/p&gt;
+
+&lt;h3 id=&#34;preconditioning&#34;&gt;Preconditioning&lt;/h3&gt;
+
+&lt;p&gt;Preconditioning is the act of creating an &amp;ldquo;affordable&amp;rdquo; operation &amp;ldquo;$P^{-1}$&amp;rdquo; such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a &amp;ldquo;nice&amp;rdquo; spectrum.  We then solve the system&lt;/p&gt;
+
+&lt;p&gt;$$ P^{-1} A x = P^{-1} b \quad \text{or}\quad A P^{-1} \underbrace{(P x)}_y = b $$&lt;/p&gt;
+
+&lt;p&gt;in which case the convergence rate depends on the spectrum of the iteration matrix
+$$ I - \omega P^{-1} A . $$&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The preconditioner must be applied on each iteration.&lt;/li&gt;
+&lt;li&gt;It is &lt;em&gt;not&lt;/em&gt; merely about finding a good initial guess.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There are two complementary techniques necessary for efficient iterative methods:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&amp;ldquo;accelerators&amp;rdquo; or Krylov methods, which use orthogonality to adaptively converge faster than Richardson&lt;/li&gt;
+&lt;li&gt;preconditioners that improve the spectrum of the preconditioned operator&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Although there is ongoing research in Krylov methods and they are immensely useful, I would say preconditioning is 90% of the game for practical applications, particularly as a research area.&lt;/p&gt;
+
+&lt;h1 id=&#34;krylov-subspaces&#34;&gt;Krylov subspaces&lt;/h1&gt;
+
+&lt;p&gt;All matrix iterations work with approximations in a &lt;em&gt;Krylov subspace&lt;/em&gt;, which has the form&lt;/p&gt;
+
+&lt;p&gt;$$ K_n = \big[ b \big| Ab \big| A^2 b \big| \dotsm \big| A^{n-1} b \big] . $$&lt;/p&gt;
+
+&lt;p&gt;This matrix is horribly ill-conditioned and cannot stably be computed as written.  Instead, we seek an orthogonal basis $Q_n$ that spans the same space as $K_n$.  We could write this as a factorization&lt;/p&gt;
+
+&lt;p&gt;$$ K_n = Q_n R_n $$&lt;/p&gt;
+
+&lt;p&gt;where the first column $q_0 = b / \lVert b \rVert$.  The $R_n$ is unnecessary and hopelessly ill-conditioned, so a slightly different procedure is used.&lt;/p&gt;
+
+&lt;h3 id=&#34;arnoldi-iteration&#34;&gt;Arnoldi iteration&lt;/h3&gt;
+
+&lt;p&gt;The Arnoldi iteration applies orthogonal similarity transformations to reduce $A$ to &lt;a href=&#34;https://en.wikipedia.org/wiki/Hessenberg_matrix&#34; target=&#34;_blank&#34;&gt;Hessenberg form&lt;/a&gt;, starting from a vector $q_0 = b$,&lt;/p&gt;
+
+&lt;p&gt;$$ A = Q H Q^h . $$&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s multiply on the right by $Q$ and examine the first $n$ columns,&lt;/p&gt;
+
+&lt;p&gt;$$ A Q&lt;em&gt;n = Q&lt;/em&gt;{n+1} H_n $$
+where $H_n$ is an $(n+1) \times n$ Hessenberg matrix.&lt;/p&gt;
+
+&lt;h4 id=&#34;conditioning&#34;&gt;Conditioning&lt;/h4&gt;
+
+&lt;p&gt;This representation is well-conditioned because $Q$ is orthogonal and&lt;/p&gt;
+
+&lt;p&gt;$$ \lVert H&lt;em&gt;n \rVert \le \lVert Q&lt;/em&gt;{n+1}^h \rVert \lVert A \rVert \lVert Q_n \rVert \le \lVert A \rVert $$.&lt;/p&gt;
+
+&lt;p&gt;For a lower bound, we have&lt;/p&gt;
+
+&lt;p&gt;$$ \sigma_{\min}(A)^2 \le x^h A^h A x $$&lt;/p&gt;
+
+&lt;p&gt;for all $x$ of norm 1.  It must also be true for any $x = Q_n y$ where $\lVert y\rVert = 1$, thus&lt;/p&gt;
+
+&lt;p&gt;$$ \sigma_{\min}(A)^2 \le y^h Q_n^h A^h A Q_n y = y^h H&lt;em&gt;n^h Q&lt;/em&gt;{n+1}^h Q_{n+1} H_n y = y^h H_n^h H_n y . $$&lt;/p&gt;
+
+&lt;h4 id=&#34;gmres&#34;&gt;GMRES&lt;/h4&gt;
+
+&lt;p&gt;GMRES (Generalized Minimum Residual) minimizes
+$$ \lVert A x - b \rVert $$
+over the subspace $Q_n$.  I.e., $x = Q&lt;em&gt;n y$ for some $y$.  By the recurrence above, this is equivalent to
+$$ \lVert Q&lt;/em&gt;{n+1} H_n y - b \lVert $$
+which can be solved by minimizing
+$$ \lVert H&lt;em&gt;n y - Q&lt;/em&gt;{n+1}^h b \rVert . $$
+Since $q_0 = b/\lVert b \lVert$, the least squares problem is to minimize
+$$ \Big\lVert H_n y - \lVert b \rVert e_0 \Big\rVert . $$
+The solution of this least squares problem is achieved by incrementally updating a $QR$ factorization of $H_n$.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Notes&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;GMRES minimizes the 2-norm of the residual $\lVert r_n \rVert$ which is equivalent to the $A^T A$ norm of the error $\lVert x&lt;em&gt;n - x&lt;/em&gt;* \rVert_{A^T A}$.&lt;/li&gt;
+&lt;li&gt;The solution $x_n$ constructed by GMRES at iteration $n$ is not explicitly available.  If a solution is needed, it must be constructed by solving the $(n+1)\times n$ least squares problem and forming the solution as a linear combination of the $n$ vectors $Q_n$.  The leading cost is $2mn$ where $m \gg n$.&lt;/li&gt;
+&lt;li&gt;The residual vector $r_n = A x_n - b$ is not explicitly available in GMRES.  To compute it, first build the solution $x_n$ as above.&lt;/li&gt;
+&lt;li&gt;GMRES needs to store the full $Q_n$, which is unaffordable for large $n$ (many iterations).  The standard solution is to choose a &amp;ldquo;restart&amp;rdquo; $k$ and to discard $Q_n$ and start over with an initial guess $x_k$ after each $k$ iterations.  This algorithm is called GMRES(k).  PETSc&amp;rsquo;s default solver is GMRES(30) and the restart can be controlled using the run-time option &lt;code&gt;-ksp_gmres_restart&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Most implementations of GMRES use classical Gram-Schmidt because it is much faster in parallel (one reduction per iteration instead of $n$ reductions per iteration).  The PETSc option &lt;code&gt;-ksp_gmres_modifiedgramschmidt&lt;/code&gt; can be used when you suspect that classical Gram-Schmidt may be causing instability.&lt;/li&gt;
+&lt;li&gt;There is a very similar (and older) algorithm called GCR that maintains $x_n$ and $r_n$.  This is useful, for example, if a convergence tolerance needs to inspect individual entries.  GCR requires $2n$ vectors instead of $n$ vectors, and can tolerate a nonlinear preconditioner.  FGMRES is a newer algorithm with similar properties to GCR.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;lanczos-iteration-the-symmetric-case&#34;&gt;Lanczos iteration: the symmetric case&lt;/h3&gt;
+
+&lt;p&gt;If $A$ is symmetric, then $H = Q^T A Q$ is also symmetric.  Since $H$ is Hessenberg, this means $H$ is tridiagonal.  Instead of storing $Q_n$, it is sufficient to store only the last two columns since the iteration satisfies a 3-term recurrence.  The analog of GMRES for the symmetric case is called MINRES and is also useful for solving symmetric indefinite problems.&lt;/p&gt;
+
+&lt;h4 id=&#34;conjugate-gradients&#34;&gt;Conjugate Gradients&lt;/h4&gt;
+
+&lt;p&gt;Instead of minimizing the $A^T A$ norm of the error, the Conjugate Gradient method minimizes the $A$ norm of the error.  For $A$ to induce a norm, it must be symmetric positive definite.  &lt;a href=&#34;http://www.cs.cmu.edu/%7Equake-papers/painless-conjugate-gradient.pdf&#34; target=&#34;_blank&#34;&gt;Jeremy Shewchuck&amp;rsquo;s guide to CG&lt;/a&gt; is an excellent resource.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Elemental for distributed dense linear algebra</title>
       <link>https://cucs-hpsc.github.io/fall2019/elemental/</link>
       <pubDate>Fri, 04 Oct 2019 06:49:25 -0600</pubDate>
