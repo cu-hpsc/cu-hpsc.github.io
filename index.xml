@@ -347,13 +347,18 @@ $$ I - \omega P^{-1} A . $$&lt;/p&gt;
 
 &lt;h2 id=&#34;classical-methods&#34;&gt;Classical methods&lt;/h2&gt;
 
-&lt;p&gt;We have discussed the Jacobi preconditioner
-$$ P&lt;em&gt;{\text{Jacobi}}^{-1} = D^{-1} $$
-where $D$ is the diagonal of $A$.
-Gauss-Seidel is
-$$ P&lt;/em&gt;{GS}^{-1} = (L+D)^{-1} $$
-where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form
-$$ P_{SGS}^{-1} = (L+U)^{-1} A \Big( I - (L+D)^{-1} \Big) . $$&lt;/p&gt;
+&lt;p&gt;We have discussed the Jacobi preconditioner&lt;/p&gt;
+
+&lt;p&gt;$$ P_{\text{Jacobi}}^{-1} = D^{-1} $$&lt;/p&gt;
+
+&lt;p&gt;where $D$ is the diagonal of $A$.
+Gauss-Seidel is&lt;/p&gt;
+
+&lt;p&gt;$$ P_{GS}^{-1} = (L+D)^{-1} $$&lt;/p&gt;
+
+&lt;p&gt;where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form&lt;/p&gt;
+
+&lt;p&gt;$$ P_{SGS}^{-1} = (L+U)^{-1} A \Big( I - (L+D)^{-1} \Big) . $$&lt;/p&gt;
 
 &lt;h2 id=&#34;domain-decomposition&#34;&gt;Domain decomposition&lt;/h2&gt;
 
