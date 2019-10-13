@@ -28,12 +28,12 @@
   
     
   
-  <meta name="description" content="Inner products $$ x^T y = \sum_{i=1}^N x_i y_i $$
-OpenMP The vectors x and y of length N are stored in a contiguous array in shared memory.
-double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt;N; i&#43;&#43;) sum &#43;= x[i] * y[i];  MPI The vectors x and y are partitioned into $P$ parts of length $np$ such that $$ N = \sum{p=1}^P n_p .">
+  <meta name="description" content="Preconditioning Recall that preconditioning is the act of creating an &ldquo;affordable&rdquo; operation &ldquo;$P^{-1}$&rdquo; such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a &ldquo;nice&rdquo; spectrum. We then solve the system
+$$ P^{-1} A x = P^{-1} b \quad \text{or}\quad A P^{-1} \underbrace{(P x)}_y = b $$
+in which case the convergence rate depends on the spectrum of the iteration matrix $$ I - \omega P^{-1} A .">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/preconditioning/">
 
   
 
@@ -100,7 +100,7 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/preconditioning/">
 
   
   
@@ -116,17 +116,17 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/dense-linalg/">
-  <meta property="og:title" content="Dense Linear Algebra and Networks | HPSC">
-  <meta property="og:description" content="Inner products $$ x^T y = \sum_{i=1}^N x_i y_i $$
-OpenMP The vectors x and y of length N are stored in a contiguous array in shared memory.
-double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt;N; i&#43;&#43;) sum &#43;= x[i] * y[i];  MPI The vectors x and y are partitioned into $P$ parts of length $np$ such that $$ N = \sum{p=1}^P n_p ."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/preconditioning/">
+  <meta property="og:title" content="Preconditioning | HPSC">
+  <meta property="og:description" content="Preconditioning Recall that preconditioning is the act of creating an &ldquo;affordable&rdquo; operation &ldquo;$P^{-1}$&rdquo; such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a &ldquo;nice&rdquo; spectrum. We then solve the system
+$$ P^{-1} A x = P^{-1} b \quad \text{or}\quad A P^{-1} \underbrace{(P x)}_y = b $$
+in which case the convergence rate depends on the spectrum of the iteration matrix $$ I - \omega P^{-1} A ."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-09-30T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-10-11T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-09-30T14:50:54-06:00">
+    <meta property="article:modified_time" content="2019-10-13T12:30:33-06:00">
   
 
   
@@ -138,7 +138,7 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
 
 
 
-  <title>Dense Linear Algebra and Networks | HPSC</title>
+  <title>Preconditioning | HPSC</title>
 
 </head>
 
@@ -321,7 +321,7 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
         <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
       </li>
       
@@ -341,7 +341,7 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
         <a href="/fall2019/iterative-solvers/">2019-10-09 Sparse and Iterative</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
       </li>
       
@@ -378,25 +378,16 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
 <ul>
 <li>
 <ul>
-<li><a href="#inner-products">Inner products</a>
+<li><a href="#preconditioning">Preconditioning</a></li>
+<li><a href="#classical-methods">Classical methods</a></li>
+<li><a href="#domain-decomposition">Domain decomposition</a>
 <ul>
-<li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#convergence-theory">Convergence theory</a></li>
+<li><a href="#hands-on-with-petsc-demonstrate-these-estimates">Hands-on with PETSc: demonstrate these estimates</a>
 <ul>
-<li><a href="#openmp">OpenMP</a></li>
-<li><a href="#mpi">MPI</a></li>
+<li><a href="#examples-1">Examples</a></li>
 </ul></li>
-<li><a href="#torus-topology">Torus topology</a></li>
-<li><a href="#dragonfly-topology">Dragonfly topology</a></li>
-<li><a href="#today-s-research-reducing-contention-and-interference">Today&rsquo;s research: reducing contention and interference</a>
-<ul>
-<li><a href="#compare-to-bg-q">Compare to BG/Q</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#outer-product">Outer product</a></li>
-<li><a href="#matrix-vector-products">Matrix-vector products</a>
-<ul>
-<li><a href="#1d-row-partition">1D row partition</a></li>
-<li><a href="#2d-partition">2D partition</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -411,153 +402,114 @@ double sum = 0; #pragma omp parallel for reduction(&#43;:sum) for (int i=0; i&lt
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Dense Linear Algebra and Networks</h1>
+          <h1 itemprop="name">Preconditioning</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<h2 id="inner-products">Inner products</h2>
+<h2 id="preconditioning">Preconditioning</h2>
 
-<p>$$ x^T y = \sum_{i=1}^N x_i y_i $$</p>
+<p>Recall that preconditioning is the act of creating an &ldquo;affordable&rdquo; operation &ldquo;$P^{-1}$&rdquo; such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a &ldquo;nice&rdquo; spectrum.  We then solve the system</p>
 
-<h4 id="openmp">OpenMP</h4>
+<p>$$ P^{-1} A x = P^{-1} b \quad \text{or}\quad A P^{-1} \underbrace{(P x)}_y = b $$</p>
 
-<p>The vectors <code>x</code> and <code>y</code> of length <code>N</code> are stored in a contiguous array in shared memory.</p>
+<p>in which case the convergence rate depends on the spectrum of the iteration matrix
+$$ I - \omega P^{-1} A . $$</p>
 
-<pre><code class="language-c">double sum = 0;
-#pragma omp parallel for reduction(+:sum)
-for (int i=0; i&lt;N; i++)
-    sum += x[i] * y[i];
+<ul>
+<li>The preconditioner must be applied on each iteration.</li>
+<li>It is <em>not</em> merely about finding a good initial guess.</li>
+</ul>
+
+<h2 id="classical-methods">Classical methods</h2>
+
+<p>We have discussed the Jacobi preconditioner
+$$ P<em>{\text{Jacobi}}^{-1} = D^{-1} $$
+where $D$ is the diagonal of $A$.
+Gauss-Seidel is
+$$ P</em>{GS}^{-1} = (L+D)^{-1} $$
+where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form
+$$ P_{SGS}^{-1} = (L+U)^{-1} A \Big( I - (L+D)^{-1} \Big) . $$</p>
+
+<h2 id="domain-decomposition">Domain decomposition</h2>
+
+<p>Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$.  The columns of $P_i$ are &ldquo;basis functions&rdquo; for the subspace $V_i$.  The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.</p>
+
+<p>Define the subspace projection</p>
+
+<p>$$ S_i = P_i A_i^{-1} P_i^T A . $$</p>
+
+<ul>
+<li>$S_i$ is a projection: $S_i^2 = S_i$</li>
+<li>If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$</li>
+<li>$I - S_i$ is $A$-orthogonal to the range of $P_i$</li>
+</ul>
+
+<p>These projections may be applied additively</p>
+
+<p>$$ I - \sum_{i=0}^n S_i, $$</p>
+
+<p>multiplicatively</p>
+
+<p>$$ \prod_{i=0}^n (I - S_i), $$</p>
+
+<p>or in some hybrid manner, such as</p>
+
+<p>$$ (I - S<em>0) (I - \sum</em>{i=1}^n S_i) . $$
+In each case above, the action is expressed in terms of the error iteration operator.</p>
+
+<h3 id="examples">Examples</h3>
+
+<ul>
+<li>Jacobi corresponds to the additive preconditioner with $P_i$ as the $i$th column of the identity</li>
+<li>Gauss-Seidel is the multiplicate preconditioner with $P_i$ as the $i$th column of the identity</li>
+<li>Block Jacobi corresponds to labeling &ldquo;subdomains&rdquo; and $P_i$ as the columns of the identity corresponding to non-overlapping subdomains</li>
+<li>Overlapping Schwarz corresponds to overlapping subdomains</li>
+<li>$P_i$ are eigenvectors of $A$</li>
+<li>A domain is partitioned into interior $V<em>I$ and interface $V</em>\Gamma$ degrees of freedom.  $P<em>I$ is embedding of the interior degrees of freedom while $P</em>\Gamma$ is &ldquo;harmonic extension&rdquo; of the interface degrees of freedom.  Consider the multiplicative combination $(I - S_\Gamma)(I - S_I)$.</li>
+</ul>
+
+<h3 id="convergence-theory">Convergence theory</h3>
+
+<p>The formal convergence is beyond the scope of this course, but the following estimates are useful.  We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1.  We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.</p>
+
+<ul>
+<li>(Block) Jacobi: $\delta=0$, $\kappa \sim H^{-2} H/h = (Hh)^{-1}$</li>
+<li>Overlapping Schwarz: $\kappa \sim H^{-2} H/\delta = (H \delta)^{-1}$</li>
+<li>2-level overlapping Schwarz: $\kappa \sim H/\delta$</li>
+</ul>
+
+<h3 id="hands-on-with-petsc-demonstrate-these-estimates">Hands-on with PETSc: demonstrate these estimates</h3>
+
+<ul>
+<li>Symmetric example: <code>src/snes/examples/tutorials/ex5.c</code></li>
+<li>Nonsymmetric example: <code>src/snes/examples/tutorials/ex19.c</code></li>
+<li>Compare preconditioned versus unpreconditioned norms.</li>
+<li>Compare BiCG versus GMRES</li>
+<li>Compare domain decomposition and multigrid preconditioning
+
+<ul>
+<li><code>-pc_type asm</code> (Additive Schwarz)</li>
+<li><code>-pc_asm_type basic</code> (symmetric, versus <code>restrict</code>)</li>
+<li><code>-pc_asm_overlap 2</code> (increase overlap)</li>
+<li>Effect of direct subdomain solver: <code>-sub_pc_type lu</code></li>
+<li><code>-pc_type mg</code> (Geometric Multigrid)</li>
+</ul></li>
+<li>Use monitors:
+
+<ul>
+<li><code>-ksp_monitor_true_residual</code></li>
+<li><code>-ksp_monitor_singular_value</code></li>
+<li><code>-ksp_converged_reason</code></li>
+</ul></li>
+<li>Explain methods: <code>-snes_view</code></li>
+<li>Performance info: <code>-log_view</code></li>
+</ul>
+
+<h4 id="examples-1">Examples</h4>
+
+<pre><code>mpiexec -n 4 ./ex19 -lidvelocity 2 -snes_monitor -da_refine 5 -ksp_monitor -pc_type asm -sub_pc_type lu
 </code></pre>
-
-<h4 id="mpi">MPI</h4>
-
-<p>The vectors <code>x</code> and <code>y</code> are partitioned into $P$ parts of length $n<em>p$ such that
-$$ N = \sum</em>{p=1}^P n_p . $$
-The inner product is computed via</p>
-
-<pre><code class="language-c">double sum = 0;
-for (int i=0; i&lt;n; i++)
-    sum += x[i] * y[i];
-MPI_Allreduce(MPI_IN_PLACE, &amp;sum, 1, MPI_DOUBLE, MPI_SUM, comm);
-</code></pre>
-
-<ul>
-<li>Work: $2N$ flops processed rate $R$</li>
-<li>Execution time: $\frac{2N}{RP} + \text{latency}$</li>
-
-<li><p>How big is latency?</p>
-
-<pre><code class="language-python">%matplotlib inline
-import matplotlib.pyplot as plt
-plt.style.use('seaborn')
-import numpy as np
-
-P = np.geomspace(2, 1e6)
-N = 1e9       # length of vectors
-R = 10e9/8    # (10 GB/s per core) (2 flops/16 bytes) = 10/8 GF/s per core
-t1 = 2e-6     # 2 µs message latency
-
-def time_compute(P):
-return 2*N / (R*P)
-
-plt.loglog(P, time_compute(P) + t1*(P-1), label='linear')
-plt.loglog(P, time_compute(P) + t1*2*(np.sqrt(P)-1), label='2D mesh')
-plt.loglog(P, time_compute(P) + t1*np.log2(P), label='hypercube')
-plt.xlabel('P processors')
-plt.ylabel('Execution time')
-plt.legend();
-</code></pre></li>
-</ul>
-
-<p><img src="./lecture_1_0.png" alt="png" /></p>
-
-<p><img src="FischerBGQAllReduce.png" alt="" /></p>
-
-<h3 id="torus-topology">Torus topology</h3>
-
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Torus_from_rectangle.gif" alt="" /></p>
-
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/3d_torus.png" width="800px" /></p>
-
-<ul>
-<li>3D torus: IBM BlueGene/L (2004) and BlueGene/P (2007)</li>
-<li>5D torus: IBM BlueGene/Q (2011)</li>
-<li>6D torus: Fujitsu K computer (2011)</li>
-</ul>
-
-<h3 id="dragonfly-topology">Dragonfly topology</h3>
-
-<p><img src="CrayAriesDragonfly.png" alt="" /></p>
-
-<h3 id="today-s-research-reducing-contention-and-interference">Today&rsquo;s research: reducing contention and interference</h3>
-
-<p><img src="https://3s81si1s5ygj3mzby34dq6qf-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/cray-slingshot-congestion-control.png" alt="" /></p>
-
-<p><img src="https://3s81si1s5ygj3mzby34dq6qf-wpengine.netdna-ssl.com/wp-content/uploads/2019/08/cray-slingshot-trace-latency.png" alt="" /></p>
-
-<p>Images from <a href="https://www.nextplatform.com/2019/08/16/how-cray-makes-ethernet-suited-for-hpc-and-ai-with-slingshot/" target="_blank">this article</a>.</p>
-
-<h4 id="compare-to-bg-q">Compare to BG/Q</h4>
-
-<ul>
-<li>Each job gets an electrically isolated 5D torus</li>
-<li>Excellent performance and reproducibility</li>
-<li>Awkward constraints on job size, lower system utilization.</li>
-</ul>
-
-<h2 id="outer-product">Outer product</h2>
-
-<p>$$ C_{ij} = x_i y_j $$</p>
-
-<ul>
-<li>Data in: $2N$</li>
-<li>Data out: $N^2$</li>
-</ul>
-
-<h2 id="matrix-vector-products">Matrix-vector products</h2>
-
-<p>$$ y<em>i = \sum</em>{j} A_{ij} x_j $$</p>
-
-<p>How to partition the matrix $A$ across $P$ processors?</p>
-
-<h3 id="1d-row-partition">1D row partition</h3>
-
-<ul>
-<li>Every process needs entire vector $x$: <code>MPI_Allgather</code></li>
-<li>Matrix data does not move</li>
-<li>Execution time
-$$ \underbrace{\frac{2N^2}{RP}}_{\text{compute}} + \underbrace{t_1 \log<em>2 P}</em>{\text{latency}} + \underbrace{t<em>b N \frac{P-1}{P}}</em>{\text{bandwidth}} $$</li>
-</ul>
-
-<p><img src="05-matvec-row.png" alt="Thanks to Abtin Rahimian" /></p>
-
-<h3 id="2d-partition">2D partition</h3>
-
-<ul>
-<li>Blocks of size $N/\sqrt{P}$</li>
-<li>&ldquo;diagonal&rdquo; ranks hold the input vector</li>
-<li>Broadcast $x$ along columns: <code>MPI_Bcast</code></li>
-<li>Perform local compute</li>
-<li>Sum <code>y</code> along rows: <code>MPI_Reduce</code> with roots on diagonal</li>
-<li>Execution time
-$$ \underbrace{\frac{2N^2}{RP}}_{\text{compute}} + \underbrace{2 t_1 \log<em>2 P}</em>{\text{latency}} + \underbrace{\frac{2 t<em>b N}{\sqrt{P}}}</em>{\text{bandwidth}} $$</li>
-</ul>
-
-<p><img src="05-matvec-block.png" alt="Thanks to Abtin Rahimian" /></p>
-
-<pre><code class="language-python">N = 1e4
-tb = 8 / 1e9 # 8 bytes / (1 GB/s) ~ bandwidth per core in units of double
-tb *= 100
-
-plt.loglog(P, (2*N**2)/(R*P) + t1*np.log2(P) + tb*N*(P-1)/P, label='1D distribution')
-plt.loglog(P, (2*N**2)/(R*P) + 2*t1*np.log2(P) + 2*tb*N/np.sqrt(P), label='2D distribution')
-plt.xlabel('P processors')
-plt.ylabel('Execution time')
-plt.legend();
-</code></pre>
-
-<p><img src="./lecture_8_0.png" alt="png" /></p>
 
           </div>
 
@@ -574,14 +526,14 @@ plt.legend();
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/dense-linalg-2/" rel="next">Dense Linear Algebra and Orthogonality</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/intro-mpi/" rel="prev">Introduction to MPI</a>
+    <a href="/fall2019/iterative-solvers/" rel="prev">Sparse and iterative linear algebra</a>
   </div>
   
 </div>
@@ -591,11 +543,11 @@ plt.legend();
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Sep 30, 2019</p>
+          <p>Last updated on Oct 13, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/dense-linalg/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/preconditioning/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

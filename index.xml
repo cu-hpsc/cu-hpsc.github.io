@@ -325,6 +325,119 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Preconditioning</title>
+      <link>https://cucs-hpsc.github.io/fall2019/preconditioning/</link>
+      <pubDate>Fri, 11 Oct 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/preconditioning/</guid>
+      <description>
+
+&lt;h2 id=&#34;preconditioning&#34;&gt;Preconditioning&lt;/h2&gt;
+
+&lt;p&gt;Recall that preconditioning is the act of creating an &amp;ldquo;affordable&amp;rdquo; operation &amp;ldquo;$P^{-1}$&amp;rdquo; such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a &amp;ldquo;nice&amp;rdquo; spectrum.  We then solve the system&lt;/p&gt;
+
+&lt;p&gt;$$ P^{-1} A x = P^{-1} b \quad \text{or}\quad A P^{-1} \underbrace{(P x)}_y = b $$&lt;/p&gt;
+
+&lt;p&gt;in which case the convergence rate depends on the spectrum of the iteration matrix
+$$ I - \omega P^{-1} A . $$&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The preconditioner must be applied on each iteration.&lt;/li&gt;
+&lt;li&gt;It is &lt;em&gt;not&lt;/em&gt; merely about finding a good initial guess.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;classical-methods&#34;&gt;Classical methods&lt;/h2&gt;
+
+&lt;p&gt;We have discussed the Jacobi preconditioner
+$$ P&lt;em&gt;{\text{Jacobi}}^{-1} = D^{-1} $$
+where $D$ is the diagonal of $A$.
+Gauss-Seidel is
+$$ P&lt;/em&gt;{GS}^{-1} = (L+D)^{-1} $$
+where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form
+$$ P_{SGS}^{-1} = (L+U)^{-1} A \Big( I - (L+D)^{-1} \Big) . $$&lt;/p&gt;
+
+&lt;h2 id=&#34;domain-decomposition&#34;&gt;Domain decomposition&lt;/h2&gt;
+
+&lt;p&gt;Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$.  The columns of $P_i$ are &amp;ldquo;basis functions&amp;rdquo; for the subspace $V_i$.  The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.&lt;/p&gt;
+
+&lt;p&gt;Define the subspace projection&lt;/p&gt;
+
+&lt;p&gt;$$ S_i = P_i A_i^{-1} P_i^T A . $$&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;$S_i$ is a projection: $S_i^2 = S_i$&lt;/li&gt;
+&lt;li&gt;If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$&lt;/li&gt;
+&lt;li&gt;$I - S_i$ is $A$-orthogonal to the range of $P_i$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;These projections may be applied additively&lt;/p&gt;
+
+&lt;p&gt;$$ I - \sum_{i=0}^n S_i, $$&lt;/p&gt;
+
+&lt;p&gt;multiplicatively&lt;/p&gt;
+
+&lt;p&gt;$$ \prod_{i=0}^n (I - S_i), $$&lt;/p&gt;
+
+&lt;p&gt;or in some hybrid manner, such as&lt;/p&gt;
+
+&lt;p&gt;$$ (I - S&lt;em&gt;0) (I - \sum&lt;/em&gt;{i=1}^n S_i) . $$
+In each case above, the action is expressed in terms of the error iteration operator.&lt;/p&gt;
+
+&lt;h3 id=&#34;examples&#34;&gt;Examples&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Jacobi corresponds to the additive preconditioner with $P_i$ as the $i$th column of the identity&lt;/li&gt;
+&lt;li&gt;Gauss-Seidel is the multiplicate preconditioner with $P_i$ as the $i$th column of the identity&lt;/li&gt;
+&lt;li&gt;Block Jacobi corresponds to labeling &amp;ldquo;subdomains&amp;rdquo; and $P_i$ as the columns of the identity corresponding to non-overlapping subdomains&lt;/li&gt;
+&lt;li&gt;Overlapping Schwarz corresponds to overlapping subdomains&lt;/li&gt;
+&lt;li&gt;$P_i$ are eigenvectors of $A$&lt;/li&gt;
+&lt;li&gt;A domain is partitioned into interior $V&lt;em&gt;I$ and interface $V&lt;/em&gt;\Gamma$ degrees of freedom.  $P&lt;em&gt;I$ is embedding of the interior degrees of freedom while $P&lt;/em&gt;\Gamma$ is &amp;ldquo;harmonic extension&amp;rdquo; of the interface degrees of freedom.  Consider the multiplicative combination $(I - S_\Gamma)(I - S_I)$.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;convergence-theory&#34;&gt;Convergence theory&lt;/h3&gt;
+
+&lt;p&gt;The formal convergence is beyond the scope of this course, but the following estimates are useful.  We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1.  We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;(Block) Jacobi: $\delta=0$, $\kappa \sim H^{-2} H/h = (Hh)^{-1}$&lt;/li&gt;
+&lt;li&gt;Overlapping Schwarz: $\kappa \sim H^{-2} H/\delta = (H \delta)^{-1}$&lt;/li&gt;
+&lt;li&gt;2-level overlapping Schwarz: $\kappa \sim H/\delta$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;hands-on-with-petsc-demonstrate-these-estimates&#34;&gt;Hands-on with PETSc: demonstrate these estimates&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Symmetric example: &lt;code&gt;src/snes/examples/tutorials/ex5.c&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Nonsymmetric example: &lt;code&gt;src/snes/examples/tutorials/ex19.c&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Compare preconditioned versus unpreconditioned norms.&lt;/li&gt;
+&lt;li&gt;Compare BiCG versus GMRES&lt;/li&gt;
+&lt;li&gt;Compare domain decomposition and multigrid preconditioning
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-pc_type asm&lt;/code&gt; (Additive Schwarz)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-pc_asm_type basic&lt;/code&gt; (symmetric, versus &lt;code&gt;restrict&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-pc_asm_overlap 2&lt;/code&gt; (increase overlap)&lt;/li&gt;
+&lt;li&gt;Effect of direct subdomain solver: &lt;code&gt;-sub_pc_type lu&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-pc_type mg&lt;/code&gt; (Geometric Multigrid)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Use monitors:
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-ksp_monitor_true_residual&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-ksp_monitor_singular_value&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-ksp_converged_reason&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Explain methods: &lt;code&gt;-snes_view&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Performance info: &lt;code&gt;-log_view&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;examples-1&#34;&gt;Examples&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;mpiexec -n 4 ./ex19 -lidvelocity 2 -snes_monitor -da_refine 5 -ksp_monitor -pc_type asm -sub_pc_type lu
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Sparse and iterative linear algebra</title>
       <link>https://cucs-hpsc.github.io/fall2019/iterative-solvers/</link>
       <pubDate>Wed, 09 Oct 2019 06:49:25 -0600</pubDate>
