@@ -355,6 +355,12 @@ I - P_{SGS}^{-1} A &amp;= \big( I - (D+U)^{-1} A \big) \big(I - (L+D)^{-1} A \bi
   &amp;= I - \underbrace{(D+U)^{-1} D (L+D)^{-1}}_{P_{SGS}^{-1}} A .
 \end{align}\]&lt;/span&gt;&lt;/p&gt;
 
+&lt;h3 id=&#34;further-resources&#34;&gt;Further resources&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www-users.cs.umn.edu/~saad/IterMethBook_2ndEd.pdf&#34;&gt;Saad (2003) &lt;strong&gt;Iterative Methods&lt;/strong&gt;&lt;/a&gt;: Chapter 4: Basic Iterative Methods&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h2 id=&#34;domain-decomposition&#34;&gt;Domain decomposition&lt;/h2&gt;
 
 &lt;p&gt;Suppose we know how to solve problems on &amp;quot;subdomains&amp;quot;, which may overlap.&lt;/p&gt;
