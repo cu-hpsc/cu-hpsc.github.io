@@ -126,7 +126,7 @@ in which case the convergence rate depends on the spectrum of the iteration matr
     
       <meta property="article:published_time" content="2019-10-11T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-10-13T12:30:33-06:00">
+    <meta property="article:modified_time" content="2019-10-14T23:05:43-06:00">
   
 
   
@@ -345,6 +345,10 @@ in which case the convergence rate depends on the spectrum of the iteration matr
         <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
       </li>
       
+      <li >
+        <a href="/fall2019/dd-preconditioning/">2019-10-14 DD Preconditioning</a>
+      </li>
+      
     </ul>
     
 
@@ -434,7 +438,7 @@ Gauss-Seidel is</p>
 
 <p>where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form</p>
 
-<p>$$ P_{SGS}^{-1} = (L+U)^{-1} A \Big( I - (L+D)^{-1} \Big) . $$</p>
+<p>$$ P_{SGS}^{-1} = (D+U)^{-1} D (L+D)^{-1} . $$</p>
 
 <h2 id="domain-decomposition">Domain decomposition</h2>
 
@@ -531,7 +535,7 @@ In each case above, the action is expressed in terms of the error iteration oper
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+    <a href="/fall2019/dd-preconditioning/" rel="next">Domain Decomposition Preconditioning</a>
   </div>
   
   
@@ -548,7 +552,7 @@ In each case above, the action is expressed in terms of the error iteration oper
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Oct 13, 2019</p>
+          <p>Last updated on Oct 14, 2019</p>
 
           
 <p class="edit-page">

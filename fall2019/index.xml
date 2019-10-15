@@ -290,6 +290,243 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Domain Decomposition Preconditioning</title>
+      <link>https://cucs-hpsc.github.io/fall2019/dd-preconditioning/</link>
+      <pubDate>Mon, 14 Oct 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/dd-preconditioning/</guid>
+      <description>&lt;h2 id=&#34;classical-methods&#34;&gt;Classical methods&lt;/h2&gt;
+
+&lt;p&gt;We have discussed the Jacobi preconditioner
+&lt;span  class=&#34;math&#34;&gt;\( P_{\text{Jacobi}}^{-1} = D^{-1} \)&lt;/span&gt;
+where $D$ is the diagonal of $A$.
+Gauss-Seidel is
+&lt;span  class=&#34;math&#34;&gt;\( P_{GS}^{-1} = (L+D)^{-1} \)&lt;/span&gt;
+where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form
+&lt;span  class=&#34;math&#34;&gt;\( P_{SGS}^{-1} = (D+U)^{-1} D (L+D)^{-1} . \)&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;[&lt;em&gt;Edit after class&lt;/em&gt;: fixed mistake in the above formula and added snippet below.]&lt;/p&gt;
+
+&lt;h4 id=&#34;aside-where-does-psgs1-come-from&#34;&gt;Aside: Where does $P_{SGS}^{-1}$ come from?&lt;/h4&gt;
+
+&lt;p&gt;Let&#39;s take the error iteration matrix for a forward sweep $I - (L+D)^{-1} A$ followed by a backward sweep $I - (D+U)^{-1}A$ and compute&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\begin{align}
+I - P_{SGS}^{-1} A &amp;= \big( I - (D+U)^{-1} A \big) \big(I - (L+D)^{-1} A \big) \\
+  &amp;= I - (D+U)^{-1} A - (L+D)^{-1} A + (D+U)^{-1} A (L+D)^{-1} A \\
+  &amp;= I - \Big( (D+U)^{-1} + (L+D)^{-1} - (D+U)^{-1} A (L+D)^{-1} \Big) A \\
+  &amp;= I - \Big( (D+U)^{-1} + \underbrace{\big[I - (D+U)^{-1} A \big]}_{I - (D+U)^{-1} (D+U+L)} (L+D)^{-1} \Big) A \\
+  &amp;= I - \Big( (D+U)^{-1} - (D+U)^{-1} L (L+D)^{-1} \Big) A \\
+  &amp;= I - \Big( (D+U)^{-1} - (D+U)^{-1} \underbrace{(L+D-D) (L+D)^{-1}}_{I - D (L+D)^{-1}} \Big) A \\
+  &amp;= I - \underbrace{(D+U)^{-1} D (L+D)^{-1}}_{P_{SGS}^{-1}} A .
+\end{align}\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;domain-decomposition&#34;&gt;Domain decomposition&lt;/h2&gt;
+
+&lt;p&gt;Suppose we know how to solve problems on &amp;quot;subdomains&amp;quot;, which may overlap.&lt;/p&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/a/a9/Ddm_original_logo.png&#34; alt=&#34;&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;This could be possible because they have special structure (e.g., above) or because they are small enough.  We want to use this ability to solve the global problem.&lt;/p&gt;
+
+&lt;h3 id=&#34;alternating-schwarz-method&#34;&gt;Alternating Schwarz method&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;bc_circle = guess()
+while not converged:
+    u_circle = solve(A_circle, bc_circle)
+    bc_rectangle = eval(u_circle, rectangle)
+    u_rectangle = solve(A_rectangle, bc_rectangle)
+    bc_circle = eval(u_rectangle, circle)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This method was proposed in 1870 by &lt;a href=&#34;https://en.wikipedia.org/wiki/Hermann_Schwarz&#34;&gt;Hermann Schwarz&lt;/a&gt; as a theoretical tool, and is now called a &amp;quot;multiplicative&amp;quot; Schwarz method because the solves depend on each other.  We can see it as a generalization of Gauss-Seidel in which we solve on subdomains instead of at individual grid points.  As with Gauss-Seidel, it is difficult to expose parallelism.&lt;/p&gt;
+
+&lt;h3 id=&#34;additive-schwarz-methods&#34;&gt;Additive Schwarz methods&lt;/h3&gt;
+
+&lt;p&gt;The additive Schwarz method is more comparable to Jacobi, with each domain solved in parallel.  Our fundamental operation will be an embedding of each subdomain $V_i$ into the global domain $V$, which we call the &lt;strong&gt;prolongation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[ P_i : V_i \to V \]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;The transpose of prolongation, $P_i^T$, will sometimes be called &lt;strong&gt;restriction&lt;/strong&gt;.
+Let&#39;s work an example.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use(&#39;seaborn&#39;)
+
+N = 21
+x = np.linspace(-1, 1, N)
+overlap = 0
+domains = [(0,N//3+overlap), (N//3-overlap, 2*N//3+overlap), (2*N//3-overlap, N)]
+P = []
+for i, (start, end) in enumerate(domains):
+    P.append(np.eye(N, end-start, -start))
+u = 1 + np.cos(3*x)
+plt.plot(x, u)
+u1 = P[1].T @ u   # Restrict to subdomain 1
+plt.plot(P[1].T @ x, u1, &#39;o&#39;)
+print(P[1].shape)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(21, 7)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;./lecture_3_1.png&#34; alt=&#34;png&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;plt.plot(x, P[1] @ u1, &#39;o-&#39;);  # Prolong to global domain
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;./lecture_4_0.png&#34; alt=&#34;png&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Define a Laplacian
+A = np.eye(N)
+A[1:-1] = (2*np.eye(N-2, N, 1) - np.eye(N-2, N, 0) - np.eye(N-2, N, 2)) / (N-1)**2
+A[:5, :5]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;array([[ 1.    ,  0.    ,  0.    ,  0.    ,  0.    ],
+       [-0.0025,  0.005 , -0.0025,  0.    ,  0.    ],
+       [ 0.    , -0.0025,  0.005 , -0.0025,  0.    ],
+       [ 0.    ,  0.    , -0.0025,  0.005 , -0.0025],
+       [ 0.    ,  0.    ,  0.    , -0.0025,  0.005 ]])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The first and last rows implement boundary conditions; the interior is the familiar centered difference method for the Laplacian.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;A1 = P[1].T @ A @ P[1]
+A1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;array([[ 0.005 , -0.0025,  0.    ,  0.    ,  0.    ,  0.    ,  0.    ],
+       [-0.0025,  0.005 , -0.0025,  0.    ,  0.    ,  0.    ,  0.    ],
+       [ 0.    , -0.0025,  0.005 , -0.0025,  0.    ,  0.    ,  0.    ],
+       [ 0.    ,  0.    , -0.0025,  0.005 , -0.0025,  0.    ,  0.    ],
+       [ 0.    ,  0.    ,  0.    , -0.0025,  0.005 , -0.0025,  0.    ],
+       [ 0.    ,  0.    ,  0.    ,  0.    , -0.0025,  0.005 , -0.0025],
+       [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    , -0.0025,  0.005 ]])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;rhs = np.zeros_like(x)
+rhs[0] = 1 # Boundary condition
+u = np.zeros_like(x) # Initial guess
+for iter in range(5):
+    r = rhs - A @ u      # Residual
+    u_next = u.copy()
+    for Pi in P:
+        Ai = Pi.T @ A @ Pi
+        ui = np.linalg.solve(Ai, Pi.T @ r)
+        u_next += Pi @ ui
+    u = u_next
+    plt.plot(x, u, &#39;o-&#39;, label=f&#39;iter {iter}&#39;)
+plt.legend();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;./lecture_8_0.png&#34; alt=&#34;png&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;handson&#34;&gt;Hands-on&lt;/h4&gt;
+
+&lt;p&gt;Go back and increase &lt;code&gt;overlap&lt;/code&gt; to see how it affects convergence.&lt;/p&gt;
+
+&lt;h3 id=&#34;theory&#34;&gt;Theory&lt;/h3&gt;
+
+&lt;p&gt;Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$.  The columns of $P_i$ are &amp;quot;basis functions&amp;quot; for the subspace $V_i$.  The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.&lt;/p&gt;
+
+&lt;p&gt;Define the subspace projection&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[ S_i = P_i A_i^{-1} P_i^T A . \]&lt;/span&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;$S_i$ is a projection: $S_i^2 = S_i$&lt;/li&gt;
+&lt;li&gt;If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$&lt;/li&gt;
+&lt;li&gt;$I - S_i$ is $A$-orthogonal to the range of $P_i$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;S1 = P[1] @ np.linalg.inv(A1) @ P[1].T @ A
+np.linalg.norm(S1 @ S1 - S1)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;1.2457015262873114e-15
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;I = np.eye(*S1.shape)
+np.linalg.norm(P[1].T @ A @ (I - S1))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;6.9011609626021565e-18
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note, the concept of $A$-orthogonality is meaningful only when $A$ is SPD.
+Does the mathematical expression $ P_i^T A (I - S_i) = 0 $ hold even when $A$ is nonsymmetric?&lt;/p&gt;
+
+&lt;p&gt;These projections may be applied additively&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[ I - \sum_{i=0}^n S_i, \]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;multiplicatively&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[ \prod_{i=0}^n (I - S_i), \]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;or in some hybrid manner, such as&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\( (I - S_0) (I - \sum_{i=1}^n S_i) . \)&lt;/span&gt;
+In each case above, the action is expressed in terms of the error iteration operator.&lt;/p&gt;
+
+&lt;h3 id=&#34;examples&#34;&gt;Examples&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Jacobi corresponds to the additive preconditioner with $P_i$ as the $i$th column of the identity&lt;/li&gt;
+&lt;li&gt;Gauss-Seidel is the multiplicate preconditioner with $P_i$ as the $i$th column of the identity&lt;/li&gt;
+&lt;li&gt;Block Jacobi corresponds to labeling &amp;quot;subdomains&amp;quot; and $P_i$ as the columns of the identity corresponding to non-overlapping subdomains&lt;/li&gt;
+&lt;li&gt;Overlapping Schwarz corresponds to overlapping subdomains&lt;/li&gt;
+&lt;li&gt;$P_i$ are eigenvectors of $A$&lt;/li&gt;
+&lt;li&gt;A domain is partitioned into interior $V_{I}$ and interface $V_\Gamma$ degrees of freedom.  $P_{I}$ is embedding of the interior degrees of freedom while $P_\Gamma$ is &amp;quot;harmonic extension&amp;quot; of the interface degrees of freedom.  Consider the multiplicative combination $(I - S_\Gamma)(I - S_{I})$.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;convergence-theory&#34;&gt;Convergence theory&lt;/h3&gt;
+
+&lt;p&gt;The formal convergence is beyond the scope of this course, but the following estimates are useful.  We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1.  We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;(Block) Jacobi: $\delta=0$, $\kappa \sim H^{-2} H/h = (Hh)^{-1}$&lt;/li&gt;
+&lt;li&gt;Overlapping Schwarz: $\kappa \sim H^{-2} H/\delta = (H \delta)^{-1}$&lt;/li&gt;
+&lt;li&gt;2-level overlapping Schwarz: $\kappa \sim H/\delta$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;handson-with-petsc-demonstrate-these-estimates&#34;&gt;Hands-on with PETSc: demonstrate these estimates&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Symmetric example: &lt;code&gt;src/snes/examples/tutorials/ex5.c&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Nonsymmetric example: &lt;code&gt;src/snes/examples/tutorials/ex19.c&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Compare preconditioned versus unpreconditioned norms.&lt;/li&gt;
+&lt;li&gt;Compare BiCG versus GMRES&lt;/li&gt;
+&lt;li&gt;Compare domain decomposition and multigrid preconditioning
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-pc_type asm&lt;/code&gt; (Additive Schwarz)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-pc_asm_type basic&lt;/code&gt; (symmetric, versus &lt;code&gt;restrict&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-pc_asm_overlap 2&lt;/code&gt; (increase overlap)&lt;/li&gt;
+&lt;li&gt;Effect of direct subdomain solver: &lt;code&gt;-sub_pc_type lu&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-pc_type mg&lt;/code&gt; (Geometric Multigrid)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Use monitors:
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-ksp_monitor_true_residual&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-ksp_monitor_singular_value&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-ksp_converged_reason&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Explain methods: &lt;code&gt;-snes_view&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Performance info: &lt;code&gt;-log_view&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;examples-1&#34;&gt;Examples&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;mpiexec -n 4 ./ex19 -lidvelocity 2 -snes_monitor -da_refine 5 -ksp_monitor -pc_type asm -sub_pc_type lu
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Preconditioning</title>
       <link>https://cucs-hpsc.github.io/fall2019/preconditioning/</link>
       <pubDate>Fri, 11 Oct 2019 06:49:25 -0600</pubDate>
@@ -323,7 +560,7 @@ Gauss-Seidel is&lt;/p&gt;
 
 &lt;p&gt;where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form&lt;/p&gt;
 
-&lt;p&gt;$$ P_{SGS}^{-1} = (L+U)^{-1} A \Big( I - (L+D)^{-1} \Big) . $$&lt;/p&gt;
+&lt;p&gt;$$ P_{SGS}^{-1} = (D+U)^{-1} D (L+D)^{-1} . $$&lt;/p&gt;
 
 &lt;h2 id=&#34;domain-decomposition&#34;&gt;Domain decomposition&lt;/h2&gt;
 

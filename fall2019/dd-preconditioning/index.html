@@ -28,13 +28,11 @@
   
     
   
-  <meta name="description" content=" Remember how single-thread performance has increased significantly since ~2004 when clock frequency stagnated?
-This is a result of doing more per clock cycle.
-Let&rsquo;s visit some slides:
- Georg Hager (2019): Modern Computer Architucture  Further resources  Intel Intrinsics Guide Wikichip  Intel Xeon: Cascade Lake AMD EPYC gen2: Rome IBM POWER9  Agner Fog&rsquo;s website  ">
+  <meta name="description" content="Classical methods We have discussed the Jacobi preconditioner \( P_{\text{Jacobi}}^{-1} = D^{-1} \) where $D$ is the diagonal of $A$. Gauss-Seidel is \( P_{GS}^{-1} = (L&#43;D)^{-1} \) where $L$ is the (strictly) lower triangular part of $A$. The upper triangular part may be used instead, or a symmetric form \( P_{SGS}^{-1} = (D&#43;U)^{-1} D (L&#43;D)^{-1} . \)
+[Edit after class: fixed mistake in the above formula and added snippet below.]">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/intro-vectorization/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/dd-preconditioning/">
 
   
 
@@ -101,7 +99,7 @@ Let&rsquo;s visit some slides:
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/intro-vectorization/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/dd-preconditioning/">
 
   
   
@@ -117,18 +115,16 @@ Let&rsquo;s visit some slides:
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/intro-vectorization/">
-  <meta property="og:title" content="Vectorization and Instruction-Level Parallelism | HPSC">
-  <meta property="og:description" content=" Remember how single-thread performance has increased significantly since ~2004 when clock frequency stagnated?
-This is a result of doing more per clock cycle.
-Let&rsquo;s visit some slides:
- Georg Hager (2019): Modern Computer Architucture  Further resources  Intel Intrinsics Guide Wikichip  Intel Xeon: Cascade Lake AMD EPYC gen2: Rome IBM POWER9  Agner Fog&rsquo;s website  "><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/dd-preconditioning/">
+  <meta property="og:title" content="Domain Decomposition Preconditioning | HPSC">
+  <meta property="og:description" content="Classical methods We have discussed the Jacobi preconditioner \( P_{\text{Jacobi}}^{-1} = D^{-1} \) where $D$ is the diagonal of $A$. Gauss-Seidel is \( P_{GS}^{-1} = (L&#43;D)^{-1} \) where $L$ is the (strictly) lower triangular part of $A$. The upper triangular part may be used instead, or a symmetric form \( P_{SGS}^{-1} = (D&#43;U)^{-1} D (L&#43;D)^{-1} . \)
+[Edit after class: fixed mistake in the above formula and added snippet below.]"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-08-30T11:00:00-06:00">
+      <meta property="article:published_time" content="2019-10-14T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-08-30T17:08:25-06:00">
+    <meta property="article:modified_time" content="2019-10-14T23:05:43-06:00">
   
 
   
@@ -140,7 +136,7 @@ Let&rsquo;s visit some slides:
 
 
 
-  <title>Vectorization and Instruction-Level Parallelism | HPSC</title>
+  <title>Domain Decomposition Preconditioning | HPSC</title>
 
 </head>
 
@@ -287,7 +283,7 @@ Let&rsquo;s visit some slides:
         <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
       </li>
       
@@ -347,7 +343,7 @@ Let&rsquo;s visit some slides:
         <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/dd-preconditioning/">2019-10-14 DD Preconditioning</a>
       </li>
       
@@ -380,14 +376,7 @@ Let&rsquo;s visit some slides:
         <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
       </ul>
 
-      <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#further-resources">Further resources</a></li>
-</ul></li>
-</ul>
-</nav>
+      
 
       
     </div>
@@ -398,39 +387,238 @@ Let&rsquo;s visit some slides:
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Vectorization and Instruction-Level Parallelism</h1>
+          <h1 itemprop="name">Domain Decomposition Preconditioning</h1>
 
           <div class="article-style" itemprop="articleBody">
-            
+            <h2 id="classical-methods">Classical methods</h2>
 
-<p>Remember how single-thread performance has increased significantly
-since ~2004 when clock frequency stagnated?</p>
+<p>We have discussed the Jacobi preconditioner
+<span  class="math">\( P_{\text{Jacobi}}^{-1} = D^{-1} \)</span>
+where $D$ is the diagonal of $A$.
+Gauss-Seidel is
+<span  class="math">\( P_{GS}^{-1} = (L+D)^{-1} \)</span>
+where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form
+<span  class="math">\( P_{SGS}^{-1} = (D+U)^{-1} D (L+D)^{-1} . \)</span></p>
 
-<p><img src="https://www.karlrupp.net/wp-content/uploads/2018/02/42-years-processor-trend.png" alt="42 years of microprocessor data" /></p>
+<p>[<em>Edit after class</em>: fixed mistake in the above formula and added snippet below.]</p>
 
-<p>This is a result of doing more per clock cycle.</p>
+<h4 id="aside-where-does-psgs1-come-from">Aside: Where does $P_{SGS}^{-1}$ come from?</h4>
 
-<p><img src="https://www.karlrupp.net/wp-content/uploads/2013/06/flops-per-cycle-sp.png" alt="Flops per clock cycle" /></p>
+<p>Let's take the error iteration matrix for a forward sweep $I - (L+D)^{-1} A$ followed by a backward sweep $I - (D+U)^{-1}A$ and compute</p>
 
-<p>Let&rsquo;s visit some slides:</p>
+<p><span  class="math">\[\begin{align}
+I - P_{SGS}^{-1} A &= \big( I - (D+U)^{-1} A \big) \big(I - (L+D)^{-1} A \big) \\
+  &= I - (D+U)^{-1} A - (L+D)^{-1} A + (D+U)^{-1} A (L+D)^{-1} A \\
+  &= I - \Big( (D+U)^{-1} + (L+D)^{-1} - (D+U)^{-1} A (L+D)^{-1} \Big) A \\
+  &= I - \Big( (D+U)^{-1} + \underbrace{\big[I - (D+U)^{-1} A \big]}_{I - (D+U)^{-1} (D+U+L)} (L+D)^{-1} \Big) A \\
+  &= I - \Big( (D+U)^{-1} - (D+U)^{-1} L (L+D)^{-1} \Big) A \\
+  &= I - \Big( (D+U)^{-1} - (D+U)^{-1} \underbrace{(L+D-D) (L+D)^{-1}}_{I - D (L+D)^{-1}} \Big) A \\
+  &= I - \underbrace{(D+U)^{-1} D (L+D)^{-1}}_{P_{SGS}^{-1}} A .
+\end{align}\]</span></p>
+
+<h2 id="domain-decomposition">Domain decomposition</h2>
+
+<p>Suppose we know how to solve problems on &quot;subdomains&quot;, which may overlap.</p>
+
+<p><figure><img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Ddm_original_logo.png" alt=""></figure></p>
+
+<p>This could be possible because they have special structure (e.g., above) or because they are small enough.  We want to use this ability to solve the global problem.</p>
+
+<h3 id="alternating-schwarz-method">Alternating Schwarz method</h3>
+
+<pre><code class="language-python">bc_circle = guess()
+while not converged:
+    u_circle = solve(A_circle, bc_circle)
+    bc_rectangle = eval(u_circle, rectangle)
+    u_rectangle = solve(A_rectangle, bc_rectangle)
+    bc_circle = eval(u_rectangle, circle)
+</code></pre>
+
+<p>This method was proposed in 1870 by <a href="https://en.wikipedia.org/wiki/Hermann_Schwarz">Hermann Schwarz</a> as a theoretical tool, and is now called a &quot;multiplicative&quot; Schwarz method because the solves depend on each other.  We can see it as a generalization of Gauss-Seidel in which we solve on subdomains instead of at individual grid points.  As with Gauss-Seidel, it is difficult to expose parallelism.</p>
+
+<h3 id="additive-schwarz-methods">Additive Schwarz methods</h3>
+
+<p>The additive Schwarz method is more comparable to Jacobi, with each domain solved in parallel.  Our fundamental operation will be an embedding of each subdomain $V_i$ into the global domain $V$, which we call the <strong>prolongation</strong></p>
+
+<p><span  class="math">\[ P_i : V_i \to V \]</span></p>
+
+<p>The transpose of prolongation, $P_i^T$, will sometimes be called <strong>restriction</strong>.
+Let's work an example.</p>
+
+<pre><code class="language-python">%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('seaborn')
+
+N = 21
+x = np.linspace(-1, 1, N)
+overlap = 0
+domains = [(0,N//3+overlap), (N//3-overlap, 2*N//3+overlap), (2*N//3-overlap, N)]
+P = []
+for i, (start, end) in enumerate(domains):
+    P.append(np.eye(N, end-start, -start))
+u = 1 + np.cos(3*x)
+plt.plot(x, u)
+u1 = P[1].T @ u   # Restrict to subdomain 1
+plt.plot(P[1].T @ x, u1, 'o')
+print(P[1].shape)
+</code></pre>
+
+<pre><code>(21, 7)
+</code></pre>
+
+<p><figure><img src="./lecture_3_1.png" alt="png"></figure></p>
+
+<pre><code class="language-python">plt.plot(x, P[1] @ u1, 'o-');  # Prolong to global domain
+</code></pre>
+
+<p><figure><img src="./lecture_4_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python"># Define a Laplacian
+A = np.eye(N)
+A[1:-1] = (2*np.eye(N-2, N, 1) - np.eye(N-2, N, 0) - np.eye(N-2, N, 2)) / (N-1)**2
+A[:5, :5]
+</code></pre>
+
+<pre><code>array([[ 1.    ,  0.    ,  0.    ,  0.    ,  0.    ],
+       [-0.0025,  0.005 , -0.0025,  0.    ,  0.    ],
+       [ 0.    , -0.0025,  0.005 , -0.0025,  0.    ],
+       [ 0.    ,  0.    , -0.0025,  0.005 , -0.0025],
+       [ 0.    ,  0.    ,  0.    , -0.0025,  0.005 ]])
+</code></pre>
+
+<p>The first and last rows implement boundary conditions; the interior is the familiar centered difference method for the Laplacian.</p>
+
+<pre><code class="language-python">A1 = P[1].T @ A @ P[1]
+A1
+</code></pre>
+
+<pre><code>array([[ 0.005 , -0.0025,  0.    ,  0.    ,  0.    ,  0.    ,  0.    ],
+       [-0.0025,  0.005 , -0.0025,  0.    ,  0.    ,  0.    ,  0.    ],
+       [ 0.    , -0.0025,  0.005 , -0.0025,  0.    ,  0.    ,  0.    ],
+       [ 0.    ,  0.    , -0.0025,  0.005 , -0.0025,  0.    ,  0.    ],
+       [ 0.    ,  0.    ,  0.    , -0.0025,  0.005 , -0.0025,  0.    ],
+       [ 0.    ,  0.    ,  0.    ,  0.    , -0.0025,  0.005 , -0.0025],
+       [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    , -0.0025,  0.005 ]])
+</code></pre>
+
+<pre><code class="language-python">rhs = np.zeros_like(x)
+rhs[0] = 1 # Boundary condition
+u = np.zeros_like(x) # Initial guess
+for iter in range(5):
+    r = rhs - A @ u      # Residual
+    u_next = u.copy()
+    for Pi in P:
+        Ai = Pi.T @ A @ Pi
+        ui = np.linalg.solve(Ai, Pi.T @ r)
+        u_next += Pi @ ui
+    u = u_next
+    plt.plot(x, u, 'o-', label=f'iter {iter}')
+plt.legend();
+</code></pre>
+
+<p><figure><img src="./lecture_8_0.png" alt="png"></figure></p>
+
+<h4 id="handson">Hands-on</h4>
+
+<p>Go back and increase <code>overlap</code> to see how it affects convergence.</p>
+
+<h3 id="theory">Theory</h3>
+
+<p>Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$.  The columns of $P_i$ are &quot;basis functions&quot; for the subspace $V_i$.  The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.</p>
+
+<p>Define the subspace projection</p>
+
+<p><span  class="math">\[ S_i = P_i A_i^{-1} P_i^T A . \]</span></p>
 
 <ul>
-<li><a href="https://moodle.rrze.uni-erlangen.de/pluginfile.php/12916/mod_resource/content/6/01_IntroArchitecture.pdf" target="_blank">Georg Hager (2019): Modern Computer Architucture</a></li>
+<li>$S_i$ is a projection: $S_i^2 = S_i$</li>
+<li>If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$</li>
+<li>$I - S_i$ is $A$-orthogonal to the range of $P_i$</li>
 </ul>
 
-<h2 id="further-resources">Further resources</h2>
+<pre><code class="language-python">S1 = P[1] @ np.linalg.inv(A1) @ P[1].T @ A
+np.linalg.norm(S1 @ S1 - S1)
+</code></pre>
+
+<pre><code>1.2457015262873114e-15
+</code></pre>
+
+<pre><code class="language-python">I = np.eye(*S1.shape)
+np.linalg.norm(P[1].T @ A @ (I - S1))
+</code></pre>
+
+<pre><code>6.9011609626021565e-18
+</code></pre>
+
+<p>Note, the concept of $A$-orthogonality is meaningful only when $A$ is SPD.
+Does the mathematical expression $ P_i^T A (I - S_i) = 0 $ hold even when $A$ is nonsymmetric?</p>
+
+<p>These projections may be applied additively</p>
+
+<p><span  class="math">\[ I - \sum_{i=0}^n S_i, \]</span></p>
+
+<p>multiplicatively</p>
+
+<p><span  class="math">\[ \prod_{i=0}^n (I - S_i), \]</span></p>
+
+<p>or in some hybrid manner, such as</p>
+
+<p><span  class="math">\( (I - S_0) (I - \sum_{i=1}^n S_i) . \)</span>
+In each case above, the action is expressed in terms of the error iteration operator.</p>
+
+<h3 id="examples">Examples</h3>
 
 <ul>
-<li><a href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#" target="_blank">Intel Intrinsics Guide</a></li>
-<li>Wikichip
+<li>Jacobi corresponds to the additive preconditioner with $P_i$ as the $i$th column of the identity</li>
+<li>Gauss-Seidel is the multiplicate preconditioner with $P_i$ as the $i$th column of the identity</li>
+<li>Block Jacobi corresponds to labeling &quot;subdomains&quot; and $P_i$ as the columns of the identity corresponding to non-overlapping subdomains</li>
+<li>Overlapping Schwarz corresponds to overlapping subdomains</li>
+<li>$P_i$ are eigenvectors of $A$</li>
+<li>A domain is partitioned into interior $V_{I}$ and interface $V_\Gamma$ degrees of freedom.  $P_{I}$ is embedding of the interior degrees of freedom while $P_\Gamma$ is &quot;harmonic extension&quot; of the interface degrees of freedom.  Consider the multiplicative combination $(I - S_\Gamma)(I - S_{I})$.</li>
+</ul>
+
+<h3 id="convergence-theory">Convergence theory</h3>
+
+<p>The formal convergence is beyond the scope of this course, but the following estimates are useful.  We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1.  We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.</p>
 
 <ul>
-<li><a href="https://en.wikichip.org/wiki/intel/microarchitectures/cascade_lake" target="_blank">Intel Xeon: Cascade Lake</a></li>
-<li><a href="https://en.wikichip.org/wiki/amd/cores/rome" target="_blank">AMD EPYC gen2: Rome</a></li>
-<li><a href="https://en.wikichip.org/wiki/ibm/microarchitectures/power9" target="_blank">IBM POWER9</a></li>
+<li>(Block) Jacobi: $\delta=0$, $\kappa \sim H^{-2} H/h = (Hh)^{-1}$</li>
+<li>Overlapping Schwarz: $\kappa \sim H^{-2} H/\delta = (H \delta)^{-1}$</li>
+<li>2-level overlapping Schwarz: $\kappa \sim H/\delta$</li>
+</ul>
+
+<h3 id="handson-with-petsc-demonstrate-these-estimates">Hands-on with PETSc: demonstrate these estimates</h3>
+
+<ul>
+<li>Symmetric example: <code>src/snes/examples/tutorials/ex5.c</code></li>
+<li>Nonsymmetric example: <code>src/snes/examples/tutorials/ex19.c</code></li>
+<li>Compare preconditioned versus unpreconditioned norms.</li>
+<li>Compare BiCG versus GMRES</li>
+<li>Compare domain decomposition and multigrid preconditioning
+
+<ul>
+<li><code>-pc_type asm</code> (Additive Schwarz)</li>
+<li><code>-pc_asm_type basic</code> (symmetric, versus <code>restrict</code>)</li>
+<li><code>-pc_asm_overlap 2</code> (increase overlap)</li>
+<li>Effect of direct subdomain solver: <code>-sub_pc_type lu</code></li>
+<li><code>-pc_type mg</code> (Geometric Multigrid)</li>
 </ul></li>
-<li><a href="https://www.agner.org/optimize/" target="_blank">Agner Fog&rsquo;s website</a></li>
+<li>Use monitors:
+
+<ul>
+<li><code>-ksp_monitor_true_residual</code></li>
+<li><code>-ksp_monitor_singular_value</code></li>
+<li><code>-ksp_converged_reason</code></li>
+</ul></li>
+<li>Explain methods: <code>-snes_view</code></li>
+<li>Performance info: <code>-log_view</code></li>
 </ul>
+
+<h4 id="examples-1">Examples</h4>
+
+<pre><code>mpiexec -n 4 ./ex19 -lidvelocity 2 -snes_monitor -da_refine 5 -ksp_monitor -pc_type asm -sub_pc_type lu
+</code></pre>
 
           </div>
 
@@ -447,14 +635,14 @@ since ~2004 when clock frequency stagnated?</p>
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/intro-modeling/" rel="next">Introduction to Performance Modeling</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/intro-architecture/" rel="prev">Intro to Architecture</a>
+    <a href="/fall2019/preconditioning/" rel="prev">Preconditioning</a>
   </div>
   
 </div>
@@ -464,11 +652,11 @@ since ~2004 when clock frequency stagnated?</p>
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Aug 30, 2019</p>
+          <p>Last updated on Oct 14, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/intro-vectorization/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/dd-preconditioning/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>
