@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Jed Brown">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Recap: Domain decomposition theory Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$. The columns of $P_i$ are &quot;basis functions&quot; for the subspace $V_i$. The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.
+Define the subspace projection
+\[ S_i = P_i A_i^{-1} P_i^T A . \]
+ $S_i$ is a projection: $S_i^2 = S_i$ If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$ $I - S_i$ is $A$-orthogonal to the range of $P_i$  Note, the concept of $A$-orthogonality is meaningful only when $A$ is SPD.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@five9a2">
+  <meta property="twitter:creator" content="@five9a2">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/">
+  <meta property="og:title" content="DD Preconditioning 2 | HPSC">
+  <meta property="og:description" content="Recap: Domain decomposition theory Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$. The columns of $P_i$ are &quot;basis functions&quot; for the subspace $V_i$. The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.
+Define the subspace projection
+\[ S_i = P_i A_i^{-1} P_i^T A . \]
+ $S_i$ is a projection: $S_i^2 = S_i$ If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$ $I - S_i$ is $A$-orthogonal to the range of $P_i$  Note, the concept of $A$-orthogonality is meaningful only when $A$ is SPD."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-10-16T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-10-16T06:49:25-06:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>DD Preconditioning 2 | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp/">2019-09-11 OpenMP Basics</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-2/">2019-09-13 More OpenMP</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-3/">2019-09-16 OpenMP Tasks</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/strategies/">2019-09-18 Reductions and Scans</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/sorting-graphs/">2019-09-23 More bitonic sorting, graphs</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-2/">2019-10-02 Dense Linear Algebra and Orthogonality</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-3/">2019-10-04 Orthogonality and Conditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/elemental/">2019-10-07 Elemental</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/iterative-solvers/">2019-10-09 Sparse and Iterative</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning/">2019-10-14 DD Preconditioning</a>
+      </li>
+      
+      <li class="active">
+        <a href="/fall2019/dd-preconditioning-2/">2019-10-16 DD Preconditioning 2</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">DD Preconditioning 2</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            <h3 id="recap-domain-decomposition-theory">Recap: Domain decomposition theory</h3>
+
+<p>Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$.  The columns of $P_i$ are &quot;basis functions&quot; for the subspace $V_i$.  The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.</p>
+
+<p>Define the subspace projection</p>
+
+<p><span  class="math">\[ S_i = P_i A_i^{-1} P_i^T A . \]</span></p>
+
+<ul>
+<li>$S_i$ is a projection: $S_i^2 = S_i$</li>
+<li>If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$</li>
+<li>$I - S_i$ is $A$-orthogonal to the range of $P_i$</li>
+</ul>
+
+<p>Note, the concept of $A$-orthogonality is meaningful only when $A$ is SPD.
+Does the mathematical expression $ P_i^T A (I - S_i) = 0 $ hold even when $A$ is nonsymmetric?</p>
+
+<p>These projections may be applied additively</p>
+
+<p><span  class="math">\[ I - \sum_{i=0}^n S_i, \]</span></p>
+
+<p>multiplicatively</p>
+
+<p><span  class="math">\[ \prod_{i=0}^n (I - S_i), \]</span></p>
+
+<p>or in some hybrid manner, such as</p>
+
+<p><span  class="math">\( (I - S_0) (I - \sum_{i=1}^n S_i) . \)</span>
+In each case above, the action is expressed in terms of the error iteration operator.</p>
+
+<h3 id="examples">Examples</h3>
+
+<ul>
+<li>Jacobi corresponds to the additive preconditioner with $P_i$ as the $i$th column of the identity</li>
+<li>Gauss-Seidel is the multiplicate preconditioner with $P_i$ as the $i$th column of the identity</li>
+<li>Block Jacobi corresponds to labeling &quot;subdomains&quot; and $P_i$ as the columns of the identity corresponding to non-overlapping subdomains</li>
+<li>Overlapping Schwarz corresponds to overlapping subdomains</li>
+<li>$P_i$ are eigenvectors of $A$</li>
+<li>A domain is partitioned into interior $V_{I}$ and interface $V_\Gamma$ degrees of freedom.  $P_{I}$ is embedding of the interior degrees of freedom while $P_\Gamma$ is &quot;harmonic extension&quot; of the interface degrees of freedom.  Consider the multiplicative combination $(I - S_\Gamma)(I - S_{I})$.</li>
+</ul>
+
+<h3 id="convergence-theory">Convergence theory</h3>
+
+<p>The formal convergence is beyond the scope of this course, but the following estimates are useful.  We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1.  We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.</p>
+
+<ul>
+<li>(Block) Jacobi: $\delta=0$, $\kappa \sim H^{-2} H/h = (Hh)^{-1}$</li>
+<li>Overlapping Schwarz: $\kappa \sim H^{-2} H/\delta = (H \delta)^{-1}$</li>
+<li>2-level overlapping Schwarz: $\kappa \sim H/\delta$</li>
+</ul>
+
+<h3 id="handson-with-petsc-demonstrate-these-estimates">Hands-on with PETSc: demonstrate these estimates</h3>
+
+<ul>
+<li>Linear Poisson with geometric multigrid: <code>src/ksp/ksp/examples/tutorials/ex29.c</code></li>
+<li>Nonlinear problems
+
+<ul>
+<li>Symmetric scalar problem: <code>src/snes/examples/tutorials/ex5.c</code></li>
+<li>Nonsymmetric system (lid/thermal-driven cavity): <code>src/snes/examples/tutorials/ex19.c</code></li>
+</ul></li>
+<li>Compare preconditioned versus unpreconditioned norms.</li>
+<li>Compare BiCG versus GMRES</li>
+<li>Compare domain decomposition and multigrid preconditioning
+
+<ul>
+<li><code>-pc_type asm</code> (Additive Schwarz)</li>
+<li><code>-pc_asm_type basic</code> (symmetric, versus <code>restrict</code>)</li>
+<li><code>-pc_asm_overlap 2</code> (increase overlap)</li>
+<li>Effect of direct subdomain solver: <code>-sub_pc_type lu</code></li>
+<li><code>-pc_type mg</code> (Geometric Multigrid)</li>
+</ul></li>
+<li>Use monitors:
+
+<ul>
+<li><code>-ksp_monitor_true_residual</code></li>
+<li><code>-ksp_monitor_singular_value</code></li>
+<li><code>-ksp_converged_reason</code></li>
+</ul></li>
+<li>Explain methods: <code>-snes_view</code></li>
+<li>Performance info: <code>-log_view</code></li>
+</ul>
+
+<h4 id="example-inhomogeneous-poisson">Example: Inhomogeneous Poisson</h4>
+
+<p><span  class="math">\[ -\nabla\cdot \Big( \rho(x,y) \nabla u(x,y) \Big) = e^{-10 (x^2 + y^2)} \]</span></p>
+
+<p>in $\Omega = [0,1]^2$ with variable conductivity</p>
+
+<p>$$\rho(x,y) = \begin{cases}</p>
+
+<pre><code>\rho_0 &amp; (x,y) \in [1/3, 2/3]^2 \\
+1 &amp; \text{otherwise}
+\end{cases} $$
+</code></pre>
+
+<p>where $\rho_0 &gt; 0$ is a parameter (with default $\rho_0 = 1$).</p>
+
+<pre><code class="language-bash">%%bash
+
+# You may need to change these for your machine
+PETSC_DIR=$HOME/petsc PETSC_ARCH=ompi-optg
+
+# Build the example
+make -C $PETSC_DIR -f gmakefile $PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex29
+
+# Link it from the current directory to make it easy to run below
+cp -sf $PETSC_DIR/$PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex29 .
+</code></pre>
+
+<pre><code>make: Entering directory '/home/jed/petsc'
+make: 'ompi-optg/tests/ksp/ksp/examples/tutorials/ex29' is up to date.
+make: Leaving directory '/home/jed/petsc'
+</code></pre>
+
+<pre><code class="language-python"># Prints solution DM and then a coordinate DM
+! mpiexec -n 2 ./ex29 -da_refine 2 -dm_view
+</code></pre>
+
+<pre><code>DM Object: 2 MPI processes
+  type: da
+Processor [0] M 9 N 9 m 1 n 2 w 1 s 1
+X range of indices: 0 9, Y range of indices: 0 5
+Processor [1] M 9 N 9 m 1 n 2 w 1 s 1
+X range of indices: 0 9, Y range of indices: 5 9
+DM Object: 2 MPI processes
+  type: da
+Processor [0] M 9 N 9 m 1 n 2 w 2 s 1
+X range of indices: 0 9, Y range of indices: 0 5
+Processor [1] M 9 N 9 m 1 n 2 w 2 s 1
+X range of indices: 0 9, Y range of indices: 5 9
+</code></pre>
+
+<pre><code class="language-python">! mpiexec -n 2 ./ex29 -rho 1e-1 -da_refine 3 -ksp_view_solution draw -draw_pause 5 -draw_cmap plasma
+</code></pre>
+
+<p>This problem is nonsymmetric due to boundary conditions, though symmetric solvers like CG and MINRES may still converge</p>
+
+<pre><code class="language-python">! mpiexec -n 2 ./ex29 -rho 1e-1 -da_refine 3 -ksp_monitor_true_residual -ksp_view -ksp_type gmres
+</code></pre>
+
+<pre><code>  0 KSP preconditioned resid norm 1.338744788815e-02 true resid norm 1.433852280437e-02 ||r(i)||/||b|| 1.000000000000e+00
+  1 KSP preconditioned resid norm 6.105013156491e-03 true resid norm 8.819020609674e-03 ||r(i)||/||b|| 6.150578222039e-01
+  2 KSP preconditioned resid norm 3.380566739974e-03 true resid norm 3.966597605983e-03 ||r(i)||/||b|| 2.766392089410e-01
+  3 KSP preconditioned resid norm 2.248884854426e-03 true resid norm 1.950654466953e-03 ||r(i)||/||b|| 1.360429169426e-01
+  4 KSP preconditioned resid norm 1.603958727893e-03 true resid norm 1.729343487982e-03 ||r(i)||/||b|| 1.206082043163e-01
+  5 KSP preconditioned resid norm 1.017005335066e-03 true resid norm 1.108652090238e-03 ||r(i)||/||b|| 7.731982613301e-02
+  6 KSP preconditioned resid norm 5.817999897588e-04 true resid norm 7.954596575686e-04 ||r(i)||/||b|| 5.547709958842e-02
+  7 KSP preconditioned resid norm 3.102671011646e-04 true resid norm 4.651546500795e-04 ||r(i)||/||b|| 3.244090457755e-02
+  8 KSP preconditioned resid norm 1.547863442961e-04 true resid norm 2.154582266646e-04 ||r(i)||/||b|| 1.502652885547e-02
+  9 KSP preconditioned resid norm 7.772941255716e-05 true resid norm 1.166482147907e-04 ||r(i)||/||b|| 8.135302107631e-03
+ 10 KSP preconditioned resid norm 3.800559054824e-05 true resid norm 5.777187067722e-05 ||r(i)||/||b|| 4.029136854992e-03
+ 11 KSP preconditioned resid norm 1.694315416916e-05 true resid norm 3.229096611633e-05 ||r(i)||/||b|| 2.252042735288e-03
+ 12 KSP preconditioned resid norm 6.705763692270e-06 true resid norm 1.252406213904e-05 ||r(i)||/||b|| 8.734555372208e-04
+ 13 KSP preconditioned resid norm 2.308568861148e-06 true resid norm 4.636253434420e-06 ||r(i)||/||b|| 3.233424738152e-04
+ 14 KSP preconditioned resid norm 8.946501825242e-07 true resid norm 1.703002880989e-06 ||r(i)||/||b|| 1.187711526650e-04
+ 15 KSP preconditioned resid norm 2.744515348301e-07 true resid norm 5.751960627589e-07 ||r(i)||/||b|| 4.011543382863e-05
+ 16 KSP preconditioned resid norm 1.137618031844e-07 true resid norm 2.081989399152e-07 ||r(i)||/||b|| 1.452025029048e-05
+KSP Object: 2 MPI processes
+  type: gmres
+    restart=30, using Classical (unmodified) Gram-Schmidt Orthogonalization with no iterative refinement
+    happy breakdown tolerance 1e-30
+  maximum iterations=10000, initial guess is zero
+  tolerances:  relative=1e-05, absolute=1e-50, divergence=10000.
+  left preconditioning
+  using PRECONDITIONED norm type for convergence test
+PC Object: 2 MPI processes
+  type: bjacobi
+    number of blocks = 2
+    Local solve is same for all blocks, in the following KSP and PC objects:
+  KSP Object: (sub_) 1 MPI processes
+    type: preonly
+    maximum iterations=10000, initial guess is zero
+    tolerances:  relative=1e-05, absolute=1e-50, divergence=10000.
+    left preconditioning
+    using NONE norm type for convergence test
+  PC Object: (sub_) 1 MPI processes
+    type: ilu
+      out-of-place factorization
+      0 levels of fill
+      tolerance for zero pivot 2.22045e-14
+      matrix ordering: natural
+      factor fill ratio given 1., needed 1.
+        Factored matrix follows:
+          Mat Object: 1 MPI processes
+            type: seqaij
+            rows=153, cols=153
+            package used to perform factorization: petsc
+            total: nonzeros=713, allocated nonzeros=713
+            total number of mallocs used during MatSetValues calls =0
+              not using I-node routines
+    linear system matrix = precond matrix:
+    Mat Object: 1 MPI processes
+      type: seqaij
+      rows=153, cols=153
+      total: nonzeros=713, allocated nonzeros=713
+      total number of mallocs used during MatSetValues calls =0
+        not using I-node routines
+  linear system matrix = precond matrix:
+  Mat Object: 2 MPI processes
+    type: mpiaij
+    rows=289, cols=289
+    total: nonzeros=1377, allocated nonzeros=1377
+    total number of mallocs used during MatSetValues calls =0
+</code></pre>
+
+<h3 id="default-parallel-solver">Default parallel solver</h3>
+
+<ul>
+<li>Krylov method: GMRES
+
+<ul>
+<li>restart length of 30 to bound memory requirement and orthogonalization cost</li>
+<li>classical Gram-Schmidt (compare <code>-ksp_gmres_modifiedgramschmidt</code>)</li>
+<li>left preconditioning, uses preconditioned norm
+<span  class="math">\( P^{-1} A x = P^{-1} b \)</span></li>
+<li><code>-ksp_norm_type unpreconditioned</code>
+<span  class="math">\( A P^{-1} (P x) = b \)</span></li>
+<li>Can estimate condition number using Hessenberg matrix</li>
+<li><code>-ksp_monitor_singular_value</code></li>
+<li><code>-ksp_view_singularvalues</code></li>
+<li>Contaminated by restarts, so turn off restart <code>-ksp_gmres_restart 1000</code> for accurate results</li>
+</ul></li>
+<li>Preconditioner: block Jacobi
+
+<ul>
+<li>Expect condition number to scale with $1/(H h)$ where $H$ is the subdomain diameter and $h$ is the element size</li>
+<li>One block per MPI process</li>
+<li>No extra memory to create subdomain problems</li>
+<li>Create two blocks per process: <code>-pc_bjacobi_local_blocks 2</code></li>
+<li>Each subdomain solver can be configured/monitored using the <code>-sub_</code> prefix</li>
+<li><code>-sub_ksp_type preonly</code> (default) means just apply the preconditioner</li>
+<li>Incomplete LU factorization with zero fill</li>
+<li>$O(n)$ cost to compute and apply; same memory as matrix $A$</li>
+<li>gets weaker as $n$ increases</li>
+<li>can fail unpredictably at the worst possible time</li>
+<li>Allow &quot;levels&quot; of fill: <code>-sub_pc_factor_levels 2</code></li>
+<li>Try <code>-sub_pc_type lu</code></li>
+</ul></li>
+</ul>
+
+<pre><code class="language-python">! mpiexec -n 2 ./ex29 -rho 1e-1 -da_refine 3 -ksp_monitor -ksp_view -sub_pc_factor_levels 3
+</code></pre>
+
+<pre><code>  0 KSP Residual norm 3.321621226957e-02 
+  1 KSP Residual norm 6.488371997792e-03 
+  2 KSP Residual norm 3.872608843511e-03 
+  3 KSP Residual norm 2.258796172567e-03 
+  4 KSP Residual norm 6.146527388370e-04 
+  5 KSP Residual norm 4.540373464970e-04 
+  6 KSP Residual norm 1.994013489521e-04 
+  7 KSP Residual norm 2.170446909144e-05 
+  8 KSP Residual norm 7.079429242940e-06 
+  9 KSP Residual norm 2.372198219605e-06 
+ 10 KSP Residual norm 9.203675161062e-07 
+ 11 KSP Residual norm 2.924907588760e-07 
+KSP Object: 2 MPI processes
+  type: gmres
+    restart=30, using Classical (unmodified) Gram-Schmidt Orthogonalization with no iterative refinement
+    happy breakdown tolerance 1e-30
+  maximum iterations=10000, initial guess is zero
+  tolerances:  relative=1e-05, absolute=1e-50, divergence=10000.
+  left preconditioning
+  using PRECONDITIONED norm type for convergence test
+PC Object: 2 MPI processes
+  type: bjacobi
+    number of blocks = 2
+    Local solve is same for all blocks, in the following KSP and PC objects:
+  KSP Object: (sub_) 1 MPI processes
+    type: preonly
+    maximum iterations=10000, initial guess is zero
+    tolerances:  relative=1e-05, absolute=1e-50, divergence=10000.
+    left preconditioning
+    using NONE norm type for convergence test
+  PC Object: (sub_) 1 MPI processes
+    type: ilu
+      out-of-place factorization
+      3 levels of fill
+      tolerance for zero pivot 2.22045e-14
+      matrix ordering: natural
+      factor fill ratio given 1., needed 2.34642
+        Factored matrix follows:
+          Mat Object: 1 MPI processes
+            type: seqaij
+            rows=153, cols=153
+            package used to perform factorization: petsc
+            total: nonzeros=1673, allocated nonzeros=1673
+            total number of mallocs used during MatSetValues calls =0
+              not using I-node routines
+    linear system matrix = precond matrix:
+    Mat Object: 1 MPI processes
+      type: seqaij
+      rows=153, cols=153
+      total: nonzeros=713, allocated nonzeros=713
+      total number of mallocs used during MatSetValues calls =0
+        not using I-node routines
+  linear system matrix = precond matrix:
+  Mat Object: 2 MPI processes
+    type: mpiaij
+    rows=289, cols=289
+    total: nonzeros=1377, allocated nonzeros=1377
+    total number of mallocs used during MatSetValues calls =0
+</code></pre>
+
+<h3 id="scaling-estimates">Scaling estimates</h3>
+
+<h4 id="dependence-on-h">Dependence on $h$</h4>
+
+<pre><code class="language-python">! mpiexec -n 16 --oversubscribe ./ex29 -da_refine 3 -sub_pc_type lu -ksp_gmres_restart 1000 -ksp_converged_reason -ksp_view_singularvalues
+</code></pre>
+
+<pre><code>Linear solve converged due to CONVERGED_RTOL iterations 20
+Iteratively computed extreme singular values: max 1.9384 min 0.0694711 max/min 27.9023
+</code></pre>
+
+<pre><code class="language-bash">%%bash
+
+for refine in {4..8}; do
+  mpiexec -n 16 --oversubscribe ./ex29 -da_refine $refine -sub_pc_type lu -ksp_gmres_restart 1000 -ksp_converged_reason -ksp_view_singularvalues
+done
+</code></pre>
+
+<pre><code>Linear solve converged due to CONVERGED_RTOL iterations 27
+Iteratively computed extreme singular values: max 1.98356 min 0.0338842 max/min 58.5395
+Linear solve converged due to CONVERGED_RTOL iterations 36
+Iteratively computed extreme singular values: max 2.04703 min 0.0167502 max/min 122.209
+Linear solve converged due to CONVERGED_RTOL iterations 47
+Iteratively computed extreme singular values: max 2.12834 min 0.00830794 max/min 256.182
+Linear solve converged due to CONVERGED_RTOL iterations 62
+Iteratively computed extreme singular values: max 2.1865 min 0.00412757 max/min 529.731
+Linear solve converged due to CONVERGED_RTOL iterations 82
+Iteratively computed extreme singular values: max 2.22724 min 0.00206119 max/min 1080.56
+</code></pre>
+
+<pre><code class="language-bash">%%bash
+
+for refine in {3..8}; do
+  mpiexec -n 16 --oversubscribe ./ex29 -da_refine $refine -pc_type asm -sub_pc_type lu -ksp_gmres_restart 1000 -ksp_converged_reason -ksp_view_singularvalues
+done
+</code></pre>
+
+<pre><code>Linear solve converged due to CONVERGED_RTOL iterations 12
+Iteratively computed extreme singular values: max 1.39648 min 0.183011 max/min 7.63057
+Linear solve converged due to CONVERGED_RTOL iterations 16
+Iteratively computed extreme singular values: max 1.68852 min 0.0984075 max/min 17.1584
+Linear solve converged due to CONVERGED_RTOL iterations 23
+Iteratively computed extreme singular values: max 1.8569 min 0.0494302 max/min 37.5661
+Linear solve converged due to CONVERGED_RTOL iterations 31
+Iteratively computed extreme singular values: max 1.9503 min 0.0247646 max/min 78.7537
+Linear solve converged due to CONVERGED_RTOL iterations 41
+Iteratively computed extreme singular values: max 2.03979 min 0.0123563 max/min 165.081
+Linear solve converged due to CONVERGED_RTOL iterations 54
+Iteratively computed extreme singular values: max 2.12275 min 0.00615712 max/min 344.764
+</code></pre>
+
+<pre><code class="language-bash">%%bash
+cat &gt; results.csv &lt;&lt;EOF
+method,refine,its,cond
+bjacobi,3,20,27.90
+bjacobi,4,27,58.54
+bjacobi,5,36,122.2
+bjacobi,6,47,256.2
+bjacobi,7,62,529.7
+bjacobi,8,82,1080.6
+asm,3,12,7.63
+asm,4,16,17.15
+asm,5,23,37.57
+asm,6,31,78.75
+asm,7,41,165.1
+asm,8,54,344.8
+EOF
+</code></pre>
+
+<pre><code class="language-python">%matplotlib inline
+import pandas
+import seaborn
+df = pandas.read_csv('results.csv')
+n1 = 2**(df.refine + 1) # number of points per dimension
+df['P'] = 16      # number of processes
+df['N'] = n1**2    # number of dofs in global problem
+df['h'] = 1/n1
+df['H'] = 0.25 # 16 procs = 4x4 process grid
+df['1/Hh'] = 1/(df.H * df.h)
+
+seaborn.lmplot(x='1/Hh', y='cond', hue='method', data=df)
+df
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>method</th>
+      <th>refine</th>
+      <th>its</th>
+      <th>cond</th>
+      <th>P</th>
+      <th>N</th>
+      <th>h</th>
+      <th>H</th>
+      <th>1/Hh</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>bjacobi</td>
+      <td>3</td>
+      <td>20</td>
+      <td>27.90</td>
+      <td>16</td>
+      <td>256</td>
+      <td>0.062500</td>
+      <td>0.25</td>
+      <td>64.0</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>bjacobi</td>
+      <td>4</td>
+      <td>27</td>
+      <td>58.54</td>
+      <td>16</td>
+      <td>1024</td>
+      <td>0.031250</td>
+      <td>0.25</td>
+      <td>128.0</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>bjacobi</td>
+      <td>5</td>
+      <td>36</td>
+      <td>122.20</td>
+      <td>16</td>
+      <td>4096</td>
+      <td>0.015625</td>
+      <td>0.25</td>
+      <td>256.0</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>bjacobi</td>
+      <td>6</td>
+      <td>47</td>
+      <td>256.20</td>
+      <td>16</td>
+      <td>16384</td>
+      <td>0.007812</td>
+      <td>0.25</td>
+      <td>512.0</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>bjacobi</td>
+      <td>7</td>
+      <td>62</td>
+      <td>529.70</td>
+      <td>16</td>
+      <td>65536</td>
+      <td>0.003906</td>
+      <td>0.25</td>
+      <td>1024.0</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>bjacobi</td>
+      <td>8</td>
+      <td>82</td>
+      <td>1080.60</td>
+      <td>16</td>
+      <td>262144</td>
+      <td>0.001953</td>
+      <td>0.25</td>
+      <td>2048.0</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>asm</td>
+      <td>3</td>
+      <td>12</td>
+      <td>7.63</td>
+      <td>16</td>
+      <td>256</td>
+      <td>0.062500</td>
+      <td>0.25</td>
+      <td>64.0</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>asm</td>
+      <td>4</td>
+      <td>16</td>
+      <td>17.15</td>
+      <td>16</td>
+      <td>1024</td>
+      <td>0.031250</td>
+      <td>0.25</td>
+      <td>128.0</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>asm</td>
+      <td>5</td>
+      <td>23</td>
+      <td>37.57</td>
+      <td>16</td>
+      <td>4096</td>
+      <td>0.015625</td>
+      <td>0.25</td>
+      <td>256.0</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>asm</td>
+      <td>6</td>
+      <td>31</td>
+      <td>78.75</td>
+      <td>16</td>
+      <td>16384</td>
+      <td>0.007812</td>
+      <td>0.25</td>
+      <td>512.0</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>asm</td>
+      <td>7</td>
+      <td>41</td>
+      <td>165.10</td>
+      <td>16</td>
+      <td>65536</td>
+      <td>0.003906</td>
+      <td>0.25</td>
+      <td>1024.0</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>asm</td>
+      <td>8</td>
+      <td>54</td>
+      <td>344.80</td>
+      <td>16</td>
+      <td>262144</td>
+      <td>0.001953</td>
+      <td>0.25</td>
+      <td>2048.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><figure><img src="./lecture_16_1.png" alt="png"></figure></p>
+
+<pre><code class="language-python">import numpy as np
+df['1/sqrt(Hh)'] = np.sqrt(df['1/Hh'])
+seaborn.lmplot(x='1/sqrt(Hh)', y='its', hue='method', data=df);
+</code></pre>
+
+<p><figure><img src="./lecture_17_0.png" alt="png"></figure></p>
+
+<h4 id="cost">Cost</h4>
+
+<p>Let $n = N/P$ be the subdomain size and suppose $k$ iterations are needed.</p>
+
+<ul>
+<li>Matrix assembly scales like $O(n)$ (perfect parallelism)</li>
+<li>2D factorization in each subdomain scales as $O(n^{3/2})$</li>
+<li>Preconditioner application scales like $O(n \log n)$</li>
+<li>Matrix multiplication scales like $O(n)$</li>
+<li>GMRES scales like $O(k^2 n) + O(k^2 \log P)$
+
+<ul>
+<li>With restart length $r \ll k$, GMRES scales with $O(krn) + O(kr\log P)$</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-python">! mpiexec -n 2 --oversubscribe ./ex29 -da_refine 8 -pc_type asm -sub_pc_type lu -ksp_converged_reason -log_view
+</code></pre>
+
+<pre><code>Linear solve converged due to CONVERGED_RTOL iterations 25
+************************************************************************************************************************
+***             WIDEN YOUR WINDOW TO 120 CHARACTERS.  Use 'enscript -r -fCourier9' to print this document            ***
+************************************************************************************************************************
+
+---------------------------------------------- PETSc Performance Summary: ----------------------------------------------
+
+./ex29 on a ompi-optg named joule.int.colorado.edu with 2 processors, by jed Wed Oct 16 10:57:30 2019
+Using Petsc Development GIT revision: v3.12-32-g78b8d9f084  GIT Date: 2019-10-03 10:45:44 -0500
+
+                         Max       Max/Min     Avg       Total 
+Time (sec):           1.484e+00     1.000   1.484e+00
+Objects:              1.040e+02     1.000   1.040e+02
+Flop:                 1.432e+09     1.004   1.429e+09  2.857e+09
+Flop/sec:             9.647e+08     1.004   9.628e+08  1.926e+09
+MPI Messages:         6.200e+01     1.000   6.200e+01  1.240e+02
+MPI Message Lengths:  2.524e+05     1.000   4.071e+03  5.048e+05
+MPI Reductions:       1.710e+02     1.000
+
+Flop counting convention: 1 flop = 1 real number operation of type (multiply/divide/add/subtract)
+                            e.g., VecAXPY() for real vectors of length N --&gt; 2N flop
+                            and VecAXPY() for complex vectors of length N --&gt; 8N flop
+
+Summary of Stages:   ----- Time ------  ----- Flop ------  --- Messages ---  -- Message Lengths --  -- Reductions --
+                        Avg     %Total     Avg     %Total    Count   %Total     Avg         %Total    Count   %Total 
+ 0:      Main Stage: 1.4839e+00 100.0%  2.8574e+09 100.0%  1.240e+02 100.0%  4.071e+03      100.0%  1.630e+02  95.3% 
+
+------------------------------------------------------------------------------------------------------------------------
+See the 'Profiling' chapter of the users' manual for details on interpreting output.
+Phase summary info:
+   Count: number of times phase was executed
+   Time and Flop: Max - maximum over all processors
+                  Ratio - ratio of maximum to minimum over all processors
+   Mess: number of messages sent
+   AvgLen: average message length (bytes)
+   Reduct: number of global reductions
+   Global: entire computation
+   Stage: stages of a computation. Set stages with PetscLogStagePush() and PetscLogStagePop().
+      %T - percent time in this phase         %F - percent flop in this phase
+      %M - percent messages in this phase     %L - percent message lengths in this phase
+      %R - percent reductions in this phase
+   Total Mflop/s: 10e-6 * (sum of flop over all processors)/(max time over all processors)
+------------------------------------------------------------------------------------------------------------------------
+Event                Count      Time (sec)     Flop                              --- Global ---  --- Stage ----  Total
+                   Max Ratio  Max     Ratio   Max  Ratio  Mess   AvgLen  Reduct  %T %F %M %L %R  %T %F %M %L %R Mflop/s
+------------------------------------------------------------------------------------------------------------------------
+
+--- Event Stage 0: Main Stage
+
+BuildTwoSided          5 1.0 1.5282e-02 1.7 0.00e+00 0.0 4.0e+00 4.0e+00 0.0e+00  1  0  3  0  0   1  0  3  0  0     0
+BuildTwoSidedF         4 1.0 1.1949e-0217.8 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+MatMult               25 1.0 2.8539e-02 1.0 2.96e+07 1.0 5.0e+01 4.1e+03 0.0e+00  2  2 40 41  0   2  2 40 41  0  2071
+MatSolve              26 1.0 2.9259e-01 1.0 3.50e+08 1.0 0.0e+00 0.0e+00 0.0e+00 20 25  0  0  0  20 25  0  0  0  2393
+MatLUFactorSym         1 1.0 1.5648e-01 1.2 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00 10  0  0  0  0  10  0  0  0  0     0
+MatLUFactorNum         1 1.0 5.9458e-01 1.1 8.64e+08 1.0 0.0e+00 0.0e+00 0.0e+00 39 60  0  0  0  39 60  0  0  0  2896
+MatAssemblyBegin       3 1.0 1.0730e-0282.8 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+MatAssemblyEnd         3 1.0 9.8794e-03 1.1 0.00e+00 0.0 3.0e+00 1.4e+03 4.0e+00  1  0  2  1  2   1  0  2  1  2     0
+MatGetRowIJ            1 1.0 5.0642e-03 1.6 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+MatCreateSubMats       1 1.0 3.9036e-02 1.2 0.00e+00 0.0 1.0e+01 7.0e+03 1.0e+00  2  0  8 14  1   2  0  8 14  1     0
+MatGetOrdering         1 1.0 8.0494e-02 1.2 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  5  0  0  0  0   5  0  0  0  0     0
+MatIncreaseOvrlp       1 1.0 1.5691e-02 1.1 0.00e+00 0.0 0.0e+00 0.0e+00 1.0e+00  1  0  0  0  1   1  0  0  0  1     0
+KSPSetUp               2 1.0 2.8898e-03 1.0 0.00e+00 0.0 0.0e+00 0.0e+00 1.0e+01  0  0  0  0  6   0  0  0  0  6     0
+KSPSolve               1 1.0 1.2704e+00 1.0 1.43e+09 1.0 1.0e+02 4.1e+03 1.1e+02 86100 82 83 64  86100 82 83 67  2249
+KSPGMRESOrthog        25 1.0 8.4230e-02 1.0 1.71e+08 1.0 0.0e+00 0.0e+00 2.5e+01  6 12  0  0 15   6 12  0  0 15  4062
+DMCreateMat            1 1.0 6.0364e-02 1.0 0.00e+00 0.0 3.0e+00 1.4e+03 6.0e+00  4  0  2  1  4   4  0  2  1  4     0
+SFSetGraph             5 1.0 3.0582e-04 1.3 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+SFSetUp                5 1.0 3.2978e-02 1.5 0.00e+00 0.0 1.2e+01 1.4e+03 0.0e+00  2  0 10  3  0   2  0 10  3  0     0
+SFBcastOpBegin        51 1.0 7.6917e-03 1.0 0.00e+00 0.0 1.0e+02 4.1e+03 0.0e+00  1  0 82 83  0   1  0 82 83  0     0
+SFBcastOpEnd          51 1.0 1.0617e-02 1.9 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  1  0  0  0  0   1  0  0  0  0     0
+SFReduceBegin         26 1.0 5.9807e-03 1.3 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+SFReduceEnd           26 1.0 5.0625e-03 1.1 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+VecMDot               25 1.0 4.1009e-02 1.0 8.57e+07 1.0 0.0e+00 0.0e+00 2.5e+01  3  6  0  0 15   3  6  0  0 15  4171
+VecNorm               26 1.0 6.5928e-03 1.3 6.86e+06 1.0 0.0e+00 0.0e+00 2.6e+01  0  0  0  0 15   0  0  0  0 16  2076
+VecScale              26 1.0 2.2696e-03 1.0 3.43e+06 1.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0  3015
+VecCopy                1 1.0 1.2067e-04 1.1 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+VecSet                85 1.0 6.4445e-03 1.0 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+VecAXPY                1 1.0 1.7286e-04 1.0 2.64e+05 1.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0  3045
+VecMAXPY              26 1.0 4.5977e-02 1.0 9.23e+07 1.0 0.0e+00 0.0e+00 0.0e+00  3  6  0  0  0   3  6  0  0  0  4007
+VecAssemblyBegin       2 1.0 1.3040e-03 2.1 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+VecAssemblyEnd         2 1.0 4.9600e-06 1.4 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+VecScatterBegin      129 1.0 2.7052e-02 1.0 0.00e+00 0.0 1.0e+02 4.1e+03 0.0e+00  2  0 82 83  0   2  0 82 83  0     0
+VecScatterEnd         77 1.0 1.5437e-02 1.4 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  1  0  0  0  0   1  0  0  0  0     0
+VecNormalize          26 1.0 8.8965e-03 1.2 1.03e+07 1.0 0.0e+00 0.0e+00 2.6e+01  1  1  0  0 15   1  1  0  0 16  2307
+PCSetUp                2 1.0 8.5827e-01 1.0 8.64e+08 1.0 1.3e+01 5.7e+03 7.0e+00 58 60 10 15  4  58 60 10 15  4  2006
+PCSetUpOnBlocks        1 1.0 7.9431e-01 1.0 8.64e+08 1.0 0.0e+00 0.0e+00 0.0e+00 53 60  0  0  0  53 60  0  0  0  2168
+PCApply               26 1.0 3.3956e-01 1.0 3.50e+08 1.0 5.2e+01 4.1e+03 0.0e+00 23 25 42 42  0  23 25 42 42  0  2062
+PCApplyOnBlocks       26 1.0 2.9531e-01 1.0 3.50e+08 1.0 0.0e+00 0.0e+00 0.0e+00 20 25  0  0  0  20 25  0  0  0  2371
+------------------------------------------------------------------------------------------------------------------------
+
+Memory usage is given in bytes:
+
+Object Type          Creations   Destructions     Memory  Descendants' Mem.
+Reports information only for process 0.
+
+--- Event Stage 0: Main Stage
+
+       Krylov Solver     2              2        20056     0.
+     DMKSP interface     1              1          664     0.
+              Matrix     5              5    105275836     0.
+    Distributed Mesh     3              3        15760     0.
+           Index Set    17             17      5309508     0.
+   IS L to G Mapping     3              3      2119704     0.
+   Star Forest Graph    11             11        10648     0.
+     Discrete System     3              3         2856     0.
+              Vector    50             50     45457728     0.
+         Vec Scatter     5              5         4008     0.
+      Preconditioner     2              2         2000     0.
+              Viewer     2              1          848     0.
+========================================================================================================================
+Average time to get PetscTime(): 3.32e-08
+Average time for MPI_Barrier(): 1.404e-06
+Average time for zero size MPI_Send(): 8.8545e-06
+#PETSc Option Table entries:
+-da_refine 8
+-ksp_converged_reason
+-log_view
+-malloc_test
+-pc_type asm
+-sub_pc_type lu
+#End of PETSc Option Table entries
+Compiled without FORTRAN kernels
+Compiled with full precision matrices (default)
+sizeof(short) 2 sizeof(int) 4 sizeof(long) 8 sizeof(void*) 8 sizeof(PetscScalar) 8 sizeof(PetscInt) 4
+Configure options: --download-ctetgen --download-exodusii --download-hypre --download-ml --download-mumps --download-netcdf --download-pnetcdf --download-scalapack --download-sundials --download-superlu --download-superlu_dist --download-triangle --with-debugging=0 --with-hdf5 --with-med --with-metis --with-mpi-dir=/home/jed/usr/ccache/ompi --with-parmetis --with-suitesparse --with-x --with-zlib COPTFLAGS=&quot;-O2 -march=native -ftree-vectorize -g&quot; PETSC_ARCH=ompi-optg
+-----------------------------------------
+Libraries compiled on 2019-10-03 21:38:02 on joule 
+Machine characteristics: Linux-5.3.1-arch1-1-ARCH-x86_64-with-arch
+Using PETSc directory: /home/jed/petsc
+Using PETSc arch: ompi-optg
+-----------------------------------------
+
+Using C compiler: /home/jed/usr/ccache/ompi/bin/mpicc  -fPIC -Wall -Wwrite-strings -Wno-strict-aliasing -Wno-unknown-pragmas -fstack-protector -fvisibility=hidden -O2 -march=native -ftree-vectorize -g  
+Using Fortran compiler: /home/jed/usr/ccache/ompi/bin/mpif90  -fPIC -Wall -ffree-line-length-0 -Wno-unused-dummy-argument -g -O    
+-----------------------------------------
+
+Using include paths: -I/home/jed/petsc/include -I/home/jed/petsc/ompi-optg/include -I/home/jed/usr/ccache/ompi/include
+-----------------------------------------
+
+Using C linker: /home/jed/usr/ccache/ompi/bin/mpicc
+Using Fortran linker: /home/jed/usr/ccache/ompi/bin/mpif90
+Using libraries: -Wl,-rpath,/home/jed/petsc/ompi-optg/lib -L/home/jed/petsc/ompi-optg/lib -lpetsc -Wl,-rpath,/home/jed/petsc/ompi-optg/lib -L/home/jed/petsc/ompi-optg/lib -Wl,-rpath,/usr/lib/openmpi -L/usr/lib/openmpi -Wl,-rpath,/usr/lib/gcc/x86_64-pc-linux-gnu/9.1.0 -L/usr/lib/gcc/x86_64-pc-linux-gnu/9.1.0 -lHYPRE -lcmumps -ldmumps -lsmumps -lzmumps -lmumps_common -lpord -lscalapack -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig -lsuperlu -lsuperlu_dist -lml -lsundials_cvode -lsundials_nvecserial -lsundials_nvecparallel -llapack -lblas -lexodus -lnetcdf -lpnetcdf -lmedC -lmed -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5 -lparmetis -lmetis -ltriangle -lm -lz -lX11 -lctetgen -lstdc++ -ldl -lmpi_usempif08 -lmpi_usempi_ignore_tkr -lmpi_mpifh -lmpi -lgfortran -lm -lgfortran -lm -lgcc_s -lquadmath -lpthread -lquadmath -lstdc++ -ldl
+-----------------------------------------
+</code></pre>
+
+<h2 id="suggested-exercises">Suggested exercises</h2>
+
+<ul>
+<li>There is no substitute for experimentation.  Try some different methods or a different example.  How do the constants and scaling compare?</li>
+<li>Can you estimate parameters to model the leading costs for this solver?
+
+<ul>
+<li>In your model, how does degrees of freedom solved per second per process depend on discretization size $h$?</li>
+<li>What would be optimal?</li>
+</ul></li>
+</ul>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/dd-preconditioning/" rel="prev">Domain Decomposition Preconditioning</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Oct 16, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/dd-preconditioning-2/index.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
