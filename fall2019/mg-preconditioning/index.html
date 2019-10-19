@@ -28,13 +28,11 @@
   
     
   
-  <meta name="description" content="Recap: Domain decomposition theory Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$. The columns of $P_i$ are &quot;basis functions&quot; for the subspace $V_i$. The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.
-Define the subspace projection
-\[ S_i = P_i A_i^{-1} P_i^T A . \]
- $S_i$ is a projection: $S_i^2 = S_i$ If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$ $I - S_i$ is $A$-orthogonal to the range of $P_i$  Note, the concept of $A$-orthogonality is meaningful only when $A$ is SPD.">
+  <meta name="description" content="Recap: Domain Decomposition convergence theory The formal convergence is beyond the scope of this course, but the following estimates are useful. We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1. We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.
+ (Block) Jacobi: $\delta=0$, $\kappa \sim H^{-2} H/h = (Hh)^{-1}$ Overlapping Schwarz: $\kappa \sim H^{-2} H/\delta = (H \delta)^{-1}$ 2-level overlapping Schwarz: $\kappa \sim H/\delta$  Hands-on with PETSc: demonstrate these estimates  Linear Poisson with geometric multigrid: src/ksp/ksp/examples/tutorials/ex29.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/mg-preconditioning/">
 
   
 
@@ -101,7 +99,7 @@ Define the subspace projection
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/mg-preconditioning/">
 
   
   
@@ -117,18 +115,16 @@ Define the subspace projection
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/">
-  <meta property="og:title" content="DD Preconditioning 2 | HPSC">
-  <meta property="og:description" content="Recap: Domain decomposition theory Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$. The columns of $P_i$ are &quot;basis functions&quot; for the subspace $V_i$. The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.
-Define the subspace projection
-\[ S_i = P_i A_i^{-1} P_i^T A . \]
- $S_i$ is a projection: $S_i^2 = S_i$ If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$ $I - S_i$ is $A$-orthogonal to the range of $P_i$  Note, the concept of $A$-orthogonality is meaningful only when $A$ is SPD."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/mg-preconditioning/">
+  <meta property="og:title" content="Multilevel Preconditioning | HPSC">
+  <meta property="og:description" content="Recap: Domain Decomposition convergence theory The formal convergence is beyond the scope of this course, but the following estimates are useful. We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1. We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.
+ (Block) Jacobi: $\delta=0$, $\kappa \sim H^{-2} H/h = (Hh)^{-1}$ Overlapping Schwarz: $\kappa \sim H^{-2} H/\delta = (H \delta)^{-1}$ 2-level overlapping Schwarz: $\kappa \sim H/\delta$  Hands-on with PETSc: demonstrate these estimates  Linear Poisson with geometric multigrid: src/ksp/ksp/examples/tutorials/ex29."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-10-16T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-10-18T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-10-16T12:16:04-06:00">
+    <meta property="article:modified_time" content="2019-10-18T14:16:25-06:00">
   
 
   
@@ -140,7 +136,7 @@ Define the subspace projection
 
 
 
-  <title>DD Preconditioning 2 | HPSC</title>
+  <title>Multilevel Preconditioning | HPSC</title>
 
 </head>
 
@@ -351,11 +347,11 @@ Define the subspace projection
         <a href="/fall2019/dd-preconditioning/">2019-10-14 DD Preconditioning</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/dd-preconditioning-2/">2019-10-16 DD Preconditioning 2</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/mg-preconditioning/">2019-10-18 Multilevel Preconditioning</a>
       </li>
       
@@ -399,51 +395,10 @@ Define the subspace projection
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">DD Preconditioning 2</h1>
+          <h1 itemprop="name">Multilevel Preconditioning</h1>
 
           <div class="article-style" itemprop="articleBody">
-            <h3 id="recap-domain-decomposition-theory">Recap: Domain decomposition theory</h3>
-
-<p>Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$.  The columns of $P_i$ are &quot;basis functions&quot; for the subspace $V_i$.  The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.</p>
-
-<p>Define the subspace projection</p>
-
-<p><span  class="math">\[ S_i = P_i A_i^{-1} P_i^T A . \]</span></p>
-
-<ul>
-<li>$S_i$ is a projection: $S_i^2 = S_i$</li>
-<li>If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$</li>
-<li>$I - S_i$ is $A$-orthogonal to the range of $P_i$</li>
-</ul>
-
-<p>Note, the concept of $A$-orthogonality is meaningful only when $A$ is SPD.
-Does the mathematical expression $ P_i^T A (I - S_i) = 0 $ hold even when $A$ is nonsymmetric?</p>
-
-<p>These projections may be applied additively</p>
-
-<p><span  class="math">\[ I - \sum_{i=0}^n S_i, \]</span></p>
-
-<p>multiplicatively</p>
-
-<p><span  class="math">\[ \prod_{i=0}^n (I - S_i), \]</span></p>
-
-<p>or in some hybrid manner, such as</p>
-
-<p><span  class="math">\( (I - S_0) (I - \sum_{i=1}^n S_i) . \)</span>
-In each case above, the action is expressed in terms of the error iteration operator.</p>
-
-<h3 id="examples">Examples</h3>
-
-<ul>
-<li>Jacobi corresponds to the additive preconditioner with $P_i$ as the $i$th column of the identity</li>
-<li>Gauss-Seidel is the multiplicate preconditioner with $P_i$ as the $i$th column of the identity</li>
-<li>Block Jacobi corresponds to labeling &quot;subdomains&quot; and $P_i$ as the columns of the identity corresponding to non-overlapping subdomains</li>
-<li>Overlapping Schwarz corresponds to overlapping subdomains</li>
-<li>$P_i$ are eigenvectors of $A$</li>
-<li>A domain is partitioned into interior $V_{I}$ and interface $V_\Gamma$ degrees of freedom.  $P_{I}$ is embedding of the interior degrees of freedom while $P_\Gamma$ is &quot;harmonic extension&quot; of the interface degrees of freedom.  Consider the multiplicative combination $(I - S_\Gamma)(I - S_{I})$.</li>
-</ul>
-
-<h3 id="convergence-theory">Convergence theory</h3>
+            <h2 id="recap-domain-decomposition-convergence-theory">Recap: Domain Decomposition convergence theory</h2>
 
 <p>The formal convergence is beyond the scope of this course, but the following estimates are useful.  We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1.  We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.</p>
 
@@ -491,12 +446,12 @@ In each case above, the action is expressed in terms of the error iteration oper
 
 <p>in $\Omega = [0,1]^2$ with variable conductivity</p>
 
-<p>$$\rho(x,y) = \begin{cases}</p>
-
-<pre><code>\rho_0 &amp; (x,y) \in [1/3, 2/3]^2 \\
-1 &amp; \text{otherwise}
-\end{cases} $$
-</code></pre>
+<p><span  class="math">\[
+\rho(x,y) = \begin{cases}
+\rho_0 & (x,y) \in [1/3, 2/3]^2 \\
+1 & \text{otherwise}
+\end{cases}
+\]</span></p>
 
 <p>where $\rho_0 &gt; 0$ is a parameter (with default $\rho_0 = 1$).</p>
 
@@ -778,6 +733,9 @@ EOF
 <pre><code class="language-python">%matplotlib inline
 import pandas
 import seaborn
+import matplotlib.pyplot as plt
+plt.style.use('seaborn')
+
 df = pandas.read_csv('results.csv')
 n1 = 2**(df.refine + 1) # number of points per dimension
 df['P'] = 16      # number of processes
@@ -785,8 +743,9 @@ df['N'] = n1**2    # number of dofs in global problem
 df['h'] = 1/n1
 df['H'] = 0.25 # 16 procs = 4x4 process grid
 df['1/Hh'] = 1/(df.H * df.h)
+</code></pre>
 
-seaborn.lmplot(x='1/Hh', y='cond', hue='method', data=df)
+<pre><code class="language-python">seaborn.lmplot(x='1/Hh', y='cond', hue='method', data=df)
 df
 </code></pre>
 
@@ -968,14 +927,28 @@ df
 </table>
 </div>
 
-<p><figure><img src="./lecture_16_1.png" alt="png"></figure></p>
+<p><figure><img src="./lecture_15_1.png" alt="png"></figure></p>
 
 <pre><code class="language-python">import numpy as np
 df['1/sqrt(Hh)'] = np.sqrt(df['1/Hh'])
-seaborn.lmplot(x='1/sqrt(Hh)', y='its', hue='method', data=df);
+plt.rc('figure', figsize=(16, 9))
+g = seaborn.lmplot(x='1/sqrt(Hh)', y='its', hue='method', data=df);
 </code></pre>
 
-<p><figure><img src="./lecture_17_0.png" alt="png"></figure></p>
+<p><figure><img src="./lecture_16_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python">from scipy.stats import linregress
+
+bjacobi = df[df.method == 'bjacobi']
+asm = df[df.method == 'asm']
+bjacobi_its = linregress(bjacobi['1/sqrt(Hh)'], bjacobi['its'])
+asm_its = linregress(asm['1/sqrt(Hh)'], asm['its'])
+bjacobi_its, asm_its
+</code></pre>
+
+<pre><code>(LinregressResult(slope=1.649535193425483, intercept=8.498251134591065, rvalue=0.998633733566655, pvalue=2.7987507565052237e-06, stderr=0.043157836341681514),
+ LinregressResult(slope=1.130138246216531, intercept=4.034979240523391, rvalue=0.9973956316037952, pvalue=1.0165269744723222e-05, stderr=0.04086178847687418))
+</code></pre>
 
 <h4 id="cost">Cost</h4>
 
@@ -1148,9 +1121,731 @@ Using libraries: -Wl,-rpath,/home/jed/petsc/ompi-optg/lib -L/home/jed/petsc/ompi
 
 <ul>
 <li>In your model, how does degrees of freedom solved per second per process depend on discretization size $h$?</li>
-<li>What would be optimal?</li>
+<li>What would be optimal?
+<br></li>
 </ul></li>
 </ul>
+
+<h2 id="an-approach-to-modeling">An approach to modeling</h2>
+
+<p>We have conducted:</p>
+
+<ul>
+<li>a few experiments to validate the mathematical estimates for condition number and number of iterations
+
+<ul>
+<li>even when the theorem exists, we need to confirm that we're in the asymptotic regime</li>
+<li>execution time does not matter at all for this; it's checking the math/convergence rates</li>
+<li>indeed, we ran oversubscribed (more processes than cores)</li>
+</ul></li>
+<li>one performance experiment on representative hardware (<code>-log_view</code>)
+
+<ul>
+<li>this was on my laptop, but could have been on a couple nodes of a cluster</li>
+</ul></li>
+</ul>
+
+<p>The performance experiment(s) enables us to fill in constants to estimate time.
+These models could be more sophisticated, accounting for cache sizes, message sizes, and the like.
+We implement this performance model in code, dropping in the timing constants from the experiment above, then run synthetic experiments to map out estimated performance in various scaling modes.</p>
+
+<pre><code class="language-python">def perf_model(h, P, method, regress_its):
+    n1 = 1/h
+    N = n1**2
+    n = N / P
+    H = 1/np.sqrt(P)
+    its = regress_its.intercept + regress_its.slope / np.sqrt(H*h)
+    nref = (2**9 + 1)**2/2 # 8 levels of refinement from a 3x3 (2x2 element) grid
+    pc_setup = 8.5827e-01 / nref**1.5 * n**1.5
+    pc_apply = 3.3956e-01 / 26 / (nref * np.log(nref)) * (n * np.log(n))
+    matmult =  2.8539e-02 / 25 / nref * n
+    gmres = 8.4230e-02 / 25 / nref * n + 30e-6
+    total = pc_setup + its*(pc_apply + matmult + gmres)
+    return dict(h=h, H=H, n=n, N=N, P=P, method=method, its=its,
+                pc_setup=pc_setup, pc_apply=its*pc_apply, matmult=its*matmult,
+                gmres=its*gmres)
+
+mdf = pandas.DataFrame(columns='h H n N P method its pc_setup pc_apply matmult gmres'.split())
+mdf.append(perf_model(.5**9, 2, 'asm', asm_its), ignore_index=True)
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>h</th>
+      <th>H</th>
+      <th>n</th>
+      <th>N</th>
+      <th>P</th>
+      <th>method</th>
+      <th>its</th>
+      <th>pc_setup</th>
+      <th>pc_apply</th>
+      <th>matmult</th>
+      <th>gmres</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.001953</td>
+      <td>0.707107</td>
+      <td>131072.0</td>
+      <td>262144.0</td>
+      <td>2</td>
+      <td>asm</td>
+      <td>34.445514</td>
+      <td>0.853261</td>
+      <td>0.447958</td>
+      <td>0.039168</td>
+      <td>0.116635</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3 id="weak-scaling-study-fixed-subdomain-size">Weak scaling study: fixed subdomain size</h3>
+
+<pre><code class="language-python">def make_stats(df):
+    df['total'] = df.pc_setup + df.pc_apply + df.matmult + df.gmres
+    df['cost'] = df.total * df.P
+    df['efficiency'] = df.N / df.cost
+    df['digits_accuracy'] = -np.log10(100*df.h**2)
+    df['log10_time'] = np.log10(df.total)
+    df['log10_cost'] = np.log10(df.cost)
+
+mdf = pandas.DataFrame(columns='h H n N P method its pc_setup pc_apply matmult gmres'.split())
+for h in [.002]:
+    for scale in np.geomspace(2, 1e3, 10):
+        for method, its in [('asm', asm_its), ('bjacobi', bjacobi_its)]:
+            mdf = mdf.append(perf_model(h/scale, scale**2, method, its), ignore_index=True)
+make_stats(mdf)
+
+plt.rc('figure', figsize=(16,9))
+grid = seaborn.scatterplot(x='P', y='total', style='method', hue='digits_accuracy', size='its', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(2, 2e6), yscale='log', ylim=(1, 2e3))
+mdf
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>h</th>
+      <th>H</th>
+      <th>n</th>
+      <th>N</th>
+      <th>P</th>
+      <th>method</th>
+      <th>its</th>
+      <th>pc_setup</th>
+      <th>pc_apply</th>
+      <th>matmult</th>
+      <th>gmres</th>
+      <th>total</th>
+      <th>cost</th>
+      <th>efficiency</th>
+      <th>digits_accuracy</th>
+      <th>log10_time</th>
+      <th>log10_cost</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.001000</td>
+      <td>0.500000</td>
+      <td>250000.0</td>
+      <td>1.000000e+06</td>
+      <td>4.000000</td>
+      <td>asm</td>
+      <td>54.576298</td>
+      <td>2.24764</td>
+      <td>1.427934</td>
+      <td>0.118369</td>
+      <td>0.350992</td>
+      <td>4.144935</td>
+      <td>1.657974e+01</td>
+      <td>60314.577430</td>
+      <td>4.000000</td>
+      <td>0.617518</td>
+      <td>1.219578</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.001000</td>
+      <td>0.500000</td>
+      <td>250000.0</td>
+      <td>1.000000e+06</td>
+      <td>4.000000</td>
+      <td>bjacobi</td>
+      <td>82.267708</td>
+      <td>2.24764</td>
+      <td>2.152452</td>
+      <td>0.178428</td>
+      <td>0.529081</td>
+      <td>5.107601</td>
+      <td>2.043040e+01</td>
+      <td>48946.656533</td>
+      <td>4.000000</td>
+      <td>0.708217</td>
+      <td>1.310277</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.000501</td>
+      <td>0.250660</td>
+      <td>250000.0</td>
+      <td>3.978974e+06</td>
+      <td>15.915896</td>
+      <td>asm</td>
+      <td>104.851598</td>
+      <td>2.24764</td>
+      <td>2.743336</td>
+      <td>0.227410</td>
+      <td>0.674323</td>
+      <td>5.892709</td>
+      <td>9.378775e+01</td>
+      <td>42425.307545</td>
+      <td>4.599771</td>
+      <td>0.770315</td>
+      <td>1.972146</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.000501</td>
+      <td>0.250660</td>
+      <td>250000.0</td>
+      <td>3.978974e+06</td>
+      <td>15.915896</td>
+      <td>bjacobi</td>
+      <td>155.648886</td>
+      <td>2.24764</td>
+      <td>4.072396</td>
+      <td>0.337583</td>
+      <td>1.001011</td>
+      <td>7.658630</td>
+      <td>1.218940e+02</td>
+      <td>32642.914395</td>
+      <td>4.599771</td>
+      <td>0.884151</td>
+      <td>2.085982</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.000251</td>
+      <td>0.125661</td>
+      <td>250000.0</td>
+      <td>1.583223e+07</td>
+      <td>63.328940</td>
+      <td>asm</td>
+      <td>205.137578</td>
+      <td>2.24764</td>
+      <td>5.367218</td>
+      <td>0.444917</td>
+      <td>1.319283</td>
+      <td>9.379058</td>
+      <td>5.939658e+02</td>
+      <td>26655.127609</td>
+      <td>5.199542</td>
+      <td>0.972159</td>
+      <td>2.773761</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>0.000251</td>
+      <td>0.125661</td>
+      <td>250000.0</td>
+      <td>1.583223e+07</td>
+      <td>63.328940</td>
+      <td>bjacobi</td>
+      <td>302.025008</td>
+      <td>2.24764</td>
+      <td>7.902180</td>
+      <td>0.655054</td>
+      <td>1.942386</td>
+      <td>12.747260</td>
+      <td>8.072705e+02</td>
+      <td>19612.057407</td>
+      <td>5.199542</td>
+      <td>1.105417</td>
+      <td>2.907019</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>0.000126</td>
+      <td>0.062996</td>
+      <td>250000.0</td>
+      <td>6.299605e+07</td>
+      <td>251.984210</td>
+      <td>asm</td>
+      <td>405.181693</td>
+      <td>2.24764</td>
+      <td>10.601171</td>
+      <td>0.878787</td>
+      <td>2.605809</td>
+      <td>16.333407</td>
+      <td>4.115761e+03</td>
+      <td>15306.053492</td>
+      <td>5.799313</td>
+      <td>1.213077</td>
+      <td>3.614450</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>0.000126</td>
+      <td>0.062996</td>
+      <td>250000.0</td>
+      <td>6.299605e+07</td>
+      <td>251.984210</td>
+      <td>bjacobi</td>
+      <td>594.006815</td>
+      <td>2.24764</td>
+      <td>15.541589</td>
+      <td>1.288325</td>
+      <td>3.820182</td>
+      <td>22.897737</td>
+      <td>5.769868e+03</td>
+      <td>10918.109272</td>
+      <td>5.799313</td>
+      <td>1.359793</td>
+      <td>3.761166</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>0.000063</td>
+      <td>0.031581</td>
+      <td>250000.0</td>
+      <td>2.506597e+08</td>
+      <td>1002.638645</td>
+      <td>asm</td>
+      <td>804.217010</td>
+      <td>2.24764</td>
+      <td>21.041527</td>
+      <td>1.744244</td>
+      <td>5.172088</td>
+      <td>30.205500</td>
+      <td>3.028520e+04</td>
+      <td>8276.638274</td>
+      <td>6.399084</td>
+      <td>1.480086</td>
+      <td>4.481230</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>0.000063</td>
+      <td>0.031581</td>
+      <td>250000.0</td>
+      <td>2.506597e+08</td>
+      <td>1002.638645</td>
+      <td>bjacobi</td>
+      <td>1176.433613</td>
+      <td>2.24764</td>
+      <td>30.780200</td>
+      <td>2.551534</td>
+      <td>7.565891</td>
+      <td>43.145266</td>
+      <td>4.325911e+04</td>
+      <td>5794.378472</td>
+      <td>6.399084</td>
+      <td>1.634933</td>
+      <td>4.636078</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>0.000032</td>
+      <td>0.015832</td>
+      <td>250000.0</td>
+      <td>9.973683e+08</td>
+      <td>3989.473198</td>
+      <td>asm</td>
+      <td>1600.187362</td>
+      <td>2.24764</td>
+      <td>41.867289</td>
+      <td>3.470602</td>
+      <td>10.291141</td>
+      <td>57.876673</td>
+      <td>2.308974e+05</td>
+      <td>4319.529584</td>
+      <td>6.998856</td>
+      <td>1.762504</td>
+      <td>5.363419</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>0.000032</td>
+      <td>0.015832</td>
+      <td>250000.0</td>
+      <td>9.973683e+08</td>
+      <td>3989.473198</td>
+      <td>bjacobi</td>
+      <td>2338.221662</td>
+      <td>2.24764</td>
+      <td>61.177213</td>
+      <td>5.071305</td>
+      <td>15.037594</td>
+      <td>83.533752</td>
+      <td>3.332557e+05</td>
+      <td>2992.802242</td>
+      <td>6.998856</td>
+      <td>1.921862</td>
+      <td>5.522778</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>0.000016</td>
+      <td>0.007937</td>
+      <td>250000.0</td>
+      <td>3.968503e+09</td>
+      <td>15874.010520</td>
+      <td>asm</td>
+      <td>3187.938555</td>
+      <td>2.24764</td>
+      <td>83.409198</td>
+      <td>6.914232</td>
+      <td>20.502302</td>
+      <td>113.073373</td>
+      <td>1.794928e+06</td>
+      <td>2210.953766</td>
+      <td>7.598627</td>
+      <td>2.053360</td>
+      <td>6.254047</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>0.000016</td>
+      <td>0.007937</td>
+      <td>250000.0</td>
+      <td>3.968503e+09</td>
+      <td>15874.010520</td>
+      <td>bjacobi</td>
+      <td>4655.682804</td>
+      <td>2.24764</td>
+      <td>121.811247</td>
+      <td>10.097582</td>
+      <td>29.941673</td>
+      <td>164.098143</td>
+      <td>2.604896e+06</td>
+      <td>1523.478544</td>
+      <td>7.598627</td>
+      <td>2.215104</td>
+      <td>6.415790</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>0.000008</td>
+      <td>0.003979</td>
+      <td>250000.0</td>
+      <td>1.579057e+10</td>
+      <td>63162.276697</td>
+      <td>asm</td>
+      <td>6355.083968</td>
+      <td>2.24764</td>
+      <td>166.274365</td>
+      <td>13.783367</td>
+      <td>40.870879</td>
+      <td>223.176251</td>
+      <td>1.409632e+07</td>
+      <td>1120.190874</td>
+      <td>8.198398</td>
+      <td>2.348648</td>
+      <td>7.149106</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>0.000008</td>
+      <td>0.003979</td>
+      <td>250000.0</td>
+      <td>1.579057e+10</td>
+      <td>63162.276697</td>
+      <td>bjacobi</td>
+      <td>9278.407360</td>
+      <td>2.24764</td>
+      <td>242.760175</td>
+      <td>20.123682</td>
+      <td>59.671385</td>
+      <td>324.802883</td>
+      <td>2.051529e+07</td>
+      <td>769.697602</td>
+      <td>8.198398</td>
+      <td>2.511620</td>
+      <td>7.312078</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>0.000004</td>
+      <td>0.001995</td>
+      <td>250000.0</td>
+      <td>6.283027e+10</td>
+      <td>251321.062979</td>
+      <td>asm</td>
+      <td>12672.704838</td>
+      <td>2.24764</td>
+      <td>331.568547</td>
+      <td>27.485481</td>
+      <td>81.500824</td>
+      <td>442.802492</td>
+      <td>1.112856e+08</td>
+      <td>564.585802</td>
+      <td>8.798169</td>
+      <td>2.646210</td>
+      <td>8.046439</td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td>0.000004</td>
+      <td>0.001995</td>
+      <td>250000.0</td>
+      <td>6.283027e+10</td>
+      <td>251321.062979</td>
+      <td>bjacobi</td>
+      <td>18499.525217</td>
+      <td>2.24764</td>
+      <td>484.021428</td>
+      <td>40.123111</td>
+      <td>118.974329</td>
+      <td>645.366508</td>
+      <td>1.621942e+08</td>
+      <td>387.376780</td>
+      <td>8.798169</td>
+      <td>2.809806</td>
+      <td>8.210035</td>
+    </tr>
+    <tr>
+      <td>18</td>
+      <td>0.000002</td>
+      <td>0.001000</td>
+      <td>250000.0</td>
+      <td>2.500000e+11</td>
+      <td>1000000.000000</td>
+      <td>asm</td>
+      <td>25274.694404</td>
+      <td>2.24764</td>
+      <td>661.286899</td>
+      <td>54.817589</td>
+      <td>162.546864</td>
+      <td>880.898993</td>
+      <td>8.808990e+08</td>
+      <td>283.800983</td>
+      <td>9.397940</td>
+      <td>2.944926</td>
+      <td>8.944926</td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td>0.000002</td>
+      <td>0.001000</td>
+      <td>250000.0</td>
+      <td>2.500000e+11</td>
+      <td>1000000.000000</td>
+      <td>bjacobi</td>
+      <td>36893.226489</td>
+      <td>2.24764</td>
+      <td>965.274079</td>
+      <td>80.016703</td>
+      <td>237.268082</td>
+      <td>1284.806505</td>
+      <td>1.284807e+09</td>
+      <td>194.581829</td>
+      <td>9.397940</td>
+      <td>3.108838</td>
+      <td>9.108838</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><figure><img src="./lecture_23_1.png" alt="png"></figure></p>
+
+<pre><code class="language-python">grid = seaborn.scatterplot(x='P', y='efficiency', style='method', hue='digits_accuracy', size='its', sizes=(50,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(3, 2e6));
+</code></pre>
+
+<p><figure><img src="./lecture_24_0.png" alt="png"></figure></p>
+
+<h3 id="strong-scaling-study-fixed-global-problem-size">Strong scaling study: fixed global problem size</h3>
+
+<pre><code class="language-python">mdf = pandas.DataFrame(columns='h H n N P method its pc_setup pc_apply matmult gmres'.split())
+for h in [1e-5]:
+    for scale in np.geomspace(2, 1e3, 10):
+        for method, its in [('asm', asm_its), ('bjacobi', bjacobi_its)]:
+            mdf = mdf.append(perf_model(h, scale**2, method, its), ignore_index=True)
+make_stats(mdf)
+
+grid = seaborn.scatterplot(x='P', y='total', style='method', size='its', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(2, 2e6), yscale='log');
+</code></pre>
+
+<p><figure><img src="./lecture_26_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python">grid = seaborn.scatterplot(x='P', y='efficiency', style='method', size='its', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(2, 2e6), ylim=0);
+</code></pre>
+
+<p><figure><img src="./lecture_27_0.png" alt="png"></figure></p>
+
+<h2 id="accessible-range">Accessible range</h2>
+
+<p>Now we grid sample the space of possible configurations to understand the shape of the <a href="https://en.wikipedia.org/wiki/Pareto_efficiency">Pareto front</a> -- those configurations that are optimal in terms of the multiple objectives, which we take to be</p>
+
+<ul>
+<li>number of digits of accuracy
+
+<ul>
+<li>scales with $O(h^2)$ for this discretization</li>
+<li>sometimes we could change the discretization to converge as $O(h^3)$ or a higher power; these are called &quot;higher order methods&quot;</li>
+</ul></li>
+<li>total execution time: how long we have wait for the parallel computation to complete</li>
+<li>cost: how many node hours are we charged for</li>
+<li>efficiency: given the required problem size to reach desired accuracy, how well are the node resources being used
+
+<ul>
+<li>we measure here as number of degrees of freedom solved per second per core
+<br></li>
+</ul></li>
+</ul>
+
+<p>All of these metrics have tangible units and none are input parameters.  We'll map out the best configurations possible within a class of algorithms and, after identifying a Pareto optimal case that we would like to run, can check the input parameters to see how to run it on a real machine.</p>
+
+<pre><code class="language-python">mdf = pandas.DataFrame(columns='h H n N P method its pc_setup pc_apply matmult gmres'.split())
+for h in np.geomspace(1e-3, .1, 10):
+    for scale in np.geomspace(2, 1e3, 10):
+        for method, its in [('asm', asm_its), ('bjacobi', bjacobi_its)]:
+            mdf = mdf.append(perf_model(h/scale, scale**2, method, its), ignore_index=True)
+make_stats(mdf)
+
+grid = seaborn.scatterplot(x='P', y='total', style='method', hue='digits_accuracy', size='its', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(3, 2e6), yscale='log', ylim=(1e-3, 2e5));
+</code></pre>
+
+<p><figure><img src="./lecture_29_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python">grid = seaborn.scatterplot(x='total', y='efficiency', style='method', hue='digits_accuracy', size='its', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(1e-3, 1e4), yscale='log');
+</code></pre>
+
+<p><figure><img src="./lecture_30_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python">grid = seaborn.scatterplot(x='digits_accuracy', y='efficiency', style='method', hue='log10_time', size='log10_cost', sizes=(30,400), data=mdf)
+grid.axes.set(yscale='log');
+</code></pre>
+
+<p><figure><img src="./lecture_31_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python">grid = seaborn.scatterplot(x='total', y='digits_accuracy', style='method', size='log10_cost', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(1, 1e4), ylim=3);
+</code></pre>
+
+<p><figure><img src="./lecture_32_0.png" alt="png"></figure></p>
+
+<h2 id="twolevel-methods">Two-level methods</h2>
+
+<p>Two-level methods add a coarse space $P_0$ to the preconditioner</p>
+
+<p><span  class="math">\[ M^{-1} = P_0 A_0^{-1} P_0^T + \sum_{i=1}^{\text{subdomains}} P_i A_i^{-1} P_i^T \]</span></p>
+
+<p>or a similar combination.  In most formulations, the size of the coarse problem $A_0 = P_0^T A P_0$ is proportional to the number of subdomains.</p>
+
+<p>Compare the figures below with those above to see how two-level methods open up new accessible ranges and bring their own tradeoffs.</p>
+
+<pre><code class="language-python">def perf_model_2level(h, P, method, regress_its):
+    n1 = 1/h
+    N = n1**2
+    n = N / P
+    H = 1/np.sqrt(P)
+    its = regress_its.intercept + regress_its.slope / np.sqrt(H*h) * H
+    nref = (2**9 + 1)**2/2 # 8 levels of refinement from a 3x3 (2x2 element) grid
+    pc_setup = 8.5827e-01 / nref**1.5 * n**1.5
+    pc_setup += 8.5827e-01 / nref**1.5 * (4*P)**1.5
+    pc_apply = 3.3956e-01 / 26 / (nref * np.log(nref)) * (n * np.log(n) + 4*P * np.log(4*P))
+    matmult =  2.8539e-02 / 25 / nref * n
+    gmres = 8.4230e-02 / 25 / nref * n + 30e-6
+    total = pc_setup + its*(pc_apply + matmult + gmres)
+    return dict(h=h, H=H, n=n, N=N, P=P, method=method, its=its,
+                pc_setup=pc_setup, pc_apply=its*pc_apply, matmult=its*matmult,
+                gmres=its*gmres)
+</code></pre>
+
+<h3 id="strong-scaling">Strong scaling</h3>
+
+<pre><code class="language-python">mdf = pandas.DataFrame(columns='h H n N P method its pc_setup pc_apply matmult gmres'.split())
+for h in [1e-5]:
+    for scale in np.geomspace(2, 1e3, 10):
+        for method, its in [('asm', asm_its), ('bjacobi', bjacobi_its)]:
+            mdf = mdf.append(perf_model_2lev(h, scale**2, method, its), ignore_index=True)
+make_stats(mdf)
+grid = seaborn.scatterplot(x='P', y='efficiency', style='method', size='its', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(2, 2e6), ylim=0);
+</code></pre>
+
+<p><figure><img src="./lecture_36_0.png" alt="png"></figure></p>
+
+<ul>
+<li>Why does efficiency drop off on the left?</li>
+<li>Why does it drop off on the right?</li>
+</ul>
+
+<h3 id="accessible-range-1">Accessible range</h3>
+
+<pre><code class="language-python">mdf = pandas.DataFrame(columns='h H n N P method its pc_setup pc_apply matmult gmres'.split())
+for h in np.geomspace(1e-3, .1, 10):
+    for scale in np.geomspace(2, 1e3, 10):
+        for method, its in [('asm', asm_its), ('bjacobi', bjacobi_its)]:
+            mdf = mdf.append(perf_model_2level(h/scale, scale**2, method, its), ignore_index=True)
+make_stats(mdf)
+
+grid = seaborn.scatterplot(x='P', y='total', style='method', hue='digits_accuracy', size='its', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(3, 2e6), yscale='log', ylim=(1e-3, 2e5));
+</code></pre>
+
+<p><figure><img src="./lecture_38_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python">grid = seaborn.scatterplot(x='total', y='efficiency', style='method', hue='digits_accuracy', size='its', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(1e-3, 1e4), yscale='log');
+</code></pre>
+
+<p><figure><img src="./lecture_39_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python">grid = seaborn.scatterplot(x='digits_accuracy', y='efficiency', style='method', hue='log10_time', size='log10_cost', sizes=(30,400), data=mdf)
+grid.axes.set(yscale='log');
+</code></pre>
+
+<p><figure><img src="./lecture_40_0.png" alt="png"></figure></p>
+
+<pre><code class="language-python">grid = seaborn.scatterplot(x='total', y='digits_accuracy', style='method', size='log10_cost', sizes=(30,400), data=mdf)
+grid.axes.set(xscale='log', xlim=(1, 1e4), ylim=3);
+</code></pre>
+
+<p><figure><img src="./lecture_41_0.png" alt="png"></figure></p>
 
           </div>
 
@@ -1167,14 +1862,14 @@ Using libraries: -Wl,-rpath,/home/jed/petsc/ompi-optg/lib -L/home/jed/petsc/ompi
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/mg-preconditioning/" rel="next">Multilevel Preconditioning</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/dd-preconditioning/" rel="prev">Domain Decomposition Preconditioning</a>
+    <a href="/fall2019/dd-preconditioning-2/" rel="prev">DD Preconditioning 2</a>
   </div>
   
 </div>
@@ -1184,11 +1879,11 @@ Using libraries: -Wl,-rpath,/home/jed/petsc/ompi-optg/lib -L/home/jed/petsc/ompi
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Oct 16, 2019</p>
+          <p>Last updated on Oct 18, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/dd-preconditioning-2/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/mg-preconditioning/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>
