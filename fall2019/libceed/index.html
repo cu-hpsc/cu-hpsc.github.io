@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Jed Brown">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Guest lecture on libCEED from Dr. Valeria Barra: slides.
+HPSC Lab 9 2019-10-25
+We are going to run some PETSc examples and consider them as &quot;baseline&quot; for the libCEED examples that will follow.
+%%bash # You may need to change these for your machine PETSC_DIR=$HOME/petsc-3.12.0 PETSC_ARCH=mpich-dbg # Build the examples make -C $PETSC_DIR -f gmakefile $PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex34 make -C $PETSC_DIR -f gmakefile $PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex45 # Link them from the current directory to make it easy to run below cp -sf $PETSC_DIR/$PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex34 .">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/fall2019/libceed/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/fall2019/libceed/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@five9a2">
+  <meta property="twitter:creator" content="@five9a2">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="/fall2019/libceed/">
+  <meta property="og:title" content="libCEED | HPSC">
+  <meta property="og:description" content="Guest lecture on libCEED from Dr. Valeria Barra: slides.
+HPSC Lab 9 2019-10-25
+We are going to run some PETSc examples and consider them as &quot;baseline&quot; for the libCEED examples that will follow.
+%%bash # You may need to change these for your machine PETSC_DIR=$HOME/petsc-3.12.0 PETSC_ARCH=mpich-dbg # Build the examples make -C $PETSC_DIR -f gmakefile $PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex34 make -C $PETSC_DIR -f gmakefile $PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex45 # Link them from the current directory to make it easy to run below cp -sf $PETSC_DIR/$PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex34 ."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="twitter:image" content="/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-10-25T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-10-25T08:23:29-04:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>libCEED | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp/">2019-09-11 OpenMP Basics</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-2/">2019-09-13 More OpenMP</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-3/">2019-09-16 OpenMP Tasks</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/strategies/">2019-09-18 Reductions and Scans</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/sorting-graphs/">2019-09-23 More bitonic sorting, graphs</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-2/">2019-10-02 Dense Linear Algebra and Orthogonality</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-3/">2019-10-04 Orthogonality and Conditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/elemental/">2019-10-07 Elemental</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/iterative-solvers/">2019-10-09 Sparse and Iterative</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning/">2019-10-14 DD Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning-2/">2019-10-16 DD Preconditioning 2</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/mg-preconditioning/">2019-10-18 Multilevel Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/nonlinear/">2019-10-21 Nonlinear</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/transient/">2019-10-23 Transient</a>
+      </li>
+      
+      <li class="active">
+        <a href="/fall2019/libceed/">2019-10-25 libCEED</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">libCEED</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            <p>Guest lecture on <a href="https://github.com/ceed/libceed">libCEED</a> from Dr. <a href="https://csel-web.cs.colorado.edu/~vaba3353/">Valeria Barra</a>: <a href="CUCS_HPSClecture.pdf">slides</a>.</p>
+
+<h1 id="hpsc-lab-9">HPSC Lab 9</h1>
+
+<p>2019-10-25</p>
+
+<p>We are going to run some PETSc examples and consider them as &quot;baseline&quot; for the libCEED examples that will follow.</p>
+
+<pre><code class="language-bash">%%bash
+
+# You may need to change these for your machine
+PETSC_DIR=$HOME/petsc-3.12.0 PETSC_ARCH=mpich-dbg
+
+# Build the examples
+make -C $PETSC_DIR -f gmakefile $PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex34
+make -C $PETSC_DIR -f gmakefile $PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex45
+
+# Link them from the current directory to make it easy to run below
+cp -sf $PETSC_DIR/$PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex34 .
+cp -sf $PETSC_DIR/$PETSC_ARCH/tests/ksp/ksp/examples/tutorials/ex45 .
+
+./ex34 -pc_type none -da_grid_x 50 -da_grid_y 50 -da_grid_z 50 -ksp_monitor
+#run with -ksp_view if you want to see details about the solver [preconditioning]
+</code></pre>
+
+<pre><code>make: Entering directory '/home/jovyan/petsc-3.12.0'
+make: 'mpich-dbg/tests/ksp/ksp/examples/tutorials/ex34' is up to date.
+make: Leaving directory '/home/jovyan/petsc-3.12.0'
+make: Entering directory '/home/jovyan/petsc-3.12.0'
+make: 'mpich-dbg/tests/ksp/ksp/examples/tutorials/ex45' is up to date.
+make: Leaving directory '/home/jovyan/petsc-3.12.0'
+  0 KSP Residual norm 1.184352528131e-01 
+  1 KSP Residual norm 4.514009350561e-15 
+Residual norm 4.63793e-15
+Error norm 0.00130921
+Error norm 0.000338459
+Error norm 1.31699e-06
+</code></pre>
+
+<pre><code class="language-python"># Another variant with blocked jacobi as smoother:
+
+! ./ex34 -da_grid_x 50 -da_grid_y 50 -da_grid_z 50 -pc_type ksp -ksp_ksp_type cg -ksp_pc_type bjacobi -ksp_monitor 
+</code></pre>
+
+<pre><code>  0 KSP Residual norm 1.251646233668e+02 
+  1 KSP Residual norm 1.480869591053e-03 
+  2 KSP Residual norm 5.120833590957e-09 
+Residual norm 1.91909e-08
+Error norm 0.00130992
+Error norm 0.000338481
+Error norm 1.31699e-06
+</code></pre>
+
+<pre><code class="language-python"># Another variant full multigrid preconditioning
+
+! ./ex34 -pc_type mg -pc_mg_type full -ksp_type fgmres -ksp_monitor_short -pc_mg_levels 3 -mg_coarse_pc_factor_shift_type nonzero
+</code></pre>
+
+<pre><code>  0 KSP Residual norm 1.00731 
+  1 KSP Residual norm 0.0510812 
+  2 KSP Residual norm 0.00248709 
+  3 KSP Residual norm 0.000165921 
+  4 KSP Residual norm 1.1586e-05 
+  5 KSP Residual norm 8.71845e-07 
+Residual norm 8.71845e-07
+Error norm 0.0208751
+Error norm 0.00618516
+Error norm 0.000197005
+</code></pre>
+
+<pre><code class="language-python"># For ex45, compare the number of iterations without precoditioning:
+
+! ./ex45 -pc_type none -da_grid_x 21 -da_grid_y 21 -da_grid_z 21 -ksp_monitor
+</code></pre>
+
+<pre><code>  0 KSP Residual norm 1.470306455035e+01 
+  1 KSP Residual norm 2.526523006237e+00 
+  2 KSP Residual norm 1.199024543393e+00 
+  3 KSP Residual norm 8.017624157084e-01 
+  4 KSP Residual norm 5.850738300493e-01 
+  5 KSP Residual norm 4.643372450285e-01 
+  6 KSP Residual norm 3.794775861442e-01 
+  7 KSP Residual norm 3.182229782482e-01 
+  8 KSP Residual norm 2.707869730107e-01 
+  9 KSP Residual norm 2.342221169435e-01 
+ 10 KSP Residual norm 2.044268946887e-01 
+ 11 KSP Residual norm 1.799290014681e-01 
+ 12 KSP Residual norm 1.597128452355e-01 
+ 13 KSP Residual norm 1.424463131478e-01 
+ 14 KSP Residual norm 1.286048456000e-01 
+ 15 KSP Residual norm 1.180539437186e-01 
+ 16 KSP Residual norm 1.097826197330e-01 
+ 17 KSP Residual norm 1.006546027975e-01 
+ 18 KSP Residual norm 8.528703754785e-02 
+ 19 KSP Residual norm 6.502594142087e-02 
+ 20 KSP Residual norm 5.023918850795e-02 
+ 21 KSP Residual norm 4.014387264317e-02 
+ 22 KSP Residual norm 2.976949998851e-02 
+ 23 KSP Residual norm 2.038487027792e-02 
+ 24 KSP Residual norm 1.483308034344e-02 
+ 25 KSP Residual norm 1.094830085637e-02 
+ 26 KSP Residual norm 7.449788171631e-03 
+ 27 KSP Residual norm 5.269131329764e-03 
+ 28 KSP Residual norm 3.594369080540e-03 
+ 29 KSP Residual norm 2.262888004918e-03 
+ 30 KSP Residual norm 1.493039224295e-03 
+ 31 KSP Residual norm 1.107124599084e-03 
+ 32 KSP Residual norm 7.286598548293e-04 
+ 33 KSP Residual norm 4.716912759260e-04 
+ 34 KSP Residual norm 3.214892159593e-04 
+ 35 KSP Residual norm 2.214075669479e-04 
+ 36 KSP Residual norm 1.645224575275e-04 
+ 37 KSP Residual norm 1.190806015370e-04 
+Residual norm 0.000119081
+</code></pre>
+
+<pre><code class="language-python"># With the ones with preconditioning:
+
+!./ex45 -da_grid_x 21 -da_grid_y 21 -da_grid_z 21 -pc_type mg -pc_mg_levels 3 -mg_levels_ksp_type richardson -mg_levels_ksp_max_it 1 -mg_levels_pc_type bjacobi -ksp_monitor
+</code></pre>
+
+<pre><code>  0 KSP Residual norm 9.713869141172e+01 
+  1 KSP Residual norm 1.457128977402e+00 
+  2 KSP Residual norm 7.197915243881e-02 
+  3 KSP Residual norm 6.946697263348e-04 
+Residual norm 6.67463e-05
+</code></pre>
+
+<h2 id="introduction-to-libceed">Introduction to libCEED</h2>
+
+<p>libCEED is a low-level API library for the efficient
+high-order discretization methods developed by the ECP co-design <a href="http://ceed.exascaleproject.org">Center for
+Efficient Exascale Discretizations (CEED)</a>.</p>
+
+<p>While our focus is on high-order finite elements, the approach is mostly
+algebraic and thus applicable to other discretizations in factored form, as
+explained in the API documentation portion of the <a href="https://codedocs.xyz/CEED/libCEED/md_doc_libCEEDapi.html">Doxygen documentation</a>.</p>
+
+<p>Clone or download libCEED by running</p>
+
+<pre><code class="language-python">! git clone https://github.com/CEED/libCEED.git
+</code></pre>
+
+<pre><code class="language-python"># then compile it by running
+
+! make -C libCEED -B
+
+
+</code></pre>
+
+<pre><code>make: Entering directory '/home/jovyan/libCEED'
+make: 'lib' with optional backends: /cpu/self/ref/memcheck /cpu/self/avx/serial /cpu/self/avx/blocked
+          CC [38;5;177;1mbuild/interface[m/ceed-fortran.o
+          CC [38;5;177;1mbuild/interface[m/ceed-basis.o
+          CC [38;5;177;1mbuild/interface[m/ceed-elemrestriction.o
+          CC [38;5;177;1mbuild/interface[m/ceed-operator.o
+          CC [38;5;177;1mbuild/interface[m/ceed-vec.o
+          CC [38;5;177;1mbuild/interface[m/ceed.o
+          CC [38;5;177;1mbuild/interface[m/ceed-tensor.o
+          CC [38;5;177;1mbuild/interface[m/ceed-qfunction.o
+          CC [38;5;85;1mbuild/gallery/identity[m/ceed-identity.o
+          CC [38;5;93;1mbuild/gallery/poisson3d[m/ceed-poisson3dapply.o
+          CC [38;5;93;1mbuild/gallery/poisson3d[m/ceed-poisson3dbuild.o
+          CC [38;5;155;1mbuild/gallery/mass1d[m/ceed-massapply.o
+          CC [38;5;155;1mbuild/gallery/mass1d[m/ceed-mass1dbuild.o
+          CC [38;5;41;1mbuild/gallery/mass2d[m/ceed-mass2dbuild.o
+          CC [38;5;47;1mbuild/gallery/poisson1d[m/ceed-poisson1dapply.o
+          CC [38;5;47;1mbuild/gallery/poisson1d[m/ceed-poisson1dbuild.o
+          CC [38;5;67;1mbuild/gallery/mass3d[m/ceed-mass3dbuild.o
+          CC [38;5;211;1mbuild/gallery/poisson2d[m/ceed-poisson2dapply.o
+          CC [38;5;211;1mbuild/gallery/poisson2d[m/ceed-poisson2dbuild.o
+          CC [38;5;39;1mbuild/backends/ref[m/ceed-ref-basis.o
+          CC [38;5;39;1mbuild/backends/ref[m/ceed-ref-operator.o
+          CC [38;5;39;1mbuild/backends/ref[m/ceed-ref-qfunction.o
+          CC [38;5;39;1mbuild/backends/ref[m/ceed-ref-restriction.o
+          CC [38;5;39;1mbuild/backends/ref[m/ceed-ref-tensor.o
+          CC [38;5;39;1mbuild/backends/ref[m/ceed-ref-vec.o
+          CC [38;5;39;1mbuild/backends/ref[m/ceed-ref.o
+          CC [38;5;63;1mbuild/backends/blocked[m/ceed-blocked-operator.o
+          CC [38;5;63;1mbuild/backends/blocked[m/ceed-blocked.o
+          CC [38;5;93;1mbuild/backends/opt[m/ceed-opt-blocked.o
+          CC [38;5;93;1mbuild/backends/opt[m/ceed-opt-operator.o
+          CC [38;5;93;1mbuild/backends/opt[m/ceed-opt-serial.o
+          CC [38;5;55;1mbuild/backends/memcheck[m/ceed-memcheck-qfunction.o
+          CC [38;5;55;1mbuild/backends/memcheck[m/ceed-memcheck.o
+          CC [38;5;89;1mbuild/backends/avx[m/ceed-avx-blocked.o
+          CC [38;5;89;1mbuild/backends/avx[m/ceed-avx-serial.o
+          CC [38;5;89;1mbuild/backends/avx[m/ceed-avx-tensor.o
+        LINK [38;5;97;1mlib[m/libceed.so
+make: Leaving directory '/home/jovyan/libCEED'
+</code></pre>
+
+<p>We are going to look at some libCEED's examples that use some PETSc's capabilities
+(e.g., process partitioning and geometry handling).</p>
+
+<p>Check out my branch for the demo where I made a couple of changes to print more info for the tutorial.</p>
+
+<pre><code class="language-bash">%%bash
+cd libCEED
+
+# checkout my branch for the demo
+git checkout valeria/CUHPSC-demo
+
+cd ~/
+
+# And compile the examples by running
+make -C libCEED/examples/petsc PETSC_DIR=$HOME/petsc-3.12.0 PETSC_ARCH=mpich-dbg -B
+
+# Link them from the current directory to make it easy to run below
+cp -sf libCEED/examples/petsc/bpsraw .
+cp -sf libCEED/examples/petsc/multigrid .
+</code></pre>
+
+<hr>
+
+<p>To run the example solving the Poisson's equation on a structured grid, use</p>
+
+<pre><code class="language-python">! ./bpsraw -ceed /cpu/self/ref/serial -problem bp3 -degree 1 -local 10000
+</code></pre>
+
+<pre><code>-- CEED Benchmark Problem 3 -- libCEED + PETSc --
+  libCEED:
+    libCEED Backend                    : /cpu/self/ref/serial
+  Mesh:
+    Number of 1D Basis Nodes (p)       : 2
+    Number of 1D Quadrature Points (q) : 3
+    Global nodes                       : 11466
+    Process Decomposition              : 1 1 1
+    Local Elements                     : 10000 = 20 20 25
+    Owned nodes                        : 11466 = 21 21 26
+  KSP:
+    KSP Type                           : cg
+    KSP Convergence                    : CONVERGED_RTOL
+    Total KSP Iterations               : 2
+    Final rnorm                        : 9.710169e-15
+  Performance:
+    CG Solve Time                      : 0.144075  sec
+    DoFs/Sec in CG                     : 0.159167  million
+    Pointwise Error (max)              : 2.079708e-02
+</code></pre>
+
+<p>See what happens when you run this in parallel, let's say with 2 processes</p>
+
+<pre><code class="language-python">! mpiexec -n 2 ./bpsraw -ceed /cpu/self/ref/serial -problem bp3 -degree 1 -local 10000
+</code></pre>
+
+<pre><code>-- CEED Benchmark Problem 3 -- libCEED + PETSc --
+  libCEED:
+    libCEED Backend                    : /cpu/self/ref/serial
+  Mesh:
+    Number of 1D Basis Nodes (p)       : 2
+    Number of 1D Quadrature Points (q) : 3
+    Global nodes                       : 22386
+    Process Decomposition              : 2 1 1
+    Local Elements                     : 10000 = 20 20 25
+    Owned nodes                        : 10920 = 20 21 26
+  KSP:
+    KSP Type                           : cg
+    KSP Convergence                    : CONVERGED_RTOL
+    Total KSP Iterations               : 2
+    Final rnorm                        : 1.327753e-14
+  Performance:
+    CG Solve Time                      : 0.229866  sec
+    DoFs/Sec in CG                     : 0.194774  million
+    Pointwise Error (max)              : 1.999130e-02
+</code></pre>
+
+<p>Instead, you can keep the total amount of work roughly constant, when you request more processes,
+but divide the local size of the problem so that each process works roughly the same. For instance, compare</p>
+
+<pre><code class="language-python">! ./bpsraw -ceed /cpu/self/ref/serial -problem bp3 -degree 1 -local 10000
+</code></pre>
+
+<pre><code>-- CEED Benchmark Problem 3 -- libCEED + PETSc --
+  libCEED:
+    libCEED Backend                    : /cpu/self/ref/serial
+  Mesh:
+    Number of 1D Basis Nodes (p)       : 2
+    Number of 1D Quadrature Points (q) : 3
+    Global nodes                       : 11466
+    Process Decomposition              : 1 1 1
+    Local Elements                     : 10000 = 20 20 25
+    Owned nodes                        : 11466 = 21 21 26
+  KSP:
+    KSP Type                           : cg
+    KSP Convergence                    : CONVERGED_RTOL
+    Total KSP Iterations               : 2
+    Final rnorm                        : 9.710169e-15
+  Performance:
+    CG Solve Time                      : 0.148991  sec
+    DoFs/Sec in CG                     : 0.153915  million
+    Pointwise Error (max)              : 2.079708e-02
+</code></pre>
+
+<p>with</p>
+
+<pre><code class="language-python">! mpiexec -n 4 ./bpsraw -ceed /cpu/self/ref/serial -problem bp3 -degree 1 -local 2500
+</code></pre>
+
+<pre><code>-- CEED Benchmark Problem 3 -- libCEED + PETSc --
+  libCEED:
+    libCEED Backend                    : /cpu/self/ref/serial
+  Mesh:
+    Number of 1D Basis Nodes (p)       : 2
+    Number of 1D Quadrature Points (q) : 3
+    Global nodes                       : 11500
+    Process Decomposition              : 2 2 1
+    Local Elements                     : 2508 = 11 12 19
+    Owned nodes                        : 2640 = 11 12 20
+  KSP:
+    KSP Type                           : cg
+    KSP Convergence                    : CONVERGED_RTOL
+    Total KSP Iterations               : 2
+    Final rnorm                        : 9.925692e-15
+  Performance:
+    CG Solve Time                      : 0.041265  sec
+    DoFs/Sec in CG                     : 0.557373  million
+    Pointwise Error (max)              : 2.854310e-02
+</code></pre>
+
+<hr>
+
+<h3 id="the-multigrid-example">The multigrid example</h3>
+
+<p>This example solves the same problem, but by using a preconditioning strategy. We use Chebchev as the smoother (solver)
+with Jacobi as the preconditioner for the smoother.</p>
+
+<p>Run</p>
+
+<pre><code class="language-python">! ./multigrid -ceed /cpu/self/ref/serial -problem bp3  -cells 1000
+</code></pre>
+
+<pre><code>-- CEED Benchmark Problem 3 -- libCEED + PETSc + PCMG --
+  libCEED:
+    libCEED Backend                    : /cpu/self/ref/serial
+  Mesh:
+    Number of 1D Basis Nodes (p)       : 3
+    Number of 1D Quadrature Points (q) : 4
+    Global Nodes                       : 49975
+    Owned Nodes                        : 49975
+  Multigrid:
+    Number of Levels                   : 2
+    Level 0 (coarse):
+      Number of 1D Basis Nodes (p)     : 2
+      Global Nodes                     : 3996
+      Owned Nodes                      : 3996
+    Level 1 (fine):
+      Number of 1D Basis Nodes (p)     : 3
+      Global Nodes                     : 49975
+      Owned Nodes                      : 49975
+  KSP:
+    KSP Type                           : cg
+    KSP Convergence                    : CONVERGED_RTOL
+    Total KSP Iterations               : 26
+    Final rnorm                        : 3.394703e-12
+  PCMG:
+    PCMG Type                          : MULTIPLICATIVE
+    PCMG Cycle Type                    : v
+  Performance:
+    Pointwise Error (max)              : 4.270543e-02
+    CG Solve Time                      : 19.3821 sec
+    DoFs/Sec in CG                     : 0.0670388 million
+</code></pre>
+
+<p>and</p>
+
+<pre><code class="language-python">! mpiexec -n 4 ./multigrid -ceed /cpu/self/ref/serial -problem bp3  -cells 1000
+</code></pre>
+
+<pre><code>-- CEED Benchmark Problem 3 -- libCEED + PETSc + PCMG --
+  libCEED:
+    libCEED Backend                    : /cpu/self/ref/serial
+  Mesh:
+    Number of 1D Basis Nodes (p)       : 3
+    Number of 1D Quadrature Points (q) : 4
+    Global Nodes                       : 49975
+    Owned Nodes                        : 6995
+  Multigrid:
+    Number of Levels                   : 2
+    Level 0 (coarse):
+      Number of 1D Basis Nodes (p)     : 2
+      Global Nodes                     : 3996
+      Owned Nodes                      : 0
+    Level 1 (fine):
+      Number of 1D Basis Nodes (p)     : 3
+      Global Nodes                     : 49975
+      Owned Nodes                      : 6995
+  KSP:
+    KSP Type                           : cg
+    KSP Convergence                    : CONVERGED_RTOL
+    Total KSP Iterations               : 26
+    Final rnorm                        : 3.387644e-12
+  PCMG:
+    PCMG Type                          : MULTIPLICATIVE
+    PCMG Cycle Type                    : v
+  Performance:
+    Pointwise Error (max)              : 4.270543e-02
+    CG Solve Time                      : 33.2205 sec
+    DoFs/Sec in CG                     : 0.0391129 million
+</code></pre>
+
+<p>What do you see?</p>
+
+<p>Now let's raise the degree (accuracy of solution).
+This will also increase the number of neighboring points we need information from, i.e., the number of nodes.</p>
+
+<p>Compare</p>
+
+<pre><code class="language-python">! ./multigrid -ceed /cpu/self/ref/serial -problem bp3 -degree 8 
+</code></pre>
+
+<pre><code>-- CEED Benchmark Problem 3 -- libCEED + PETSc + PCMG --
+  libCEED:
+    libCEED Backend                    : /cpu/self/ref/serial
+  Mesh:
+    Number of 1D Basis Nodes (p)       : 9
+    Number of 1D Quadrature Points (q) : 10
+    Global Nodes                       : 12167
+    Owned Nodes                        : 12167
+  Multigrid:
+    Number of Levels                   : 8
+    Level 0 (coarse):
+      Number of 1D Basis Nodes (p)     : 2
+      Global Nodes                     : 8
+      Owned Nodes                      : 8
+    Level 7 (fine):
+      Number of 1D Basis Nodes (p)     : 9
+      Global Nodes                     : 12167
+      Owned Nodes                      : 12167
+  KSP:
+    KSP Type                           : cg
+    KSP Convergence                    : CONVERGED_RTOL
+    Total KSP Iterations               : 6
+    Final rnorm                        : 3.132892e-11
+  PCMG:
+    PCMG Type                          : MULTIPLICATIVE
+    PCMG Cycle Type                    : v
+  Performance:
+    Pointwise Error (max)              : 4.525195e-08
+    CG Solve Time                      : 1.60019 sec
+    DoFs/Sec in CG                     : 0.0456207 million
+</code></pre>
+
+<p>With</p>
+
+<pre><code class="language-python">! ./multigrid -ceed /cpu/self/ref/serial -problem bp3 -degree 8 -coarsen logarithmic
+</code></pre>
+
+<pre><code>-- CEED Benchmark Problem 3 -- libCEED + PETSc + PCMG --
+  libCEED:
+    libCEED Backend                    : /cpu/self/ref/serial
+  Mesh:
+    Number of 1D Basis Nodes (p)       : 9
+    Number of 1D Quadrature Points (q) : 10
+    Global Nodes                       : 12167
+    Owned Nodes                        : 12167
+  Multigrid:
+    Number of Levels                   : 4
+    Level 0 (coarse):
+      Number of 1D Basis Nodes (p)     : 2
+      Global Nodes                     : 8
+      Owned Nodes                      : 8
+    Level 3 (fine):
+      Number of 1D Basis Nodes (p)     : 9
+      Global Nodes                     : 12167
+      Owned Nodes                      : 12167
+  KSP:
+    KSP Type                           : cg
+    KSP Convergence                    : CONVERGED_RTOL
+    Total KSP Iterations               : 7
+    Final rnorm                        : 1.970523e-11
+  PCMG:
+    PCMG Type                          : MULTIPLICATIVE
+    PCMG Cycle Type                    : v
+  Performance:
+    Pointwise Error (max)              : 4.525156e-08
+    CG Solve Time                      : 0.912013 sec
+    DoFs/Sec in CG                     : 0.0933857 million
+</code></pre>
+
+<p>Without specifying a coarsening strategy, it defaults to <code>-coarsen uniform</code>.
+This way, the domain is partitioned from finest grid to coarsest grid in a linear fashion, i.e.,
+for <code>-degree 8</code>, we run all intermediate levels given by</p>
+
+<p>8-&gt;7-&gt;6-&gt;5-&gt;...-&gt;2-&gt;1</p>
+
+<p>Instead, when we use <code>-coarsen logarithmic</code> we have fewer subdivisions, using only powers of 2 as intermediate levels</p>
+
+<p>8-&gt;4-&gt;2-&gt;1</p>
+
+<hr>
+
+<p>Collect your experiments data and try to plot the accuracy gained
+(given by the error, when the actual solution is available, otherwise by the digits of precision gained) vs time to solve</p>
+
+<pre><code class="language-python">
+</code></pre>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/transient/" rel="prev">Transient Problems</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Oct 25, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/libceed/index.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+        
+  </p>
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
