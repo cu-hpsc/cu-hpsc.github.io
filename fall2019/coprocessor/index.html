@@ -28,12 +28,11 @@
   
     
   
-  <meta name="description" content="Preconditioning Recall that preconditioning is the act of creating an &ldquo;affordable&rdquo; operation &ldquo;$P^{-1}$&rdquo; such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a &ldquo;nice&rdquo; spectrum. We then solve the system
-$$ P^{-1} A x = P^{-1} b \quad \text{or}\quad A P^{-1} \underbrace{(P x)}_y = b $$
-in which case the convergence rate depends on the spectrum of the iteration matrix $$ I - \omega P^{-1} A .">
+  <meta name="description" content="Coprocessor architectures 
+ CUDA devices (NVIDIA)  Programmable via CUDA, OpenACC, OpenMP-5, OpenCL, HIP-&gt;CUDA, SYCL-&gt;CUDA Example machine: OLCF Summit (details from user guide)  ROCm devices (AMD)  Programmable via HIP, OpenMP-5, OpenCL, SYCL-&gt;HIP Example machine: OLCF Frontier  Intel X GPUs  Programmable via SYCL, OpenMP-5, OpenCL? Example machine: ALCF Aurora/A21  Upcoming non-coprocessor Supercomputers  RIKEN Fugaku (Post-K) TACC Frontera   Fundamental capabilities from io import StringIO import pandas import numpy as np import matplotlib.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/preconditioning/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/coprocessor/">
 
   
 
@@ -100,7 +99,7 @@ in which case the convergence rate depends on the spectrum of the iteration matr
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/preconditioning/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/coprocessor/">
 
   
   
@@ -116,17 +115,16 @@ in which case the convergence rate depends on the spectrum of the iteration matr
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/preconditioning/">
-  <meta property="og:title" content="Preconditioning | HPSC">
-  <meta property="og:description" content="Preconditioning Recall that preconditioning is the act of creating an &ldquo;affordable&rdquo; operation &ldquo;$P^{-1}$&rdquo; such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a &ldquo;nice&rdquo; spectrum. We then solve the system
-$$ P^{-1} A x = P^{-1} b \quad \text{or}\quad A P^{-1} \underbrace{(P x)}_y = b $$
-in which case the convergence rate depends on the spectrum of the iteration matrix $$ I - \omega P^{-1} A ."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/coprocessor/">
+  <meta property="og:title" content="Coprocessor architectures | HPSC">
+  <meta property="og:description" content="Coprocessor architectures 
+ CUDA devices (NVIDIA)  Programmable via CUDA, OpenACC, OpenMP-5, OpenCL, HIP-&gt;CUDA, SYCL-&gt;CUDA Example machine: OLCF Summit (details from user guide)  ROCm devices (AMD)  Programmable via HIP, OpenMP-5, OpenCL, SYCL-&gt;HIP Example machine: OLCF Frontier  Intel X GPUs  Programmable via SYCL, OpenMP-5, OpenCL? Example machine: ALCF Aurora/A21  Upcoming non-coprocessor Supercomputers  RIKEN Fugaku (Post-K) TACC Frontera   Fundamental capabilities from io import StringIO import pandas import numpy as np import matplotlib."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-10-11T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-10-28T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-10-14T23:05:43-06:00">
+    <meta property="article:modified_time" content="2019-10-28T06:49:25-06:00">
   
 
   
@@ -138,7 +136,7 @@ in which case the convergence rate depends on the spectrum of the iteration matr
 
 
 
-  <title>Preconditioning | HPSC</title>
+  <title>Coprocessor architectures | HPSC</title>
 
 </head>
 
@@ -341,7 +339,7 @@ in which case the convergence rate depends on the spectrum of the iteration matr
         <a href="/fall2019/iterative-solvers/">2019-10-09 Sparse and Iterative</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
       </li>
       
@@ -369,7 +367,7 @@ in which case the convergence rate depends on the spectrum of the iteration matr
         <a href="/fall2019/libceed/">2019-10-25 libCEED</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/coprocessor/">2019-10-28 Coprocessors</a>
       </li>
       
@@ -402,24 +400,7 @@ in which case the convergence rate depends on the spectrum of the iteration matr
         <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
       </ul>
 
-      <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#preconditioning">Preconditioning</a></li>
-<li><a href="#classical-methods">Classical methods</a></li>
-<li><a href="#domain-decomposition">Domain decomposition</a>
-<ul>
-<li><a href="#examples">Examples</a></li>
-<li><a href="#convergence-theory">Convergence theory</a></li>
-<li><a href="#hands-on-with-petsc-demonstrate-these-estimates">Hands-on with PETSc: demonstrate these estimates</a>
-<ul>
-<li><a href="#examples-1">Examples</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
-</nav>
+      
 
       
     </div>
@@ -430,119 +411,277 @@ in which case the convergence rate depends on the spectrum of the iteration matr
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Preconditioning</h1>
+          <h1 itemprop="name">Coprocessor architectures</h1>
 
           <div class="article-style" itemprop="articleBody">
-            
+            <h2 id="coprocessor-architectures">Coprocessor architectures</h2>
 
-<h2 id="preconditioning">Preconditioning</h2>
-
-<p>Recall that preconditioning is the act of creating an &ldquo;affordable&rdquo; operation &ldquo;$P^{-1}$&rdquo; such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a &ldquo;nice&rdquo; spectrum.  We then solve the system</p>
-
-<p>$$ P^{-1} A x = P^{-1} b \quad \text{or}\quad A P^{-1} \underbrace{(P x)}_y = b $$</p>
-
-<p>in which case the convergence rate depends on the spectrum of the iteration matrix
-$$ I - \omega P^{-1} A . $$</p>
+<p><figure><img src="https://en.wikichip.org/w/images/0/06/summit_single-node.svg" alt=""></figure></p>
 
 <ul>
-<li>The preconditioner must be applied on each iteration.</li>
-<li>It is <em>not</em> merely about finding a good initial guess.</li>
-</ul>
-
-<h2 id="classical-methods">Classical methods</h2>
-
-<p>We have discussed the Jacobi preconditioner</p>
-
-<p>$$ P_{\text{Jacobi}}^{-1} = D^{-1} $$</p>
-
-<p>where $D$ is the diagonal of $A$.
-Gauss-Seidel is</p>
-
-<p>$$ P_{GS}^{-1} = (L+D)^{-1} $$</p>
-
-<p>where $L$ is the (strictly) lower triangular part of $A$.  The upper triangular part may be used instead, or a symmetric form</p>
-
-<p>$$ P_{SGS}^{-1} = (D+U)^{-1} D (L+D)^{-1} . $$</p>
-
-<h2 id="domain-decomposition">Domain decomposition</h2>
-
-<p>Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$.  The columns of $P_i$ are &ldquo;basis functions&rdquo; for the subspace $V_i$.  The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.</p>
-
-<p>Define the subspace projection</p>
-
-<p>$$ S_i = P_i A_i^{-1} P_i^T A . $$</p>
+<li>CUDA devices (NVIDIA)
 
 <ul>
-<li>$S_i$ is a projection: $S_i^2 = S_i$</li>
-<li>If $A$ is SPD, $S_i$ is SPD with respect to the $A$ inner product $x^T A y$</li>
-<li>$I - S_i$ is $A$-orthogonal to the range of $P_i$</li>
-</ul>
-
-<p>These projections may be applied additively</p>
-
-<p>$$ I - \sum_{i=0}^n S_i, $$</p>
-
-<p>multiplicatively</p>
-
-<p>$$ \prod_{i=0}^n (I - S_i), $$</p>
-
-<p>or in some hybrid manner, such as</p>
-
-<p>$$ (I - S<em>0) (I - \sum</em>{i=1}^n S_i) . $$
-In each case above, the action is expressed in terms of the error iteration operator.</p>
-
-<h3 id="examples">Examples</h3>
-
-<ul>
-<li>Jacobi corresponds to the additive preconditioner with $P_i$ as the $i$th column of the identity</li>
-<li>Gauss-Seidel is the multiplicate preconditioner with $P_i$ as the $i$th column of the identity</li>
-<li>Block Jacobi corresponds to labeling &ldquo;subdomains&rdquo; and $P_i$ as the columns of the identity corresponding to non-overlapping subdomains</li>
-<li>Overlapping Schwarz corresponds to overlapping subdomains</li>
-<li>$P_i$ are eigenvectors of $A$</li>
-<li>A domain is partitioned into interior $V<em>I$ and interface $V</em>\Gamma$ degrees of freedom.  $P<em>I$ is embedding of the interior degrees of freedom while $P</em>\Gamma$ is &ldquo;harmonic extension&rdquo; of the interface degrees of freedom.  Consider the multiplicative combination $(I - S_\Gamma)(I - S_I)$.</li>
-</ul>
-
-<h3 id="convergence-theory">Convergence theory</h3>
-
-<p>The formal convergence is beyond the scope of this course, but the following estimates are useful.  We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1.  We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.</p>
-
-<ul>
-<li>(Block) Jacobi: $\delta=0$, $\kappa \sim H^{-2} H/h = (Hh)^{-1}$</li>
-<li>Overlapping Schwarz: $\kappa \sim H^{-2} H/\delta = (H \delta)^{-1}$</li>
-<li>2-level overlapping Schwarz: $\kappa \sim H/\delta$</li>
-</ul>
-
-<h3 id="hands-on-with-petsc-demonstrate-these-estimates">Hands-on with PETSc: demonstrate these estimates</h3>
-
-<ul>
-<li>Symmetric example: <code>src/snes/examples/tutorials/ex5.c</code></li>
-<li>Nonsymmetric example: <code>src/snes/examples/tutorials/ex19.c</code></li>
-<li>Compare preconditioned versus unpreconditioned norms.</li>
-<li>Compare BiCG versus GMRES</li>
-<li>Compare domain decomposition and multigrid preconditioning
-
-<ul>
-<li><code>-pc_type asm</code> (Additive Schwarz)</li>
-<li><code>-pc_asm_type basic</code> (symmetric, versus <code>restrict</code>)</li>
-<li><code>-pc_asm_overlap 2</code> (increase overlap)</li>
-<li>Effect of direct subdomain solver: <code>-sub_pc_type lu</code></li>
-<li><code>-pc_type mg</code> (Geometric Multigrid)</li>
+<li>Programmable via <strong>CUDA</strong>, OpenACC, OpenMP-5, OpenCL, HIP-&gt;CUDA, SYCL-&gt;CUDA</li>
+<li>Example machine: <a href="https://en.wikichip.org/wiki/supercomputers/summit">OLCF Summit</a> (details from <a href="https://www.olcf.ornl.gov/for-users/system-user-guides/summit/summit-user-guide/">user guide</a>)</li>
 </ul></li>
-<li>Use monitors:
+<li>ROCm devices (AMD)
 
 <ul>
-<li><code>-ksp_monitor_true_residual</code></li>
-<li><code>-ksp_monitor_singular_value</code></li>
-<li><code>-ksp_converged_reason</code></li>
+<li>Programmable via <strong>HIP</strong>, OpenMP-5, OpenCL, SYCL-&gt;HIP</li>
+<li>Example machine: <a href="https://www.olcf.ornl.gov/wp-content/uploads/2019/05/frontier_specsheet_v4.pdf">OLCF Frontier</a></li>
 </ul></li>
-<li>Explain methods: <code>-snes_view</code></li>
-<li>Performance info: <code>-log_view</code></li>
+<li>Intel X GPUs
+
+<ul>
+<li>Programmable via <strong>SYCL</strong>, OpenMP-5, OpenCL?</li>
+<li>Example machine: <a href="https://aurora.alcf.anl.gov/">ALCF Aurora/A21</a></li>
+</ul></li>
+<li>Upcoming non-coprocessor Supercomputers
+
+<ul>
+<li><a href="https://www.hpcwire.com/2019/05/23/riken-post-k-supercomputer-named-after-japans-tallest-peak/">RIKEN Fugaku (Post-K)</a></li>
+<li><a href="https://www.tacc.utexas.edu/systems/frontera">TACC Frontera</a></li>
+</ul></li>
 </ul>
 
-<h4 id="examples-1">Examples</h4>
+<h2 id="fundamental-capabilities">Fundamental capabilities</h2>
 
-<pre><code>mpiexec -n 4 ./ex19 -lidvelocity 2 -snes_monitor -da_refine 5 -ksp_monitor -pc_type asm -sub_pc_type lu
+<pre><code class="language-python">from io import StringIO
+import pandas
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
+
+data = StringIO(&quot;&quot;&quot;
+package,cores,lanes/core,clock (MHz),peak (GF),bandwidth (GB/s),TDP (W),MSRP
+Xeon 8280,28,8,2700,2400,141,205,10000
+NVIDIA V100,80,64,1455,7800,900,300,10664
+AMD MI60,64,64,1800,7362,1024,300,
+AMD Rome,64,4,2000,2048,205,200,6450
+&quot;&quot;&quot;)
+
+df = pandas.read_csv(data, index_col='package')
+df
 </code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>cores</th>
+      <th>lanes/core</th>
+      <th>clock (MHz)</th>
+      <th>peak (GF)</th>
+      <th>bandwidth (GB/s)</th>
+      <th>TDP (W)</th>
+      <th>MSRP</th>
+    </tr>
+    <tr>
+      <th>package</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Xeon 8280</th>
+      <td>28</td>
+      <td>8</td>
+      <td>2700</td>
+      <td>2400</td>
+      <td>141</td>
+      <td>205</td>
+      <td>10000.0</td>
+    </tr>
+    <tr>
+      <th>NVIDIA V100</th>
+      <td>80</td>
+      <td>64</td>
+      <td>1455</td>
+      <td>7800</td>
+      <td>900</td>
+      <td>300</td>
+      <td>10664.0</td>
+    </tr>
+    <tr>
+      <th>AMD MI60</th>
+      <td>64</td>
+      <td>64</td>
+      <td>1800</td>
+      <td>7362</td>
+      <td>1024</td>
+      <td>300</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>AMD Rome</th>
+      <td>64</td>
+      <td>4</td>
+      <td>2000</td>
+      <td>2048</td>
+      <td>205</td>
+      <td>200</td>
+      <td>6450.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3 id="amdahls-lawhttpsenwikipediaorgwikiamdahl27slaw-for-energy-efficiency"><a href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Amdahl's Law</a> for energy efficiency</h3>
+
+<pre><code class="language-python">df['efficiency (GF/W)'] = df['peak (GF)'] / df['TDP (W)']
+df['efficiency (GF/W)']
+</code></pre>
+
+<pre><code>package
+Xeon 8280      11.707317
+NVIDIA V100    26.000000
+AMD MI60       24.540000
+AMD Rome       10.240000
+Name: efficiency (GF/W), dtype: float64
+</code></pre>
+
+<pre><code class="language-python">ngpu = np.arange(0, 9)
+overhead = 100 # Power supply, DRAM, disk, etc.
+peak = (ngpu == 0)*df.loc['Xeon 8280']['peak (GF)'] + ngpu*df.loc['NVIDIA V100']['peak (GF)']
+tdp = overhead + df.loc['Xeon 8280']['TDP (W)'] + ngpu*df.loc['NVIDIA V100']['TDP (W)']
+plt.plot(ngpu, peak / tdp)
+plt.xlabel('number of GPUs per CPU')
+plt.title('DP Peak efficiency (GF/W)');
+</code></pre>
+
+<p><figure><img src="./lecture_5_0.png" alt="png"></figure></p>
+
+<h4 id="compare-to-green-500-listhttpswwwtop500orggreen500lists201906">Compare to <a href="https://www.top500.org/green500/lists/2019/06/">Green 500 list</a></h4>
+
+<ul>
+<li><a href="https://www.top500.org/system/179166">#1 system</a> is <strong>15.1 GF/W</strong> (2x Xeon E5-2698v4, 8x V100)</li>
+<li><a href="https://www.top500.org/system/179397">#2 system</a> (Summit) is <strong>14.7 GF/W</strong> (2x Power9, 6x V100)</li>
+<li><a href="https://www.top500.org/system/179683">#27 system</a> is <strong>5.8 GF/W</strong> on Xeon 6248 (no GPU)</li>
+</ul>
+
+<h3 id="amdahl-for-cost-efficiency">Amdahl for cost efficiency</h3>
+
+<pre><code class="language-python">df['cost (GF/$)'] = df['peak (GF)'] / df['MSRP']
+df['cost (GF/$)']
+</code></pre>
+
+<pre><code>package
+Xeon 8280      0.240000
+NVIDIA V100    0.731433
+AMD MI60            NaN
+AMD Rome       0.317519
+Name: cost (GF/$), dtype: float64
+</code></pre>
+
+<pre><code class="language-python">overhead = 3000 + 2000*ngpu # power supply, memory, cooling, maintenance
+cost = overhead + df.loc['Xeon 8280']['MSRP'] + ngpu*df.loc['NVIDIA V100']['MSRP']
+plt.plot(ngpu, peak / cost)
+plt.xlabel('number of GPUs per CPU')
+plt.title('DP cost efficiency (GF/$)');
+</code></pre>
+
+<p><figure><img src="./lecture_8_0.png" alt="png"></figure></p>
+
+<h3 id="what-fraction-of-datacenter-cost-goes-to-the-power-bill">What fraction of datacenter cost goes to the power bill?</h3>
+
+<ul>
+<li>OLCF Summit is reportedly a \$200M machine.</li>
+<li>What if we just buy the GPUs at retail?
+
+<ul>
+<li>256 racks</li>
+<li>18 nodes per rack</li>
+<li>6 GPUs per node</li>
+<li>V100 MSRP of about $10k</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-python">256 * 18 * 6 * 10e3 / 1e6 # millions
+</code></pre>
+
+<pre><code>276.48
+</code></pre>
+
+<ul>
+<li>Rule of thumb: $ \lesssim \$1M $ per MW-year</li>
+<li>We know Summit is a 13 MW facility</li>
+<li>Check <a href="https://www.electricitylocal.com/states/tennessee/knoxville/">industrial electricity rates</a>
+<figure><img src="knoxville-electricity.png" alt=""></figure></li>
+</ul>
+
+<pre><code class="language-python">.0638 * 24 * 365
+</code></pre>
+
+<pre><code>558.8879999999999
+</code></pre>
+
+<p><figure><img src="olcf-4-foia.png" alt=""></figure></p>
+
+<h2 id="programming-models">Programming models</h2>
+
+<ul>
+<li>Directives
+
+<ul>
+<li><a href="https://www.openmp.org/resources/refguides/">OpenMP-5</a></li>
+<li><a href="https://www.openacc.org/">OpenACC</a></li>
+</ul></li>
+</ul>
+
+<pre><code class="language-c">#pragma acc data copy(A) create(Anew)
+while ( error &gt; tol  &amp;&amp;  iter  &lt;  iter_max )  {
+  error = 0.0;
+#pragma acc kernels {
+#pragma acc loop independent collapse(2)
+  for (  int  j = 1; j &lt; n-1;  j++ )  {
+    for (  int  i = 1; i &lt; m-1; i++ )  {
+       Anew [j] [i] = 0.25 * ( A [j] [i+1] + A [j] [i-1] +
+                                      A [j-1] [i] + A [j+1] [i]);
+       error = max ( error, fabs (Anew [j] [i] - A [j] [i]));
+      }
+    }
+  } 
+}
+</code></pre>
+
+<p>Comparison slides: <a href="https://openmpcon.org/wp-content/uploads/2018_Session1_Diaz.pdf">Is OpenMP 4.5 Target Off-load Ready for Real Life? A Case Study of Three Benchmark Kernels (2018)</a></p>
+
+<ul>
+<li>Thread &quot;kernel&quot; and control
+
+<ul>
+<li><a href="https://devblogs.nvidia.com/even-easier-introduction-cuda/">CUDA</a></li>
+<li><a href="https://rocm-documentation.readthedocs.io/en/latest/Programming_Guides/HIP-GUIDE.html">HIP</a> (<a href="https://vimeo.com/channels/olcftraining/359154970">video</a>)</li>
+</ul></li>
+<li>C++ templated
+
+<ul>
+<li><a href="https://www.khronos.org/sycl/">SYCL</a></li>
+<li><a href="https://github.com/kokkos/kokkos">Kokkos</a></li>
+<li><a href="https://raja.readthedocs.io/en/master/">Raja</a></li>
+</ul></li>
+</ul>
 
           </div>
 
@@ -559,14 +698,14 @@ In each case above, the action is expressed in terms of the error iteration oper
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/dd-preconditioning/" rel="next">Domain Decomposition Preconditioning</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/iterative-solvers/" rel="prev">Sparse and iterative linear algebra</a>
+    <a href="/fall2019/libceed/" rel="prev">libCEED</a>
   </div>
   
 </div>
@@ -576,11 +715,11 @@ In each case above, the action is expressed in terms of the error iteration oper
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Oct 14, 2019</p>
+          <p>Last updated on Oct 28, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/preconditioning/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/coprocessor/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

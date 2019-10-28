@@ -325,6 +325,282 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Coprocessor architectures</title>
+      <link>https://cucs-hpsc.github.io/fall2019/coprocessor/</link>
+      <pubDate>Mon, 28 Oct 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/coprocessor/</guid>
+      <description>&lt;h2 id=&#34;coprocessor-architectures&#34;&gt;Coprocessor architectures&lt;/h2&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;https://en.wikichip.org/w/images/0/06/summit_single-node.svg&#34; alt=&#34;&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CUDA devices (NVIDIA)
+
+&lt;ul&gt;
+&lt;li&gt;Programmable via &lt;strong&gt;CUDA&lt;/strong&gt;, OpenACC, OpenMP-5, OpenCL, HIP-&amp;gt;CUDA, SYCL-&amp;gt;CUDA&lt;/li&gt;
+&lt;li&gt;Example machine: &lt;a href=&#34;https://en.wikichip.org/wiki/supercomputers/summit&#34;&gt;OLCF Summit&lt;/a&gt; (details from &lt;a href=&#34;https://www.olcf.ornl.gov/for-users/system-user-guides/summit/summit-user-guide/&#34;&gt;user guide&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;ROCm devices (AMD)
+
+&lt;ul&gt;
+&lt;li&gt;Programmable via &lt;strong&gt;HIP&lt;/strong&gt;, OpenMP-5, OpenCL, SYCL-&amp;gt;HIP&lt;/li&gt;
+&lt;li&gt;Example machine: &lt;a href=&#34;https://www.olcf.ornl.gov/wp-content/uploads/2019/05/frontier_specsheet_v4.pdf&#34;&gt;OLCF Frontier&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Intel X GPUs
+
+&lt;ul&gt;
+&lt;li&gt;Programmable via &lt;strong&gt;SYCL&lt;/strong&gt;, OpenMP-5, OpenCL?&lt;/li&gt;
+&lt;li&gt;Example machine: &lt;a href=&#34;https://aurora.alcf.anl.gov/&#34;&gt;ALCF Aurora/A21&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Upcoming non-coprocessor Supercomputers
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.hpcwire.com/2019/05/23/riken-post-k-supercomputer-named-after-japans-tallest-peak/&#34;&gt;RIKEN Fugaku (Post-K)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.tacc.utexas.edu/systems/frontera&#34;&gt;TACC Frontera&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;fundamental-capabilities&#34;&gt;Fundamental capabilities&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from io import StringIO
+import pandas
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use(&#39;ggplot&#39;)
+
+data = StringIO(&amp;quot;&amp;quot;&amp;quot;
+package,cores,lanes/core,clock (MHz),peak (GF),bandwidth (GB/s),TDP (W),MSRP
+Xeon 8280,28,8,2700,2400,141,205,10000
+NVIDIA V100,80,64,1455,7800,900,300,10664
+AMD MI60,64,64,1800,7362,1024,300,
+AMD Rome,64,4,2000,2048,205,200,6450
+&amp;quot;&amp;quot;&amp;quot;)
+
+df = pandas.read_csv(data, index_col=&#39;package&#39;)
+df
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;cores&lt;/th&gt;
+      &lt;th&gt;lanes/core&lt;/th&gt;
+      &lt;th&gt;clock (MHz)&lt;/th&gt;
+      &lt;th&gt;peak (GF)&lt;/th&gt;
+      &lt;th&gt;bandwidth (GB/s)&lt;/th&gt;
+      &lt;th&gt;TDP (W)&lt;/th&gt;
+      &lt;th&gt;MSRP&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;package&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Xeon 8280&lt;/th&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+      &lt;td&gt;2700&lt;/td&gt;
+      &lt;td&gt;2400&lt;/td&gt;
+      &lt;td&gt;141&lt;/td&gt;
+      &lt;td&gt;205&lt;/td&gt;
+      &lt;td&gt;10000.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;NVIDIA V100&lt;/th&gt;
+      &lt;td&gt;80&lt;/td&gt;
+      &lt;td&gt;64&lt;/td&gt;
+      &lt;td&gt;1455&lt;/td&gt;
+      &lt;td&gt;7800&lt;/td&gt;
+      &lt;td&gt;900&lt;/td&gt;
+      &lt;td&gt;300&lt;/td&gt;
+      &lt;td&gt;10664.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;AMD MI60&lt;/th&gt;
+      &lt;td&gt;64&lt;/td&gt;
+      &lt;td&gt;64&lt;/td&gt;
+      &lt;td&gt;1800&lt;/td&gt;
+      &lt;td&gt;7362&lt;/td&gt;
+      &lt;td&gt;1024&lt;/td&gt;
+      &lt;td&gt;300&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;AMD Rome&lt;/th&gt;
+      &lt;td&gt;64&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;2000&lt;/td&gt;
+      &lt;td&gt;2048&lt;/td&gt;
+      &lt;td&gt;205&lt;/td&gt;
+      &lt;td&gt;200&lt;/td&gt;
+      &lt;td&gt;6450.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&#34;amdahls-lawhttpsenwikipediaorgwikiamdahl27slaw-for-energy-efficiency&#34;&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Amdahl%27s_law&#34;&gt;Amdahl&#39;s Law&lt;/a&gt; for energy efficiency&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df[&#39;efficiency (GF/W)&#39;] = df[&#39;peak (GF)&#39;] / df[&#39;TDP (W)&#39;]
+df[&#39;efficiency (GF/W)&#39;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;package
+Xeon 8280      11.707317
+NVIDIA V100    26.000000
+AMD MI60       24.540000
+AMD Rome       10.240000
+Name: efficiency (GF/W), dtype: float64
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;ngpu = np.arange(0, 9)
+overhead = 100 # Power supply, DRAM, disk, etc.
+peak = (ngpu == 0)*df.loc[&#39;Xeon 8280&#39;][&#39;peak (GF)&#39;] + ngpu*df.loc[&#39;NVIDIA V100&#39;][&#39;peak (GF)&#39;]
+tdp = overhead + df.loc[&#39;Xeon 8280&#39;][&#39;TDP (W)&#39;] + ngpu*df.loc[&#39;NVIDIA V100&#39;][&#39;TDP (W)&#39;]
+plt.plot(ngpu, peak / tdp)
+plt.xlabel(&#39;number of GPUs per CPU&#39;)
+plt.title(&#39;DP Peak efficiency (GF/W)&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;./lecture_5_0.png&#34; alt=&#34;png&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;compare-to-green-500-listhttpswwwtop500orggreen500lists201906&#34;&gt;Compare to &lt;a href=&#34;https://www.top500.org/green500/lists/2019/06/&#34;&gt;Green 500 list&lt;/a&gt;&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.top500.org/system/179166&#34;&gt;#1 system&lt;/a&gt; is &lt;strong&gt;15.1 GF/W&lt;/strong&gt; (2x Xeon E5-2698v4, 8x V100)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.top500.org/system/179397&#34;&gt;#2 system&lt;/a&gt; (Summit) is &lt;strong&gt;14.7 GF/W&lt;/strong&gt; (2x Power9, 6x V100)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.top500.org/system/179683&#34;&gt;#27 system&lt;/a&gt; is &lt;strong&gt;5.8 GF/W&lt;/strong&gt; on Xeon 6248 (no GPU)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;amdahl-for-cost-efficiency&#34;&gt;Amdahl for cost efficiency&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df[&#39;cost (GF/$)&#39;] = df[&#39;peak (GF)&#39;] / df[&#39;MSRP&#39;]
+df[&#39;cost (GF/$)&#39;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;package
+Xeon 8280      0.240000
+NVIDIA V100    0.731433
+AMD MI60            NaN
+AMD Rome       0.317519
+Name: cost (GF/$), dtype: float64
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;overhead = 3000 + 2000*ngpu # power supply, memory, cooling, maintenance
+cost = overhead + df.loc[&#39;Xeon 8280&#39;][&#39;MSRP&#39;] + ngpu*df.loc[&#39;NVIDIA V100&#39;][&#39;MSRP&#39;]
+plt.plot(ngpu, peak / cost)
+plt.xlabel(&#39;number of GPUs per CPU&#39;)
+plt.title(&#39;DP cost efficiency (GF/$)&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;./lecture_8_0.png&#34; alt=&#34;png&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;what-fraction-of-datacenter-cost-goes-to-the-power-bill&#34;&gt;What fraction of datacenter cost goes to the power bill?&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;OLCF Summit is reportedly a \$200M machine.&lt;/li&gt;
+&lt;li&gt;What if we just buy the GPUs at retail?
+
+&lt;ul&gt;
+&lt;li&gt;256 racks&lt;/li&gt;
+&lt;li&gt;18 nodes per rack&lt;/li&gt;
+&lt;li&gt;6 GPUs per node&lt;/li&gt;
+&lt;li&gt;V100 MSRP of about $10k&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;256 * 18 * 6 * 10e3 / 1e6 # millions
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;276.48
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Rule of thumb: $ \lesssim \$1M $ per MW-year&lt;/li&gt;
+&lt;li&gt;We know Summit is a 13 MW facility&lt;/li&gt;
+&lt;li&gt;Check &lt;a href=&#34;https://www.electricitylocal.com/states/tennessee/knoxville/&#34;&gt;industrial electricity rates&lt;/a&gt;
+&lt;figure&gt;&lt;img src=&#34;knoxville-electricity.png&#34; alt=&#34;&#34;&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;.0638 * 24 * 365
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;558.8879999999999
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;olcf-4-foia.png&#34; alt=&#34;&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;programming-models&#34;&gt;Programming models&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Directives
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.openmp.org/resources/refguides/&#34;&gt;OpenMP-5&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.openacc.org/&#34;&gt;OpenACC&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;#pragma acc data copy(A) create(Anew)
+while ( error &amp;gt; tol  &amp;amp;&amp;amp;  iter  &amp;lt;  iter_max )  {
+  error = 0.0;
+#pragma acc kernels {
+#pragma acc loop independent collapse(2)
+  for (  int  j = 1; j &amp;lt; n-1;  j++ )  {
+    for (  int  i = 1; i &amp;lt; m-1; i++ )  {
+       Anew [j] [i] = 0.25 * ( A [j] [i+1] + A [j] [i-1] +
+                                      A [j-1] [i] + A [j+1] [i]);
+       error = max ( error, fabs (Anew [j] [i] - A [j] [i]));
+      }
+    }
+  } 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Comparison slides: &lt;a href=&#34;https://openmpcon.org/wp-content/uploads/2018_Session1_Diaz.pdf&#34;&gt;Is OpenMP 4.5 Target Off-load Ready for Real Life? A Case Study of Three Benchmark Kernels (2018)&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Thread &amp;quot;kernel&amp;quot; and control
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://devblogs.nvidia.com/even-easier-introduction-cuda/&#34;&gt;CUDA&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://rocm-documentation.readthedocs.io/en/latest/Programming_Guides/HIP-GUIDE.html&#34;&gt;HIP&lt;/a&gt; (&lt;a href=&#34;https://vimeo.com/channels/olcftraining/359154970&#34;&gt;video&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;C++ templated
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.khronos.org/sycl/&#34;&gt;SYCL&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/kokkos/kokkos&#34;&gt;Kokkos&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://raja.readthedocs.io/en/master/&#34;&gt;Raja&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
       <title>libCEED</title>
       <link>https://cucs-hpsc.github.io/fall2019/libceed/</link>
       <pubDate>Fri, 25 Oct 2019 06:49:25 -0600</pubDate>
