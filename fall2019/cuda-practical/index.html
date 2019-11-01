@@ -28,12 +28,10 @@
   
     
   
-  <meta name="description" content="def render_c(filename): from IPython.display import Markdown with open(filename) as f: contents = f.read() return Markdown(&quot;```c\n&quot; &#43; contents &#43; &quot;```\n&quot;)  Processes and Threads Threads and processes are very similar * Both created via clone system call on Linux * Scheduled in the same way by the operating system * Separate stacks (automatic variables) * Access to same memory before fork() or clone()
-with some important distinctions
- Threads set CLONE_VM  threads share the same virtual-to-physical address mapping threads can access the same data at the same addresses; private data is private only because other threads don&rsquo;t know its address  Threads set CLONE_FILES  threads share file descriptors  Threads set CLONE_THREAD, CLONE_SIGHAND  process id and signal handlers shared   Myths  Processes can&rsquo;t share memory  mmap(), shm_open(), and MPI_Win_allocate_shared()  Processes are &ldquo;heavy&rdquo;  same data structures and kernel scheduling; no difference in context switching data from parent is inherited copy-on-write at very low overhead startup costs ~100 microseconds to duplicate page tables caches are physically tagged; processes can share L1 cache   MPI: Message Passing Interface  Just a library: plain C, C&#43;&#43;, or Fortran compiler  Two active open source libraries: MPICH and Open MPI Numerous vendor implementations modify/extend these open source implementations MVAPICH is an MPICH-derived open source implementation for InfiniBand and related networks  Bindings from many other languages; mpi4py is popular Scales to millions of processes across ~100k nodes  Shared memory systems can be scaled up to ~4000 cores, but latency and price ($) increase  Standard usage: processes are separate on startup Timeline">
+  <meta name="description" content="GPUs have 2-4x greater floating point and bandwidth peak for the watts  also for the $ if you buy enterprise gear better for the $ if you buy gaming gear  Step 1 is to assess workload and latency requirements   Don&rsquo;t waste time with GPUs if  your problem size or time to solution requirements don&rsquo;t align if the work you&rsquo;d like to move to the GPU is not a bottleneck if the computation cost will be dwarfed by moving data to/from the GPU often you need to restructure so that caller passes in data already on the device can require nonlocal refactoring  Almost never: pick one kernel at a time and move it to the GPU  DOE ACME/E3SM (to pick on one high-profile application) has basically done this for five years and it still doesn&rsquo;t help their production workloads so they bought a non-GPU machine    Okay, okay, okay.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/intro-mpi/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/cuda-practical/">
 
   
 
@@ -100,7 +98,7 @@ with some important distinctions
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/intro-mpi/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/cuda-practical/">
 
   
   
@@ -116,17 +114,15 @@ with some important distinctions
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/intro-mpi/">
-  <meta property="og:title" content="Introduction to MPI | HPSC">
-  <meta property="og:description" content="def render_c(filename): from IPython.display import Markdown with open(filename) as f: contents = f.read() return Markdown(&quot;```c\n&quot; &#43; contents &#43; &quot;```\n&quot;)  Processes and Threads Threads and processes are very similar * Both created via clone system call on Linux * Scheduled in the same way by the operating system * Separate stacks (automatic variables) * Access to same memory before fork() or clone()
-with some important distinctions
- Threads set CLONE_VM  threads share the same virtual-to-physical address mapping threads can access the same data at the same addresses; private data is private only because other threads don&rsquo;t know its address  Threads set CLONE_FILES  threads share file descriptors  Threads set CLONE_THREAD, CLONE_SIGHAND  process id and signal handlers shared   Myths  Processes can&rsquo;t share memory  mmap(), shm_open(), and MPI_Win_allocate_shared()  Processes are &ldquo;heavy&rdquo;  same data structures and kernel scheduling; no difference in context switching data from parent is inherited copy-on-write at very low overhead startup costs ~100 microseconds to duplicate page tables caches are physically tagged; processes can share L1 cache   MPI: Message Passing Interface  Just a library: plain C, C&#43;&#43;, or Fortran compiler  Two active open source libraries: MPICH and Open MPI Numerous vendor implementations modify/extend these open source implementations MVAPICH is an MPICH-derived open source implementation for InfiniBand and related networks  Bindings from many other languages; mpi4py is popular Scales to millions of processes across ~100k nodes  Shared memory systems can be scaled up to ~4000 cores, but latency and price ($) increase  Standard usage: processes are separate on startup Timeline"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/cuda-practical/">
+  <meta property="og:title" content="Practical CUDA | HPSC">
+  <meta property="og:description" content="GPUs have 2-4x greater floating point and bandwidth peak for the watts  also for the $ if you buy enterprise gear better for the $ if you buy gaming gear  Step 1 is to assess workload and latency requirements   Don&rsquo;t waste time with GPUs if  your problem size or time to solution requirements don&rsquo;t align if the work you&rsquo;d like to move to the GPU is not a bottleneck if the computation cost will be dwarfed by moving data to/from the GPU often you need to restructure so that caller passes in data already on the device can require nonlocal refactoring  Almost never: pick one kernel at a time and move it to the GPU  DOE ACME/E3SM (to pick on one high-profile application) has basically done this for five years and it still doesn&rsquo;t help their production workloads so they bought a non-GPU machine    Okay, okay, okay."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-09-24T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-11-01T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-09-25T11:04:09-06:00">
+    <meta property="article:modified_time" content="2019-11-01T06:49:25-06:00">
   
 
   
@@ -138,7 +134,7 @@ with some important distinctions
 
 
 
-  <title>Introduction to MPI | HPSC</title>
+  <title>Practical CUDA | HPSC</title>
 
 </head>
 
@@ -317,7 +313,7 @@ with some important distinctions
         <a href="/fall2019/sorting-graphs/">2019-09-23 More bitonic sorting, graphs</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
       </li>
       
@@ -377,7 +373,7 @@ with some important distinctions
         <a href="/fall2019/cuda/">2019-10-30 GPUs and CUDA</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/cuda-practical/">2019-11-01 Practical CUDA</a>
       </li>
       
@@ -414,23 +410,26 @@ with some important distinctions
 <ul>
 <li>
 <ul>
-<li><a href="#processes-and-threads">Processes and Threads</a>
+<li><a href="#terminology-intro">Terminology/intro</a>
 <ul>
 <li>
 <ul>
-<li><a href="#myths">Myths</a></li>
+<li><a href="#how-does-this-relate-to-the-hardware">How does this relate to the hardware?</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#mpi-message-passing-interface">MPI: Message Passing Interface</a>
+<li><a href="#practical-cuda">Practical CUDA</a>
 <ul>
-<li>
+<li><a href="#cuda-best-practices-guide-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html"><a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html" target="_blank">CUDA Best Practices Guide</a></a>
 <ul>
-<li><a href="#advice-from-bill-gropp">Advice from Bill Gropp</a></li>
+<li><a href="#occupancy">Occupancy</a></li>
+<li><a href="#further-reading">Further reading</a></li>
 </ul></li>
-<li><a href="#communicators">Communicators</a></li>
-<li><a href="#collective-operations">Collective operations</a></li>
-<li><a href="#point-to-point-messaging">Point-to-point messaging</a></li>
-<li><a href="#neighbors">Neighbors</a></li>
+<li><a href="#memory">Memory</a>
+<ul>
+<li><a href="#getting-your-memory-into-position-is-often-the-hardest-part-of-cuda-programming">Getting your memory into position is often the hardest part of CUDA programming.</a></li>
+<li><a href="#unified-managed-memory-https-devblogs-nvidia-com-unified-memory-cuda-beginners"><a href="https://devblogs.nvidia.com/unified-memory-cuda-beginners/" target="_blank">Unified/managed memory</a></a></li>
+</ul></li>
+<li><a href="#on-memory-coalescing-and-strided-access-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html-strided-accesses">On memory coalescing and <a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#strided-accesses" target="_blank">strided access</a></a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -445,263 +444,277 @@ with some important distinctions
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Introduction to MPI</h1>
+          <h1 itemprop="name">Practical CUDA</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<pre><code class="language-python">def render_c(filename):
-    from IPython.display import Markdown
-    with open(filename) as f:
-        contents = f.read()
-    return Markdown(&quot;```c\n&quot; + contents + &quot;```\n&quot;)
-</code></pre>
-
-<h2 id="processes-and-threads">Processes and Threads</h2>
-
-<p>Threads and processes are very similar
-* Both created via <a href="https://linux.die.net/man/2/clone" target="_blank"><code>clone</code> system call</a> on Linux
-* Scheduled in the same way by the operating system
-* Separate stacks (automatic variables)
-* Access to same memory before <code>fork()</code> or <code>clone()</code></p>
-
-<p>with some important distinctions</p>
+<ul>
+<li>GPUs have 2-4x greater floating point and bandwidth peak for the watts
 
 <ul>
-<li>Threads set <code>CLONE_VM</code>
-
-<ul>
-<li>threads share the same virtual-to-physical address mapping</li>
-<li>threads can access the same data at the same addresses; private data is private only because other threads don&rsquo;t know its address</li>
+<li>also for the $ if you buy enterprise gear</li>
+<li>better for the $ if you buy gaming gear</li>
 </ul></li>
-<li>Threads set <code>CLONE_FILES</code>
+<li>Step 1 is to assess workload and latency requirements</li>
+</ul>
+
+<p><img src="VecDot_CPU_vs_GPU_size.png" alt="" />
+<img src="VecDot_CPU_vs_GPU_time.png" alt="" /></p>
 
 <ul>
-<li>threads share file descriptors</li>
+<li>Don&rsquo;t waste time with GPUs if
+
+<ul>
+<li>your problem size or time to solution requirements don&rsquo;t align</li>
+<li>if the work you&rsquo;d like to move to the GPU is not a bottleneck</li>
+<li>if the computation cost will be dwarfed by moving data to/from the GPU</li>
+<li>often you need to restructure so that caller passes in data already on the device</li>
+<li>can require nonlocal refactoring</li>
 </ul></li>
-<li>Threads set <code>CLONE_THREAD</code>, <code>CLONE_SIGHAND</code>
+<li>Almost never: pick one kernel at a time and move it to the GPU
 
 <ul>
-<li>process id and signal handlers shared</li>
+<li>DOE ACME/E3SM (to pick on one high-profile application) has basically done this for five years and it still doesn&rsquo;t help their production workloads so they bought a non-GPU machine
+<br /></li>
 </ul></li>
 </ul>
 
-<h4 id="myths">Myths</h4>
+<p><strong>Okay, okay, okay.  What if I have the right workload?</strong></p>
+
+<h2 id="terminology-intro">Terminology/intro</h2>
 
 <ul>
-<li>Processes can&rsquo;t share memory
+<li><a href="https://devblogs.nvidia.com/even-easier-introduction-cuda/" target="_blank">An even easier introduction to CUDA</a></li>
 
-<ul>
-<li><code>mmap()</code>, <code>shm_open()</code>, and <code>MPI_Win_allocate_shared()</code></li>
-</ul></li>
-<li>Processes are &ldquo;heavy&rdquo;
+<li><p><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#programming-model" target="_blank">CUDA Programming Model</a></p></li>
 
-<ul>
-<li>same data structures and kernel scheduling; no difference in context switching</li>
-<li>data from parent is inherited copy-on-write at very low overhead</li>
-<li>startup costs ~100 microseconds to duplicate page tables</li>
-<li>caches are physically tagged; processes can share L1 cache</li>
-</ul></li>
-</ul>
+<li><p>On the CPU, we have a thread with vector registers/instructions</p></li>
 
-<h2 id="mpi-message-passing-interface">MPI: Message Passing Interface</h2>
+<li><p>In CUDA, we write code inside a single vector lane (&ldquo;confusingly&rdquo; called a CUDA thread)</p></li>
 
-<ul>
-<li>Just a library: plain C, C++, or Fortran compiler
+<li><p>To get inside the lane, we launch a <strong>kernel</strong> from the CPU using special syntax</p>
 
-<ul>
-<li>Two active open source libraries: <a href="https://www.mpich.org/" target="_blank">MPICH</a> and <a href="https://www.open-mpi.org/" target="_blank">Open MPI</a></li>
-<li>Numerous vendor implementations modify/extend these open source implementations</li>
-<li>MVAPICH is an MPICH-derived open source implementation for InfiniBand and related networks</li>
-</ul></li>
-<li>Bindings from many other languages; <a href="https://mpi4py.readthedocs.io/en/stable/" target="_blank">mpi4py</a> is popular</li>
-<li>Scales to millions of processes across ~100k nodes
-
-<ul>
-<li>Shared memory systems can be scaled up to <a href="https://www.uvhpc.com/sgi-uv-3000" target="_blank">~4000 cores</a>, but latency and price ($) increase</li>
-</ul></li>
-<li>Standard usage: processes are separate on startup</li>
-
-<li><p>Timeline</p>
-
-<ul>
-<li>MPI-1 (1994) point-to-point messaging, collectives</li>
-<li>MPI-2 (1997) parallel IO, dynamic processes, one-sided</li>
-
-<li><p>MPI-3 (2012) nonblocking collectives, neighborhood collectives, improved one-sided</p>
-
-<pre><code class="language-python">render_c('mpi-demo.c')
+<pre><code class="language-c">add&lt;&lt;&lt;numBlocks, blockSize&gt;&gt;&gt;(N, x, y);
 </code></pre>
 
-<pre><code class="language-c">#include &lt;mpi.h&gt;
-#include &lt;stdio.h&gt;
-
-int main(int argc, char **argv) {
-MPI_Init(&amp;argc, &amp;argv);   // Must call before any other MPI functions
-int size, rank, sum;
-MPI_Comm_rank(MPI_COMM_WORLD, &amp;rank);
-MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
-MPI_Allreduce(&amp;rank, &amp;sum, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
-printf(&quot;I am rank %d of %d: sum=%d\n&quot;, rank, size, sum);
-MPI_Finalize();
-}
-</code></pre></li>
+<ul>
+<li>needs to be compiled using <code>nvcc</code></li>
+<li>Logically 1D/2D/3D rectangular tiled iteration space</li>
 </ul></li>
 </ul>
 
-<p>This may remind you of the top-level OpenMP strategy</p>
-
-<pre><code class="language-c">int main() {
-    #pragma omp parallel
-    {
-        int rank = omp_get_thread_num();
-        int size = omp_get_num_threads();
-        // your code
-    }
-}
-</code></pre>
+<p><img src="grid-of-thread-blocks.png" width="40%"></p>
 
 <ul>
-<li><p>We use the compiler wrapper <code>mpicc</code>, but it just passes some flags to the real compiler.</p>
-
-<pre><code class="language-python">! mpicc -show
-</code></pre>
-
-<p>gcc -pthread -Wl,-rpath -Wl,/usr/lib/openmpi -Wl,&ndash;enable-new-dtags -L/usr/lib/openmpi -lmpi</p>
-
-<pre><code class="language-python">! make CC=mpicc CFLAGS=-Wall mpi-demo
-</code></pre>
-
-<p>mpicc -Wall    mpi-demo.c   -o mpi-demo</p></li>
-
-<li><p>We use <code>mpiexec</code> to run locally.  Clusters/supercomputers often have different job launching programs.</p>
-
-<pre><code class="language-python">! mpiexec -n 2 ./mpi-demo
-</code></pre>
-
-<p>I am rank 0 of 2: sum=1
-I am rank 1 of 2: sum=1</p></li>
-
-<li><p>We can run more MPI processes than cores (or hardware threads), but you might need to use the <code>--oversubscribe</code> option because <strong>oversubscription is usually expensive</strong>.</p>
-
-<pre><code class="language-python">! mpiexec -n 6 --oversubscribe ./mpi-demo
-</code></pre>
-
-<p>I am rank 1 of 6: sum=15
-I am rank 3 of 6: sum=15
-I am rank 4 of 6: sum=15
-I am rank 5 of 6: sum=15
-I am rank 0 of 6: sum=15
-I am rank 2 of 6: sum=15</p></li>
-
-<li><p>You can use OpenMP within ranks of MPI (but use <code>MPI_Init_thread()</code>)</p></li>
-
-<li><p>Everything is private by default</p></li>
+<li>There are <a href="https://en.wikipedia.org/wiki/CUDA#Version_features_and_specifications" target="_blank">many</a> constraints and limitations to the iteration &ldquo;grid&rdquo;</li>
 </ul>
 
-<h4 id="advice-from-bill-gropp">Advice from Bill Gropp</h4>
+<p><img src="cuda-constraints.png" alt="" /></p>
+
+<ul>
+<li>Control flow for CUDA threads is nominally independent, but performance will be poor if you don&rsquo;t coordinate threads within each block.
+
+<ul>
+<li>Implicit coordination</li>
+<li>Memory coalescing</li>
+<li>Organize your algorithm to limit &ldquo;divergence&rdquo;</li>
+<li>Explicit coordination</li>
+<li>Shared memory</li>
+<li><code>__syncthreads()</code></li>
+<li>Warp shuffles</li>
+</ul></li>
+<li>We implement the kernel by using the <code>__global__</code> attribute
+
+<ul>
+<li>Visible from the CPU</li>
+<li>Special <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#built-in-variables" target="_blank">built-in variables</a> are defined</li>
+<li><code>gridDim</code></li>
+<li><code>blockIdx</code></li>
+<li><code>blockDim</code></li>
+<li><code>threadIdx</code></li>
+<li>There is also <code>__device__</code>, which is callable from other device functions</li>
+<li>Can use <code>__host__ __device__</code> to compile two versions</li>
+</ul></li>
+</ul>
+
+<p><img src="cuda_indexing.png" alt="" /></p>
+
+<h4 id="how-does-this-relate-to-the-hardware">How does this relate to the hardware?</h4>
+
+<ul>
+<li>Each thread block is assigned to one streaming multiprocessor (SM)</li>
+<li>Executed in warps (number of hardware lanes)</li>
+<li>Multiple warps (from the same or different thread blocks) execute like hyperthreads</li>
+</ul>
+
+<h2 id="practical-cuda">Practical CUDA</h2>
+
+<p><img src="https://images.dailykos.com/images/201610/story_image/Question_authority_says_who_Capture.PNG?1454006844" alt="" /></p>
+
+<h3 id="cuda-best-practices-guide-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html"><a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html" target="_blank">CUDA Best Practices Guide</a></h3>
+
+<h4 id="occupancy">Occupancy</h4>
 
 <blockquote>
-<p>You want to think about how you decompose your data structures, how
-    you think about them globally.  [&hellip;]  If you were building a house,
-    you&rsquo;d start with a set of blueprints that give you a picture of what
-    the whole house looks like.  You wouldn&rsquo;t start with a bunch of
-    tiles and say. &ldquo;Well I&rsquo;ll put this tile down on the ground, and
-    then I&rsquo;ll find a tile to go next to it.&rdquo;  But all too many people
-    try to build their parallel programs by creating the smallest
-    possible tiles and then trying to have the structure of their code
-    emerge from the chaos of all these little pieces.  You have to have
-    an organizing principle if you&rsquo;re going to survive making your code
-    parallel.
-    &ndash; <a href="https://www.rce-cast.com/Podcast/rce-28-mpich2.html" target="_blank">https://www.rce-cast.com/Podcast/rce-28-mpich2.html</a></p>
+<p>Thread instructions are executed sequentially in CUDA, and, as a result, executing other warps when one warp is paused or stalled is the only way to hide latencies and keep the hardware busy. Some metric related to the number of active warps on a multiprocessor is therefore important in <strong>determining how effectively the hardware is kept busy</strong> [emphasis added]. This metric is occupancy.</p>
 </blockquote>
 
-<h3 id="communicators">Communicators</h3>
-
 <ul>
-<li><code>MPI_COMM_WORLD</code> contains all ranks in the <code>mpiexec</code>.  Those ranks may be on different nodes, even in different parts of the world.</li>
-<li><code>MPI_COMM_SELF</code> contains only one rank</li>
-
-<li><p>Can create new communicators from existing ones</p>
-
-<pre><code class="language-c">int MPI_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm);
-int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *newcomm);
-int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm);
-</code></pre></li>
-
-<li><p>Can spawn new processes (but not supported on all machines)</p>
-
-<pre><code class="language-c">int MPI_Comm_spawn(const char *command, char *argv[], int maxprocs,
-        MPI_Info info, int root, MPI_Comm comm,
-        MPI_Comm *intercomm, int array_of_errcodes[]);
-</code></pre></li>
-
-<li><p>Can attach <em>attributes</em> to communicators (useful for library composition)</p></li>
+<li>Reality: occupancy is just one aspect, and often inversely correlated with keeping the hardware busy (and with performance).</li>
 </ul>
 
-<h3 id="collective-operations">Collective operations</h3>
+<blockquote>
+<p>Occupancy is the ratio of the number of active warps per multiprocessor to the maximum number of possible active warps.</p>
+</blockquote>
 
-<p>MPI has a rich set of collective operations scoped by communicator, including the following.</p>
+<ul>
+<li>If your kernel uses fewer registers/less shared memory, more warps can be scheduled.</li>
 
-<pre><code class="language-c">int MPI_Allreduce(const void *sendbuf, void *recvbuf, int count,
-        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-int MPI_Reduce(const void *sendbuf, void *recvbuf, int count,
-        MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
-int MPI_Scan(const void *sendbuf, void *recvbuf, int count,
-        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-int MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-        void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
-int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-        void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+<li><p>Register/shared memory usage is determined by the compiler.</p>
+
+<pre><code class="language-python">def render_c(filename):
+from IPython.display import Markdown
+with open(filename) as f:
+    contents = f.read()
+return Markdown(&quot;```c\n&quot; + contents + &quot;```\n&quot;)
+
+render_c('add.cu')
 </code></pre>
 
-<ul>
-<li>Implementations are optimized by vendors for their custom networks, and can be very fast.</li>
+<pre><code class="language-c">__global__ void add(int n, float *x, float *y) {
+int index = blockIdx.x * blockDim.x + threadIdx.x;
+int stride = blockDim.x * gridDim.x;
+for (int i = index; i &lt; n; i += stride)
+y[i] += x[i];
+}
+</code></pre>
+
+<pre><code class="language-python">! nvcc -arch sm_75 --resource-usage -c add.cu
+</code></pre>
+
+<p>ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function &lsquo;<em>Z3addiPfS</em>&rsquo; for &lsquo;sm_75&rsquo;
+ptxas info    : Function properties for <em>Z3addiPfS</em>
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 376 bytes cmem[0]</p>
+
+<pre><code class="language-python">render_c('copy.cu')
+</code></pre>
+
+<pre><code class="language-c">__global__ void copy(float *dst, float *src) {
+int iblock = blockIdx.x + blockIdx.y * gridDim.x;
+int index  = threadIdx.x + TILE_SIZE * iblock * blockDim.x;
+float a[TILE_SIZE]; // allocated in registers
+for (int i=0; i&lt;TILE_SIZE; i++)
+a[i] = src[index + i * blockDim.x];
+for (int i=0; i&lt;TILE_SIZE; i++)
+dst[index + i * blockDim.x] = a[i];
+}
+</code></pre>
+
+<pre><code class="language-python">! nvcc -arch sm_75 --resource-usage -DTILE_SIZE=16 -c copy.cu
+</code></pre>
+
+<p>ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function &lsquo;<em>Z4copyPfS</em>&rsquo; for &lsquo;sm_75&rsquo;
+ptxas info    : Function properties for <em>Z4copyPfS</em>
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 368 bytes cmem[0]</p></li>
+
+<li><p>The <a href="https://docs.nvidia.com/cuda/cuda-occupancy-calculator/index.html" target="_blank">Occupancy Calculator</a> can compute occupancy based on the register and shared memory usage.</p></li>
+
+<li><p>You can tell the compiler to reduce register usage, sometimes at the expense of spills.</p>
+
+<pre><code class="language-python">! nvcc -arch sm_75 --resource-usage -DTILE_SIZE=16 --maxrregcount 24 -c copy.cu
+</code></pre>
+
+<p>ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function &lsquo;<em>Z4copyPfS</em>&rsquo; for &lsquo;sm_75&rsquo;
+ptxas info    : Function properties for <em>Z4copyPfS</em>
+    80 bytes stack frame, 76 bytes spill stores, 76 bytes spill loads
+ptxas info    : Used 24 registers, 368 bytes cmem[0]</p></li>
 </ul>
 
-<p><img src="https://www.mcs.anl.gov/~fischer/gop/bgp_gop_png.png" alt="Fischer BGP" /></p>
-
-<p>Notice how the time is basically independent of number of processes $P$, and only a small multiple of the cost to send a single message. Not all networks are this good.</p>
-
-<h3 id="point-to-point-messaging">Point-to-point messaging</h3>
-
-<p>In addition to collectives, MPI supports messaging directly between individual ranks.</p>
-
-<p><img src="mpi-send-recv.png" alt="send-recv" /></p>
+<h4 id="further-reading">Further reading</h4>
 
 <ul>
-<li>Interfaces can be:
+<li>Vasily Volkov (2010) <a href="https://www.nvidia.com/content/GTC-2010/pdfs/2238_GTC2010.pdf" target="_blank"><strong>Better Performance at Lower Occupancy</strong></a> (slides)</li>
+<li>Vasily Volkov (2016) <a href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf" target="_blank"><strong>Understanding Latency Hiding on GPUs</strong></a> (very in-depth)</li>
+<li>Kasia Swirydowicz (2018) <a href="https://www.paranumal.com/single-post/2018/03/02/Finite-Element-Stiffness-Matrix-Action-monolithic-kernel-optimization-on-Titan-V" target="_blank"><strong>Finite Element Stiffness Matrix Action: monolithic kernel optimization on Titan V</strong></a></li>
+</ul>
+
+<h3 id="memory">Memory</h3>
 
 <ul>
-<li>blocking like <code>MPI_Send()</code> and <code>MPI_Recv()</code>, or</li>
-<li>&ldquo;immediate&rdquo; (asynchronous), like <code>MPI_Isend()</code> and <code>MPI_Irecv()</code>.  The immediate varliants return an <code>MPI_Request</code>, which must be waited on to complete the send or receive.</li>
-</ul></li>
-<li>Be careful of deadlock when using blocking interfaces.
+<li>GPU memory is not CPU memory</li>
+</ul>
+
+<p><img src="https://en.wikichip.org/w/images/4/47/summit_single-socket.svg" width="50%"></p>
+
+<p><strong>Duh</strong>, so why does NVIDIA <a href="https://devblogs.nvidia.com/unified-memory-cuda-beginners/" target="_blank">publish this</a>?</p>
+
+<p><img src="https://devblogs.nvidia.com/wp-content/uploads/2017/06/Unified-Memory-MultiGPU.png" alt="" /></p>
+
+<h4 id="getting-your-memory-into-position-is-often-the-hardest-part-of-cuda-programming">Getting your memory into position is often the hardest part of CUDA programming.</h4>
 
 <ul>
-<li>I never use blocking send/recv.</li>
-<li>There are also &ldquo;synchronous&rdquo; <code>MPI_Ssend</code> and &ldquo;buffered&rdquo; <code>MPI_Bsend</code>, and nonblocking variants of these, <code>MPI_Issend</code>, etc.</li>
-<li>I never use these either (with one cool exception that we&rsquo;ll talk about).</li>
-</ul></li>
-<li>Point-to-point messaging is like the assembly of parallel computing
+<li><p>Allocate memory on the GPU</p>
+
+<pre><code class="language-c">cudaMalloc(&amp;xdevice, N*sizeof(double));
+</code></pre></li>
+
+<li><p>Populate it from the host</p>
+
+<pre><code class="language-c">cudaMemcpy(xdevice, xhost, N*sizeof(double), cudaMemcpyHostToDevice);
+</code></pre></li>
+
+<li><p>Repeat for all data, including control parameters</p></li>
+
+<li><p>Easy to forget, ongoing maintenance/complexity cost</p></li>
+</ul>
+
+<h4 id="unified-managed-memory-https-devblogs-nvidia-com-unified-memory-cuda-beginners"><a href="https://devblogs.nvidia.com/unified-memory-cuda-beginners/" target="_blank">Unified/managed memory</a></h4>
 
 <ul>
-<li>It can be good for building libraries, but it&rsquo;s a headache to use directly for most purposes</li>
-<li>Better to use collectives when possible, or higher level libraries</li>
+<li><p>Allocate &ldquo;managed&rdquo; memory, accessible from CPU and GPU</p>
+
+<pre><code class="language-c">cudaMallocManaged(&amp;x, N*sizeof(float));
+</code></pre></li>
+
+<li><p>How?</p></li>
+</ul>
+
+<p><img src="maximizing-unified-memory.png" width="50%"></p>
+
+<ul>
+<li>With OpenACC, make all dynamic allocations in managed memory: <code>pgcc -ta=tesla:managed</code>
+
+<ul>
+<li>The GPU probably has a lot less memory than you have DRAM</li>
+<li>Really convenient for incremental work in legacy code</li>
+<li>Performance isn&rsquo;t great without <code>cudaMemPrefetchAsync</code>
+<br /></li>
 </ul></li>
 </ul>
 
-<h3 id="neighbors">Neighbors</h3>
+<p><img src="pngbase6479f3c9825c97fa94.png" alt="" /></p>
 
-<p>A common pattern involves communicating with neighbors, often many times in sequence (such as each iteration or time step).</p>
+<p><strong>Further reading</strong>: <a href="https://devblogs.nvidia.com/maximizing-unified-memory-performance-cuda/" target="_blank">Maximizing Unified Memory Performance in CUDA</a></p>
 
-<p><img src="mpi-neighbor-grid.png" alt="Neighbor comm" /></p>
+<h3 id="on-memory-coalescing-and-strided-access-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html-strided-accesses">On memory coalescing and <a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#strided-accesses" target="_blank">strided access</a></h3>
 
-<p>This can be achieved with
-* Point-to-point: <code>MPI_Isend</code>, <code>MPI_Irecv</code>, <code>MPI_Waitall</code>
-* Persistent: <code>MPI_Send_init</code> (once), <code>MPI_Startall</code>, <code>MPI_Waitall</code>.
-* Neighborhood collectives (need to create special communicator)
-* One-sided (need to manage safety yourself)</p>
+<pre><code class="language-c">__global__ void strideCopy(float *odata, float* idata, int stride) {
+    int xid = (blockIdx.x*blockDim.x + threadIdx.x)*stride;
+    odata[xid] = idata[xid];
+}
+</code></pre>
+
+<p><img src="adjacent-threads-accessing-memory-with-stride-of-2.png" alt="" /></p>
+
+<p>Lose half your bandwidth for <code>stride=2</code>.</p>
+
+<p><img src="performance-of-stridecopy-kernel.png" alt="" /></p>
 
           </div>
 
@@ -718,14 +731,14 @@ int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/dense-linalg/" rel="next">Dense Linear Algebra and Networks</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/sorting-graphs/" rel="prev">More bitonic sorting, graphs</a>
+    <a href="/fall2019/cuda/" rel="prev">GPUs and CUDA</a>
   </div>
   
 </div>
@@ -735,11 +748,11 @@ int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Sep 25, 2019</p>
+          <p>Last updated on Nov 1, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/intro-mpi/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/cuda-practical/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

@@ -325,6 +325,282 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Practical CUDA</title>
+      <link>https://cucs-hpsc.github.io/fall2019/cuda-practical/</link>
+      <pubDate>Fri, 01 Nov 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/cuda-practical/</guid>
+      <description>
+
+&lt;ul&gt;
+&lt;li&gt;GPUs have 2-4x greater floating point and bandwidth peak for the watts
+
+&lt;ul&gt;
+&lt;li&gt;also for the $ if you buy enterprise gear&lt;/li&gt;
+&lt;li&gt;better for the $ if you buy gaming gear&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Step 1 is to assess workload and latency requirements&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;VecDot_CPU_vs_GPU_size.png&#34; alt=&#34;&#34; /&gt;
+&lt;img src=&#34;VecDot_CPU_vs_GPU_time.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Don&amp;rsquo;t waste time with GPUs if
+
+&lt;ul&gt;
+&lt;li&gt;your problem size or time to solution requirements don&amp;rsquo;t align&lt;/li&gt;
+&lt;li&gt;if the work you&amp;rsquo;d like to move to the GPU is not a bottleneck&lt;/li&gt;
+&lt;li&gt;if the computation cost will be dwarfed by moving data to/from the GPU&lt;/li&gt;
+&lt;li&gt;often you need to restructure so that caller passes in data already on the device&lt;/li&gt;
+&lt;li&gt;can require nonlocal refactoring&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Almost never: pick one kernel at a time and move it to the GPU
+
+&lt;ul&gt;
+&lt;li&gt;DOE ACME/E3SM (to pick on one high-profile application) has basically done this for five years and it still doesn&amp;rsquo;t help their production workloads so they bought a non-GPU machine
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Okay, okay, okay.  What if I have the right workload?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;terminology-intro&#34;&gt;Terminology/intro&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://devblogs.nvidia.com/even-easier-introduction-cuda/&#34; target=&#34;_blank&#34;&gt;An even easier introduction to CUDA&lt;/a&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#programming-model&#34; target=&#34;_blank&#34;&gt;CUDA Programming Model&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;On the CPU, we have a thread with vector registers/instructions&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;In CUDA, we write code inside a single vector lane (&amp;ldquo;confusingly&amp;rdquo; called a CUDA thread)&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;To get inside the lane, we launch a &lt;strong&gt;kernel&lt;/strong&gt; from the CPU using special syntax&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;add&amp;lt;&amp;lt;&amp;lt;numBlocks, blockSize&amp;gt;&amp;gt;&amp;gt;(N, x, y);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;needs to be compiled using &lt;code&gt;nvcc&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Logically 1D/2D/3D rectangular tiled iteration space&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;grid-of-thread-blocks.png&#34; width=&#34;40%&#34;&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;There are &lt;a href=&#34;https://en.wikipedia.org/wiki/CUDA#Version_features_and_specifications&#34; target=&#34;_blank&#34;&gt;many&lt;/a&gt; constraints and limitations to the iteration &amp;ldquo;grid&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;cuda-constraints.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Control flow for CUDA threads is nominally independent, but performance will be poor if you don&amp;rsquo;t coordinate threads within each block.
+
+&lt;ul&gt;
+&lt;li&gt;Implicit coordination&lt;/li&gt;
+&lt;li&gt;Memory coalescing&lt;/li&gt;
+&lt;li&gt;Organize your algorithm to limit &amp;ldquo;divergence&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Explicit coordination&lt;/li&gt;
+&lt;li&gt;Shared memory&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;__syncthreads()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Warp shuffles&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;We implement the kernel by using the &lt;code&gt;__global__&lt;/code&gt; attribute
+
+&lt;ul&gt;
+&lt;li&gt;Visible from the CPU&lt;/li&gt;
+&lt;li&gt;Special &lt;a href=&#34;https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#built-in-variables&#34; target=&#34;_blank&#34;&gt;built-in variables&lt;/a&gt; are defined&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;gridDim&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;blockIdx&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;blockDim&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;threadIdx&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;There is also &lt;code&gt;__device__&lt;/code&gt;, which is callable from other device functions&lt;/li&gt;
+&lt;li&gt;Can use &lt;code&gt;__host__ __device__&lt;/code&gt; to compile two versions&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;cuda_indexing.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;how-does-this-relate-to-the-hardware&#34;&gt;How does this relate to the hardware?&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Each thread block is assigned to one streaming multiprocessor (SM)&lt;/li&gt;
+&lt;li&gt;Executed in warps (number of hardware lanes)&lt;/li&gt;
+&lt;li&gt;Multiple warps (from the same or different thread blocks) execute like hyperthreads&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;practical-cuda&#34;&gt;Practical CUDA&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://images.dailykos.com/images/201610/story_image/Question_authority_says_who_Capture.PNG?1454006844&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;cuda-best-practices-guide-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html&#34;&gt;&lt;a href=&#34;https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html&#34; target=&#34;_blank&#34;&gt;CUDA Best Practices Guide&lt;/a&gt;&lt;/h3&gt;
+
+&lt;h4 id=&#34;occupancy&#34;&gt;Occupancy&lt;/h4&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Thread instructions are executed sequentially in CUDA, and, as a result, executing other warps when one warp is paused or stalled is the only way to hide latencies and keep the hardware busy. Some metric related to the number of active warps on a multiprocessor is therefore important in &lt;strong&gt;determining how effectively the hardware is kept busy&lt;/strong&gt; [emphasis added]. This metric is occupancy.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Reality: occupancy is just one aspect, and often inversely correlated with keeping the hardware busy (and with performance).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Occupancy is the ratio of the number of active warps per multiprocessor to the maximum number of possible active warps.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If your kernel uses fewer registers/less shared memory, more warps can be scheduled.&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Register/shared memory usage is determined by the compiler.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def render_c(filename):
+from IPython.display import Markdown
+with open(filename) as f:
+    contents = f.read()
+return Markdown(&amp;quot;```c\n&amp;quot; + contents + &amp;quot;```\n&amp;quot;)
+
+render_c(&#39;add.cu&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;__global__ void add(int n, float *x, float *y) {
+int index = blockIdx.x * blockDim.x + threadIdx.x;
+int stride = blockDim.x * gridDim.x;
+for (int i = index; i &amp;lt; n; i += stride)
+y[i] += x[i];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! nvcc -arch sm_75 --resource-usage -c add.cu
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function &amp;lsquo;&lt;em&gt;Z3addiPfS&lt;/em&gt;&amp;rsquo; for &amp;lsquo;sm_75&amp;rsquo;
+ptxas info    : Function properties for &lt;em&gt;Z3addiPfS&lt;/em&gt;
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 376 bytes cmem[0]&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;render_c(&#39;copy.cu&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;__global__ void copy(float *dst, float *src) {
+int iblock = blockIdx.x + blockIdx.y * gridDim.x;
+int index  = threadIdx.x + TILE_SIZE * iblock * blockDim.x;
+float a[TILE_SIZE]; // allocated in registers
+for (int i=0; i&amp;lt;TILE_SIZE; i++)
+a[i] = src[index + i * blockDim.x];
+for (int i=0; i&amp;lt;TILE_SIZE; i++)
+dst[index + i * blockDim.x] = a[i];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! nvcc -arch sm_75 --resource-usage -DTILE_SIZE=16 -c copy.cu
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function &amp;lsquo;&lt;em&gt;Z4copyPfS&lt;/em&gt;&amp;rsquo; for &amp;lsquo;sm_75&amp;rsquo;
+ptxas info    : Function properties for &lt;em&gt;Z4copyPfS&lt;/em&gt;
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 368 bytes cmem[0]&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The &lt;a href=&#34;https://docs.nvidia.com/cuda/cuda-occupancy-calculator/index.html&#34; target=&#34;_blank&#34;&gt;Occupancy Calculator&lt;/a&gt; can compute occupancy based on the register and shared memory usage.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;You can tell the compiler to reduce register usage, sometimes at the expense of spills.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! nvcc -arch sm_75 --resource-usage -DTILE_SIZE=16 --maxrregcount 24 -c copy.cu
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function &amp;lsquo;&lt;em&gt;Z4copyPfS&lt;/em&gt;&amp;rsquo; for &amp;lsquo;sm_75&amp;rsquo;
+ptxas info    : Function properties for &lt;em&gt;Z4copyPfS&lt;/em&gt;
+    80 bytes stack frame, 76 bytes spill stores, 76 bytes spill loads
+ptxas info    : Used 24 registers, 368 bytes cmem[0]&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;further-reading&#34;&gt;Further reading&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Vasily Volkov (2010) &lt;a href=&#34;https://www.nvidia.com/content/GTC-2010/pdfs/2238_GTC2010.pdf&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Better Performance at Lower Occupancy&lt;/strong&gt;&lt;/a&gt; (slides)&lt;/li&gt;
+&lt;li&gt;Vasily Volkov (2016) &lt;a href=&#34;https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Understanding Latency Hiding on GPUs&lt;/strong&gt;&lt;/a&gt; (very in-depth)&lt;/li&gt;
+&lt;li&gt;Kasia Swirydowicz (2018) &lt;a href=&#34;https://www.paranumal.com/single-post/2018/03/02/Finite-Element-Stiffness-Matrix-Action-monolithic-kernel-optimization-on-Titan-V&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Finite Element Stiffness Matrix Action: monolithic kernel optimization on Titan V&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;memory&#34;&gt;Memory&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;GPU memory is not CPU memory&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://en.wikichip.org/w/images/4/47/summit_single-socket.svg&#34; width=&#34;50%&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Duh&lt;/strong&gt;, so why does NVIDIA &lt;a href=&#34;https://devblogs.nvidia.com/unified-memory-cuda-beginners/&#34; target=&#34;_blank&#34;&gt;publish this&lt;/a&gt;?&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://devblogs.nvidia.com/wp-content/uploads/2017/06/Unified-Memory-MultiGPU.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;getting-your-memory-into-position-is-often-the-hardest-part-of-cuda-programming&#34;&gt;Getting your memory into position is often the hardest part of CUDA programming.&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Allocate memory on the GPU&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;cudaMalloc(&amp;amp;xdevice, N*sizeof(double));
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Populate it from the host&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;cudaMemcpy(xdevice, xhost, N*sizeof(double), cudaMemcpyHostToDevice);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Repeat for all data, including control parameters&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Easy to forget, ongoing maintenance/complexity cost&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;unified-managed-memory-https-devblogs-nvidia-com-unified-memory-cuda-beginners&#34;&gt;&lt;a href=&#34;https://devblogs.nvidia.com/unified-memory-cuda-beginners/&#34; target=&#34;_blank&#34;&gt;Unified/managed memory&lt;/a&gt;&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Allocate &amp;ldquo;managed&amp;rdquo; memory, accessible from CPU and GPU&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;cudaMallocManaged(&amp;amp;x, N*sizeof(float));
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;How?&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;maximizing-unified-memory.png&#34; width=&#34;50%&#34;&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;With OpenACC, make all dynamic allocations in managed memory: &lt;code&gt;pgcc -ta=tesla:managed&lt;/code&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The GPU probably has a lot less memory than you have DRAM&lt;/li&gt;
+&lt;li&gt;Really convenient for incremental work in legacy code&lt;/li&gt;
+&lt;li&gt;Performance isn&amp;rsquo;t great without &lt;code&gt;cudaMemPrefetchAsync&lt;/code&gt;
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;pngbase6479f3c9825c97fa94.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Further reading&lt;/strong&gt;: &lt;a href=&#34;https://devblogs.nvidia.com/maximizing-unified-memory-performance-cuda/&#34; target=&#34;_blank&#34;&gt;Maximizing Unified Memory Performance in CUDA&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;on-memory-coalescing-and-strided-access-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html-strided-accesses&#34;&gt;On memory coalescing and &lt;a href=&#34;https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#strided-accesses&#34; target=&#34;_blank&#34;&gt;strided access&lt;/a&gt;&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;__global__ void strideCopy(float *odata, float* idata, int stride) {
+    int xid = (blockIdx.x*blockDim.x + threadIdx.x)*stride;
+    odata[xid] = idata[xid];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;adjacent-threads-accessing-memory-with-stride-of-2.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lose half your bandwidth for &lt;code&gt;stride=2&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;performance-of-stridecopy-kernel.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>GPUs and CUDA</title>
       <link>https://cucs-hpsc.github.io/fall2019/cuda/</link>
       <pubDate>Wed, 30 Oct 2019 06:49:25 -0600</pubDate>
