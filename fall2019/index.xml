@@ -290,6 +290,257 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>GPUs and CUDA</title>
+      <link>https://cucs-hpsc.github.io/fall2019/cuda/</link>
+      <pubDate>Wed, 30 Oct 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/cuda/</guid>
+      <description>
+
+&lt;ul&gt;
+&lt;li&gt;GPU vs CPU characterization&lt;/li&gt;
+&lt;li&gt;CUDA preview&lt;/li&gt;
+&lt;li&gt;Execution heirarchy&lt;/li&gt;
+&lt;li&gt;Memory managerie&lt;/li&gt;
+&lt;li&gt;Optimizations&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;graphics-processing-units&#34;&gt;Graphics Processing Units&lt;/h2&gt;
+
+&lt;p&gt;Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics.  HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.&lt;/p&gt;
+
+&lt;p&gt;GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;gpu-devotes-more-transistors-to-data-processing.png&#34; width=&#34;600&#34;/&gt;
+&lt;center&gt;&lt;i&gt;Nvidia.com: real-estate difference&lt;/i&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;GPUs have no* branch prediction and no speculative execution.  (In the early days, computational uses even needed to implement their own error correction in software!)  Longer memory access latencies from tiny cache size is meant to be hidden behind co-resident compute.  The difference in mentality allowed GPUs to far surpass CPU compute efficiency.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;*: recent devices use branch prediction to group divergent threads&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;karlrupp.net_costpercomputetrend.png&#34; alt=&#34;karlrupp.net: compute efficiency&#34; /&gt;
+&lt;center&gt;&lt;i&gt;karlrupp.net: compute efficiency&lt;/i&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;Power can dominant the cost in HPC. Consider the Summit supercomputer:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;#2 GREEN500 (was #3, but #1 was decomissioned)&lt;/li&gt;
+&lt;li&gt;cost \$200 million to build&lt;/li&gt;
+&lt;li&gt;13 MW to run compute+interconnect+file systems =&amp;gt; roughly \$7 million/year in raw electricity to power&lt;/li&gt;
+&lt;li&gt;(does not count facilities/infrastructure cost to actually supply this power, nor cooling)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The drawbacks: GPU efficiency needs the problem to fit well into SIMD and have a relatively high computation intensity.&lt;/p&gt;
+
+&lt;h2 id=&#34;cuda&#34;&gt;CUDA&lt;/h2&gt;
+
+&lt;p&gt;Early general purpose computing GPU efforts required formulating problems in terms of graphics primatives (e.g. DirectX).&lt;/p&gt;
+
+&lt;p&gt;NVIDIA publicly launched CUDA in 2006, allowing programming in C (and Fortran).&lt;/p&gt;
+
+&lt;p&gt;Flash forward to 2019: AMD has its own language and there are also several vendor-independent languages (dominant: OpenCL), but CUDA still dominates overall.&lt;/p&gt;
+
+&lt;p&gt;Nvidia maintains good documentation to ease adoption, like its &lt;a href=&#34;programming guide&#34; target=&#34;_blank&#34;&gt;https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;kernel-syntax-example&#34;&gt;Kernel syntax example&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;// Add two matrices A and B of size NxN and stores the result into matrix C:
+// Kernel definition
+__global__ void MatAdd(float A[N][N], float B[N][N], float C[N][N])
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+    if (i &amp;lt; N &amp;amp;&amp;amp; j &amp;lt; N)
+        C[i][j] = A[i][j] + B[i][j];
+}
+
+int main()
+{
+    ...
+    // Kernel invocation
+    dim3 threadsPerBlock(16, 16);
+    dim3 numBlocks(N / threadsPerBlock.x, N / threadsPerBlock.y);
+    MatAdd&amp;lt;&amp;lt;&amp;lt;numBlocks, threadsPerBlock&amp;gt;&amp;gt;&amp;gt;(A, B, C);
+    ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;CUDA-specific additions:
+* Kernels are defined with a &lt;code&gt;__global__&lt;/code&gt; specifier (when called by the host).
+* &lt;code&gt;&amp;lt;&amp;lt;&amp;lt;numBlocks, threadsPerBlock&amp;gt;&amp;gt;&amp;gt;&lt;/code&gt; gives the &lt;em&gt;execution configuration&lt;/em&gt;.
+* Ways for threads to query their location: &lt;code&gt;threadIdx&lt;/code&gt;, &lt;code&gt;blockIdx&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;thread-heirarchy&#34;&gt;Thread Heirarchy&lt;/h3&gt;
+
+&lt;p&gt;Threads each have their own register allocation.  They are always executed in &amp;ldquo;SIMT&amp;rdquo; &lt;strong&gt;warps&lt;/strong&gt; of up to 32 (could change, but hasn&amp;rsquo;t yet).  This means:
+* any divergence of instructions between threads within a warp causes some of the threads to no-op (relaxed recently);
+* &lt;code&gt;product(threadsPerBlock)&lt;/code&gt; should be a multiple of 32 (maximum 1024) where possible.&lt;/p&gt;
+
+&lt;p&gt;Blocks each have their own shared memory allocation.  All threads in a block are resident on the same processing core.  Thread layout can be up to three dimensions.
+* can perform a lightweight synchronization within a block;
+* co-resident blocks can be helpful at masking latency, but this is limited by block memory and register use.&lt;/p&gt;
+
+&lt;p&gt;Blocks themselves are layed out on a &lt;strong&gt;grid&lt;/strong&gt; of up to three dimensions (on recent compute capabilities).  They must be logically executable in parallel or any serial order.
+* no synchronization across blocks within a kernel;
+* embarassingly parallel only, although caches can be reused.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;grid-of-thread-blocks.png&#34; width=&#34;400&#34;/&gt;
+&lt;center&gt;&lt;i&gt;Nvidia.com: 2d grid and threads&lt;/i&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;memory&#34;&gt;Memory&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;hardware-model.png&#34; width=&#34;400&#34;/&gt;
+&lt;center&gt;&lt;i&gt;Nvidia.com: model of memory connections&lt;/i&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Global&lt;/strong&gt;, &lt;strong&gt;constant&lt;/strong&gt;, and &lt;strong&gt;texture&lt;/strong&gt; memories persist across kernel calls, and each has its own cache per SM (L2 cache shared by SMs).  By default, host and device are assumed to maintain separate memory:
+* explicit device allocation and deallocation;
+* explicit transfer between host and device.&lt;/p&gt;
+
+&lt;p&gt;Alternatively, there is a &amp;ldquo;Unified Memory&amp;rdquo; configuration that automates these on an as-needed basis, pretending there is one common address space.&lt;/p&gt;
+
+&lt;p&gt;Each block has &lt;strong&gt;shared&lt;/strong&gt; memory which tends to be fast (equivalent to a user-managed L1 cache).&lt;/p&gt;
+
+&lt;p&gt;Each thread has &amp;ldquo;&lt;strong&gt;local&lt;/strong&gt;&amp;rdquo; memory (that is actually no more local than global memory!), which is mostly used for register spilling.  (Register and shared memory usage are reported by the compiler when compiling with the &lt;code&gt;-ptxas-options=-v&lt;/code&gt; option.)&lt;/p&gt;
+
+&lt;h3 id=&#34;memory-transfer-example&#34;&gt;Memory transfer example&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;__global__ void VecAdd(float* A, float* B, float* C, int N)
+{
+    int i = blockDim.x * blockIdx.x + threadIdx.x;
+    if (i &amp;lt; N)
+        C[i] = A[i] + B[i];
+}
+
+int main()
+{
+    int N = ...;
+    size_t size = N * sizeof(float);
+    
+    // Allocate input vectors h_A and h_B in host memory
+    float* h_A = (float*)malloc(size);
+    float* h_B = (float*)malloc(size);
+    float* h_C = (float*)malloc(size);
+
+    // Initialize input vectors
+    ...
+
+    
+    // Allocate vectors in device memory
+    float* d_A;
+    cudaMalloc(&amp;amp;d_A, size);
+    float* d_B;
+    cudaMalloc(&amp;amp;d_B, size);
+    float* d_C;
+    cudaMalloc(&amp;amp;d_C, size);
+
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
+
+
+    // Invoke kernel
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+    VecAdd&amp;lt;&amp;lt;&amp;lt;blocksPerGrid, threadsPerBlock&amp;gt;&amp;gt;&amp;gt;(d_A, d_B, d_C, N);
+
+
+    // Copy result from device memory to host memory
+    // h_C contains the result in host memory
+    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
+
+    // Free device memory
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+            
+    // Free host memory
+    ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;hline&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;optimization-details&#34;&gt;Optimization Details&lt;/h2&gt;
+
+&lt;p&gt;Often details depend on the particular &amp;ldquo;compute capability&amp;rdquo; of the device.&lt;/p&gt;
+
+&lt;h3 id=&#34;intrinsic-function-instructions&#34;&gt;Intrinsic function instructions&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;similar tradeoffs to &amp;ndash;ffast-math&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;memory-1&#34;&gt;Memory&lt;/h3&gt;
+
+&lt;h4 id=&#34;hiding-memory-transfers&#34;&gt;Hiding Memory Transfers:&lt;/h4&gt;
+
+&lt;p&gt;Memory transfers between host and device generally have the greatest latency.  Modern capabilities can hide data transfer between host and device by giving the device other tasks to work on and having the host use asynchronous versions of the transfer functions.&lt;/p&gt;
+
+&lt;p&gt;This is managed through  &lt;strong&gt;streams&lt;/strong&gt; on the host, where cuda calls within a stream are guaranteed to execute on the device in order, but those between streams may be out of order or overlap &lt;em&gt;depending on the compute capability&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;To minimize waiting with the following code, the compute capability needs to allow concurrent data transfers, concurrent kernel execution, and overlap of data transfer and kernel execution.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;for (int i = 0; i &amp;lt; 2; ++i) {
+    cudaMemcpyAsync(inputDevPtr + i * size, hostPtr + i * size,
+                    size, cudaMemcpyHostToDevice, stream[i]);
+    MyKernel &amp;lt;&amp;lt;&amp;lt;100, 512, 0, stream[i]&amp;gt;&amp;gt;&amp;gt;
+          (outputDevPtr + i * size, inputDevPtr + i * size, size);
+    cudaMemcpyAsync(hostPtr + i * size, outputDevPtr + i * size,
+                    size, cudaMemcpyDeviceToHost, stream[i]);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;global-memory-access-size-and-alignment&#34;&gt;Global memory access size and alignment:&lt;/h4&gt;
+
+&lt;p&gt;Example: an array of this struct would have elements that aren&amp;rsquo;t aligned if not for the &lt;code&gt;__align__(16)&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct __align__(16) {
+    float x;
+    float y;
+    float z;
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This usually crops up with 2d arrays, which are more efficient if width-padded to a multiple of the warp size.&lt;/p&gt;
+
+&lt;h4 id=&#34;coalescence&#34;&gt;Coalescence:&lt;/h4&gt;
+
+&lt;p&gt;Global (and local*) memory requests must be &lt;strong&gt;coalesced&lt;/strong&gt;&amp;mdash;falling into the same 128-byte wide+aligned window (for all modern capabilities)&amp;mdash;or they will require multiple instructions.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;*: the compiler will generally ensure that local memory use is coalesced&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;bank-distribution&#34;&gt;Bank Distribution:&lt;/h4&gt;
+
+&lt;p&gt;Similar, but different from global-memory coalescence.  Shared memory is divided into &lt;strong&gt;banks&lt;/strong&gt; (typically 32), where each bank can be accessed simultaneously.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;six-examples-of-shared-memory-accesses.png&#34; width=&#34;450&#34;/&gt;
+&lt;center&gt;&lt;i&gt;Nvidia.com: A) conflict-free, B) conflict depth 2, C) conflict-free, D) conflict-free, E) conflict-free, F) conflict-free&lt;/i&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;My impression is that most programmers rely on the compiler to sensibly structure bank accesses for temporary variables, but occasionally breaking into the &amp;ldquo;CUDA assembly&amp;rdquo; language &lt;code&gt;PTX&lt;/code&gt; will yeild significant performance improvements.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The combination of coalescence and shared banks can cause an interesting interplay for certain problems.  Consider:
+* Mx31 array made of structs of 2 32-bit floats.
+* Coalescence would suggest padding the array to 32 wide when reading from global memory, but then once it resides in a shared memory with 32-bit strided banks, a warp of threads accessing the first of the pair of floats will cause bank conflicts of depth 2.
+* Shared memory would be better served by padding the array width to 31.5.&lt;/p&gt;
+
+&lt;p&gt;(the better solution might be to pull the struct apart&amp;hellip;)&lt;/p&gt;
+
+&lt;h4 id=&#34;texture-specific-memory-features&#34;&gt;Texture-specific memory features:&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Optimized for 2d locality; can be faster than non-coalesced global/constant memory requests.&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Ability to automatically cast &lt;sup&gt;8&lt;/sup&gt;&amp;frasl;&lt;sub&gt;16&lt;/sub&gt;-bit integers into [0,1] 32-bit floats.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Coprocessor architectures</title>
       <link>https://cucs-hpsc.github.io/fall2019/coprocessor/</link>
       <pubDate>Mon, 28 Oct 2019 06:49:25 -0600</pubDate>

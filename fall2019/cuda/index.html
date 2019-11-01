@@ -28,10 +28,12 @@
   
     
   
-  <meta name="description" content="CSCI 5576/4576: Fall 2019: High Performance Scientific Computing">
+  <meta name="description" content="GPU vs CPU characterization CUDA preview Execution heirarchy Memory managerie Optimizations  Graphics Processing Units Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics. HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.
+GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.
+Nvidia.com: real-estate difference">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/cuda/">
 
   
 
@@ -93,14 +95,12 @@
   
 
   
-  <link rel="alternate" href="/fall2019/index.xml" type="application/rss+xml" title="HPSC">
-  
 
   <link rel="manifest" href="/index.webmanifest">
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/cuda/">
 
   
   
@@ -116,12 +116,17 @@
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/">
-  <meta property="og:title" content="Logistics | HPSC">
-  <meta property="og:description" content="CSCI 5576/4576: Fall 2019: High Performance Scientific Computing"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/cuda/">
+  <meta property="og:title" content="GPUs and CUDA | HPSC">
+  <meta property="og:description" content="GPU vs CPU characterization CUDA preview Execution heirarchy Memory managerie Optimizations  Graphics Processing Units Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics. HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.
+GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.
+Nvidia.com: real-estate difference"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
+      <meta property="article:published_time" content="2019-10-30T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-10-30T13:41:28-06:00">
   
 
   
@@ -133,7 +138,7 @@
 
 
 
-  <title>Logistics | HPSC</title>
+  <title>GPUs and CUDA | HPSC</title>
 
 </head>
 
@@ -262,7 +267,7 @@
 <nav class="collapse docs-links" id="docs-nav">
   
   
-  <div class="docs-toc-item active">
+  <div class="docs-toc-item">
     <a class="docs-toc-link" href="/fall2019/">Logistics</a>
 
   </div>
@@ -368,7 +373,7 @@
         <a href="/fall2019/coprocessor/">2019-10-28 Coprocessors</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/cuda/">2019-10-30 GPUs and CUDA</a>
       </li>
       
@@ -405,18 +410,26 @@
 <ul>
 <li>
 <ul>
-<li><a href="#where-and-when">Where and When</a>
+<li><a href="#graphics-processing-units">Graphics Processing Units</a></li>
+<li><a href="#cuda">CUDA</a>
 <ul>
-<li>
+<li><a href="#kernel-syntax-example">Kernel syntax example</a></li>
+<li><a href="#thread-heirarchy">Thread Heirarchy</a></li>
+<li><a href="#memory">Memory</a></li>
+<li><a href="#memory-transfer-example">Memory transfer example</a></li>
+</ul></li>
+<li><a href="#optimization-details">Optimization Details</a>
 <ul>
-<li><a href="#zoom">Zoom</a></li>
-<li><a href="#calendar">Calendar</a></li>
-<li><a href="#instructor-jed-brown-https-www-colorado-edu-cs-jed-brown">Instructor: <a href="https://www.colorado.edu/cs/jed-brown" target="_blank">Jed Brown</a></a></li>
-<li><a href="#teaching-assistant-camden-elliott-williams-https-www-colorado-edu-ics-camden-elliott-williams">Teaching Assistant: <a href="https://www.colorado.edu/ics/camden-elliott-williams" target="_blank">Camden Elliott-Williams</a></a></li>
+<li><a href="#intrinsic-function-instructions">Intrinsic function instructions</a></li>
+<li><a href="#memory-1">Memory</a>
+<ul>
+<li><a href="#hiding-memory-transfers">Hiding Memory Transfers:</a></li>
+<li><a href="#global-memory-access-size-and-alignment">Global memory access size and alignment:</a></li>
+<li><a href="#coalescence">Coalescence:</a></li>
+<li><a href="#bank-distribution">Bank Distribution:</a></li>
+<li><a href="#texture-specific-memory-features">Texture-specific memory features:</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#homework">Homework</a></li>
-<li><a href="#videos">Videos</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -430,238 +443,252 @@
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Logistics</h1>
+          <h1 itemprop="name">GPUs and CUDA</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<h2 id="where-and-when">Where and When</h2>
-
 <ul>
-<li>CSCI 5576 / 4576: High Performance Scientific Computing</li>
-<li>Lectures: <strong>Mon/Wed/Fri 11-11:50</strong> in ECCR 150</li>
-<li>Labs: <strong>Fri 9-10:40</strong> in KOBL 300</li>
-<li>Website: <a href="https://cucs-hpsc.github.io/fall2019" target="_blank">https://cucs-hpsc.github.io/fall2019</a></li>
-<li>Issues/Questions/etc.: <a href="https://github.com/cucs-hpsc/hpsc-class/issues" target="_blank">Browse</a> or <a href="https://github.com/cucs-hpsc/hpsc-class/issues/new" target="_blank">Create</a></li>
+<li>GPU vs CPU characterization</li>
+<li>CUDA preview</li>
+<li>Execution heirarchy</li>
+<li>Memory managerie</li>
+<li>Optimizations</li>
 </ul>
 
-<h4 id="zoom">Zoom</h4>
+<h2 id="graphics-processing-units">Graphics Processing Units</h2>
+
+<p>Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics.  HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.</p>
+
+<p>GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.</p>
+
+<p><img src="gpu-devotes-more-transistors-to-data-processing.png" width="600"/>
+<center><i>Nvidia.com: real-estate difference</i></center></p>
+
+<p>GPUs have no* branch prediction and no speculative execution.  (In the early days, computational uses even needed to implement their own error correction in software!)  Longer memory access latencies from tiny cache size is meant to be hidden behind co-resident compute.  The difference in mentality allowed GPUs to far surpass CPU compute efficiency.</p>
+
+<p><em>*: recent devices use branch prediction to group divergent threads</em></p>
+
+<p><img src="karlrupp.net_costpercomputetrend.png" alt="karlrupp.net: compute efficiency" />
+<center><i>karlrupp.net: compute efficiency</i></center></p>
+
+<p>Power can dominant the cost in HPC. Consider the Summit supercomputer:</p>
 
 <ul>
-<li>Meeting ID: 214-104-523</li>
-<li>Join via web browser: <a href="https://cuboulder.zoom.us/j/214104523" target="_blank">https://cuboulder.zoom.us/j/214104523</a></li>
-<li>Join via Zoom app (using meeting ID)</li>
-<li>Join via One tap mobile: +16699006833,,214104523# or +16465588656,,214104523#</li>
-<li>Join via telephone: 1-669-900-6833 or 1-646-558-8656</li>
+<li>#2 GREEN500 (was #3, but #1 was decomissioned)</li>
+<li>cost \$200 million to build</li>
+<li>13 MW to run compute+interconnect+file systems =&gt; roughly \$7 million/year in raw electricity to power</li>
+<li>(does not count facilities/infrastructure cost to actually supply this power, nor cooling)</li>
 </ul>
 
-<h4 id="calendar">Calendar</h4>
+<p>The drawbacks: GPU efficiency needs the problem to fit well into SIMD and have a relatively high computation intensity.</p>
 
-<iframe src="https://calendar.google.com/calendar/embed?src=0vto3a2spansbnhgb0jcm5a16c%40group.calendar.google.com&ctz=America%2FDenver" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+<h2 id="cuda">CUDA</h2>
 
-<h4 id="instructor-jed-brown-https-www-colorado-edu-cs-jed-brown">Instructor: <a href="https://www.colorado.edu/cs/jed-brown" target="_blank">Jed Brown</a></h4>
+<p>Early general purpose computing GPU efforts required formulating problems in terms of graphics primatives (e.g. DirectX).</p>
+
+<p>NVIDIA publicly launched CUDA in 2006, allowing programming in C (and Fortran).</p>
+
+<p>Flash forward to 2019: AMD has its own language and there are also several vendor-independent languages (dominant: OpenCL), but CUDA still dominates overall.</p>
+
+<p>Nvidia maintains good documentation to ease adoption, like its <a href="programming guide" target="_blank">https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html</a>.</p>
+
+<h3 id="kernel-syntax-example">Kernel syntax example</h3>
+
+<pre><code>// Add two matrices A and B of size NxN and stores the result into matrix C:
+// Kernel definition
+__global__ void MatAdd(float A[N][N], float B[N][N], float C[N][N])
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+    if (i &lt; N &amp;&amp; j &lt; N)
+        C[i][j] = A[i][j] + B[i][j];
+}
+
+int main()
+{
+    ...
+    // Kernel invocation
+    dim3 threadsPerBlock(16, 16);
+    dim3 numBlocks(N / threadsPerBlock.x, N / threadsPerBlock.y);
+    MatAdd&lt;&lt;&lt;numBlocks, threadsPerBlock&gt;&gt;&gt;(A, B, C);
+    ...
+}
+</code></pre>
+
+<p>CUDA-specific additions:
+* Kernels are defined with a <code>__global__</code> specifier (when called by the host).
+* <code>&lt;&lt;&lt;numBlocks, threadsPerBlock&gt;&gt;&gt;</code> gives the <em>execution configuration</em>.
+* Ways for threads to query their location: <code>threadIdx</code>, <code>blockIdx</code>.</p>
+
+<h3 id="thread-heirarchy">Thread Heirarchy</h3>
+
+<p>Threads each have their own register allocation.  They are always executed in &ldquo;SIMT&rdquo; <strong>warps</strong> of up to 32 (could change, but hasn&rsquo;t yet).  This means:
+* any divergence of instructions between threads within a warp causes some of the threads to no-op (relaxed recently);
+* <code>product(threadsPerBlock)</code> should be a multiple of 32 (maximum 1024) where possible.</p>
+
+<p>Blocks each have their own shared memory allocation.  All threads in a block are resident on the same processing core.  Thread layout can be up to three dimensions.
+* can perform a lightweight synchronization within a block;
+* co-resident blocks can be helpful at masking latency, but this is limited by block memory and register use.</p>
+
+<p>Blocks themselves are layed out on a <strong>grid</strong> of up to three dimensions (on recent compute capabilities).  They must be logically executable in parallel or any serial order.
+* no synchronization across blocks within a kernel;
+* embarassingly parallel only, although caches can be reused.</p>
+
+<p><img src="grid-of-thread-blocks.png" width="400"/>
+<center><i>Nvidia.com: 2d grid and threads</i></center></p>
+
+<h3 id="memory">Memory</h3>
+
+<p><img src="hardware-model.png" width="400"/>
+<center><i>Nvidia.com: model of memory connections</i></center></p>
+
+<p><strong>Global</strong>, <strong>constant</strong>, and <strong>texture</strong> memories persist across kernel calls, and each has its own cache per SM (L2 cache shared by SMs).  By default, host and device are assumed to maintain separate memory:
+* explicit device allocation and deallocation;
+* explicit transfer between host and device.</p>
+
+<p>Alternatively, there is a &ldquo;Unified Memory&rdquo; configuration that automates these on an as-needed basis, pretending there is one common address space.</p>
+
+<p>Each block has <strong>shared</strong> memory which tends to be fast (equivalent to a user-managed L1 cache).</p>
+
+<p>Each thread has &ldquo;<strong>local</strong>&rdquo; memory (that is actually no more local than global memory!), which is mostly used for register spilling.  (Register and shared memory usage are reported by the compiler when compiling with the <code>-ptxas-options=-v</code> option.)</p>
+
+<h3 id="memory-transfer-example">Memory transfer example</h3>
+
+<pre><code>__global__ void VecAdd(float* A, float* B, float* C, int N)
+{
+    int i = blockDim.x * blockIdx.x + threadIdx.x;
+    if (i &lt; N)
+        C[i] = A[i] + B[i];
+}
+
+int main()
+{
+    int N = ...;
+    size_t size = N * sizeof(float);
+    
+    // Allocate input vectors h_A and h_B in host memory
+    float* h_A = (float*)malloc(size);
+    float* h_B = (float*)malloc(size);
+    float* h_C = (float*)malloc(size);
+
+    // Initialize input vectors
+    ...
+
+    
+    // Allocate vectors in device memory
+    float* d_A;
+    cudaMalloc(&amp;d_A, size);
+    float* d_B;
+    cudaMalloc(&amp;d_B, size);
+    float* d_C;
+    cudaMalloc(&amp;d_C, size);
+
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
+
+
+    // Invoke kernel
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+    VecAdd&lt;&lt;&lt;blocksPerGrid, threadsPerBlock&gt;&gt;&gt;(d_A, d_B, d_C, N);
+
+
+    // Copy result from device memory to host memory
+    // h_C contains the result in host memory
+    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
+
+    // Free device memory
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+            
+    // Free host memory
+    ...
+}
+</code></pre>
+
+<p><hline></p>
+
+<pre><code class="language-python">
+</code></pre>
+
+<h2 id="optimization-details">Optimization Details</h2>
+
+<p>Often details depend on the particular &ldquo;compute capability&rdquo; of the device.</p>
+
+<h3 id="intrinsic-function-instructions">Intrinsic function instructions</h3>
 
 <ul>
-<li>GitHub: <a href="https://github.com/jedbrown" target="_blank">@jedbrown</a></li>
-<li>Office hours: See calendar in ECOT 824 (usually Tue 14:30-15:30 and Thu 9:00-10:00)</li>
+<li>similar tradeoffs to &ndash;ffast-math</li>
 </ul>
 
-<h4 id="teaching-assistant-camden-elliott-williams-https-www-colorado-edu-ics-camden-elliott-williams">Teaching Assistant: <a href="https://www.colorado.edu/ics/camden-elliott-williams" target="_blank">Camden Elliott-Williams</a></h4>
+<h3 id="memory-1">Memory</h3>
+
+<h4 id="hiding-memory-transfers">Hiding Memory Transfers:</h4>
+
+<p>Memory transfers between host and device generally have the greatest latency.  Modern capabilities can hide data transfer between host and device by giving the device other tasks to work on and having the host use asynchronous versions of the transfer functions.</p>
+
+<p>This is managed through  <strong>streams</strong> on the host, where cuda calls within a stream are guaranteed to execute on the device in order, but those between streams may be out of order or overlap <em>depending on the compute capability</em>.</p>
+
+<p>To minimize waiting with the following code, the compute capability needs to allow concurrent data transfers, concurrent kernel execution, and overlap of data transfer and kernel execution.</p>
+
+<pre><code>for (int i = 0; i &lt; 2; ++i) {
+    cudaMemcpyAsync(inputDevPtr + i * size, hostPtr + i * size,
+                    size, cudaMemcpyHostToDevice, stream[i]);
+    MyKernel &lt;&lt;&lt;100, 512, 0, stream[i]&gt;&gt;&gt;
+          (outputDevPtr + i * size, inputDevPtr + i * size, size);
+    cudaMemcpyAsync(hostPtr + i * size, outputDevPtr + i * size,
+                    size, cudaMemcpyDeviceToHost, stream[i]);
+}
+</code></pre>
+
+<h4 id="global-memory-access-size-and-alignment">Global memory access size and alignment:</h4>
+
+<p>Example: an array of this struct would have elements that aren&rsquo;t aligned if not for the <code>__align__(16)</code>:</p>
+
+<pre><code>struct __align__(16) {
+    float x;
+    float y;
+    float z;
+};
+</code></pre>
+
+<p>This usually crops up with 2d arrays, which are more efficient if width-padded to a multiple of the warp size.</p>
+
+<h4 id="coalescence">Coalescence:</h4>
+
+<p>Global (and local*) memory requests must be <strong>coalesced</strong>&mdash;falling into the same 128-byte wide+aligned window (for all modern capabilities)&mdash;or they will require multiple instructions.</p>
+
+<p><em>*: the compiler will generally ensure that local memory use is coalesced</em></p>
+
+<h4 id="bank-distribution">Bank Distribution:</h4>
+
+<p>Similar, but different from global-memory coalescence.  Shared memory is divided into <strong>banks</strong> (typically 32), where each bank can be accessed simultaneously.</p>
+
+<p><img src="six-examples-of-shared-memory-accesses.png" width="450"/>
+<center><i>Nvidia.com: A) conflict-free, B) conflict depth 2, C) conflict-free, D) conflict-free, E) conflict-free, F) conflict-free</i></center></p>
+
+<p><em>My impression is that most programmers rely on the compiler to sensibly structure bank accesses for temporary variables, but occasionally breaking into the &ldquo;CUDA assembly&rdquo; language <code>PTX</code> will yeild significant performance improvements.</em></p>
+
+<p>The combination of coalescence and shared banks can cause an interesting interplay for certain problems.  Consider:
+* Mx31 array made of structs of 2 32-bit floats.
+* Coalescence would suggest padding the array to 32 wide when reading from global memory, but then once it resides in a shared memory with 32-bit strided banks, a warp of threads accessing the first of the pair of floats will cause bank conflicts of depth 2.
+* Shared memory would be better served by padding the array width to 31.5.</p>
+
+<p>(the better solution might be to pull the struct apart&hellip;)</p>
+
+<h4 id="texture-specific-memory-features">Texture-specific memory features:</h4>
 
 <ul>
-<li>GitHub: <a href="https://github.com/CamdenCU" target="_blank">@CamdenCU</a></li>
-<li>Office hours: Wed 9:30-10:30 and 13:30-14:30 or by appointment in ECCR 1B &ldquo;Systems Lab&rdquo; (<a href="/img/camden-desk.png">see map</a>)</li>
+<li>Optimized for 2d locality; can be faster than non-coalesced global/constant memory requests.</li>
+
+<li><p>Ability to automatically cast <sup>8</sup>&frasl;<sub>16</sub>-bit integers into [0,1] 32-bit floats.</p>
+
+<pre><code class="language-python">
+</code></pre></li>
 </ul>
-
-<h2 id="homework">Homework</h2>
-
-<p>For each assignment, click the link below to accept via GitHub
-Classroom.  This creates a private repository for you to work in.
-Then <code>git clone</code> the repository to whatever machine you&rsquo;ll work on and
-follow instructions in the README.  Usually you will be asked to read
-and edit code, run a range of experiments, and interpret/plot data in
-a <code>Report.ipynb</code>.</p>
-
-<table>
-<thead>
-<tr>
-<th>Assigned</th>
-<th>Due</th>
-<th>Description</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>2019-09-06</td>
-<td>2019-09-16 (part by 2019-09-13)</td>
-<td><a href="https://classroom.github.com/a/DOC_yYu2" target="_blank">Experiments in vectorization</a></td>
-</tr>
-
-<tr>
-<td>2019-09-20</td>
-<td>2019-09-30</td>
-<td><a href="https://classroom.github.com/a/d4_gpzck" target="_blank">Sorting</a></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="videos">Videos</h2>
-
-<p>Videos appear automatically on
-<a href="https://canvas.colorado.edu/courses/54520/external_tools/2040" target="_blank">Canvas</a>
-and linked below.</p>
-
-<table>
-<thead>
-<tr>
-<th>Date</th>
-<th>Topic</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/055148f7c5c141578bb467d237da1d801d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Aug 26</a></td>
-<td>Course introduction and preview of architectural trends</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/e6af2695fcfe4276b08a3e85ea625dbf1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Aug 28</a></td>
-<td>Intro to architecture</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/f062611e09f64437a13f64de570bc30e1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Aug 30</a></td>
-<td>Intro to vectorization and ILP</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/422cf46ffd1844bb8492e8831f92d9461d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 4</a></td>
-<td>Intro to performance modeling (roofline)</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/6446d91e5f2f46b680d4ce5492e88f9b1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 6</a></td>
-<td>Intro to parallel scaling</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/e4b2187d5d2d45dca8321a86e0e0e8a41d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 9</a></td>
-<td>Joel Frahm on CU <a href="https://www.colorado.edu/rc/" target="_blank">Research Computing</a> (<a href="https://github.com/ResearchComputing/CSCI-5576/blob/master/RC-CSCI-5576.pdf" target="_blank">slides</a>)</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/ef164dcd135b487ca938617d8823340c1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 11</a></td>
-<td>OpenMP Basics</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/39793bba0c824472a92202a3816858b91d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 13</a></td>
-<td>OpenMP memory semantics, synchronization, and <code>perf</code> demo</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/51f737b31b4a4f13a6082e4dcd1adedd1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 16</a></td>
-<td>OpenMP tasking and computational depth/critical path</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/b7c3da0053d54ab99e4884a5ce7c93e51d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 18</a></td>
-<td>Low-level optimization, parallel reductions and scans</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/4233af0b8ef54477bf63590c2229a26f1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 20</a></td>
-<td>Searching and sorting methods (based on parts of <a href="http://home.cs.colorado.edu/~rahimian/articles/18/hpc18-03-search.sl.html" target="_blank">slides</a> and <a href="http://home.cs.colorado.edu/~rahimian/articles/18/hpc18-03-tech.sl.html" target="_blank">slides</a>)</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/e85296370c80494492649d73fc068f111d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 23</a></td>
-<td>Bitonic sort recap/demo; intro to graph independence</td>
-</tr>
-
-<tr>
-<td><a href="https://www.youtube.com/watch?v=8bB2L1-8rBI" target="_blank">Sep 25</a></td>
-<td>Recorded lecture: Introduction to MPI</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/6551873dad33443087afc7d4339a28141d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 27</a></td>
-<td>Library interfaces with MPI: Conway&rsquo;s Game of Life</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/0fccb0cac51145d694f95a3b7c4e043a1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Sep 30</a></td>
-<td>Dense linear algebra and networks</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/fc99deffabad45899dfc6bfab7099a201d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 2</a></td>
-<td>Dense linear algebra and orthogonality</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/34ae8e391dbb4ce0b9f859837d8a4bdf1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 4</a></td>
-<td>Orthogonality and conditioning</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/6ab776e8c8094589894f5a1cfd6cb6f51d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 7</a></td>
-<td>Parallel QR and Elemental for distributed memory</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/e02c02c5f9894a418e02b4c310129d021d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 9</a></td>
-<td>Sparse and iterative linear algebra</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/8f13ca9b522b4033af4f7a8a46b954be1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 11</a></td>
-<td>Intro to preconditioning</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/15e583c6ae124f6c88bfd550e70cc82e1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 14</a></td>
-<td>Intro to domain decomposition preconditioning</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/79a9c6440fc347c1af6b8047fb48cba51d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 16</a></td>
-<td>Domain decomposition preconditioning and scaling</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/6605b42ccb024f3cbf372333f40602be1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 18</a></td>
-<td>Multilevel preconditioning and predictive modeling</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/ed0ca3d18e76408cb81056ade23f3acb1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 21</a></td>
-<td>Nonlinear solvers</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/c9f9cc4d51334476b151dd165f2ad3861d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 23</a></td>
-<td>Transient problems</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/647268d14f6947f0806b7833dfaa50de1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 25</a></td>
-<td>libCEED: spectral elements and matrix-free methods</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/e5bd9725ef5f432d8298ff1ee605fe8f1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 28</a></td>
-<td>Coprocessor architectures</td>
-</tr>
-
-<tr>
-<td><a href="https://cu-classcapture.colorado.edu/Mediasite/Play/7b7f65749dbd47a58a5a9f4187da308d1d?catalog=38dea75ea63b491fa8cc2804c084abb821" target="_blank">Oct 30</a></td>
-<td>CUDA (by Camden Elliott-Williams)</td>
-</tr>
-</tbody>
-</table>
 
           </div>
 
@@ -675,6 +702,19 @@ and linked below.</p>
 <div class="post-nav">
   
   
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/coprocessor/" rel="prev">Coprocessor architectures</a>
+  </div>
+  
 </div>
 
           </div>
@@ -682,11 +722,11 @@ and linked below.</p>
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Oct 31, 2019</p>
+          <p>Last updated on Oct 30, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/_index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/cuda/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>
