@@ -28,12 +28,10 @@
   
     
   
-  <meta name="description" content="GPU vs CPU characterization CUDA preview Execution heirarchy Memory managerie Optimizations  Graphics Processing Units Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics. HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.
-GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.
-Nvidia.com: real-estate difference">
+  <meta name="description" content="def render_c(filename): from IPython.display import Markdown with open(filename) as f: contents = f.read() return Markdown(&quot;```c\n&quot; &#43; contents &#43; &quot;```\n&quot;)     Architecture Directives SIMD SPMD     Intel AVX&#43; (SIMD) #pragma omp simd intrinsics ISPC   CUDA (SIMT) #pragma omp target C&#43;&#43; templates and other high-level APIs CUDA    ISPC: Intel SPMD Program Compiler We can program SIMT (e.g., CUDA) devices using directives, but we can also program SIMD (e.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/cuda/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/openmp-target/">
 
   
 
@@ -100,7 +98,7 @@ Nvidia.com: real-estate difference">
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/cuda/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/openmp-target/">
 
   
   
@@ -116,17 +114,15 @@ Nvidia.com: real-estate difference">
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/cuda/">
-  <meta property="og:title" content="GPUs and CUDA | HPSC">
-  <meta property="og:description" content="GPU vs CPU characterization CUDA preview Execution heirarchy Memory managerie Optimizations  Graphics Processing Units Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics. HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.
-GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.
-Nvidia.com: real-estate difference"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/openmp-target/">
+  <meta property="og:title" content="ISPC, OpenMP target, OpenACC, and all that | HPSC">
+  <meta property="og:description" content="def render_c(filename): from IPython.display import Markdown with open(filename) as f: contents = f.read() return Markdown(&quot;```c\n&quot; &#43; contents &#43; &quot;```\n&quot;)     Architecture Directives SIMD SPMD     Intel AVX&#43; (SIMD) #pragma omp simd intrinsics ISPC   CUDA (SIMT) #pragma omp target C&#43;&#43; templates and other high-level APIs CUDA    ISPC: Intel SPMD Program Compiler We can program SIMT (e.g., CUDA) devices using directives, but we can also program SIMD (e."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-10-30T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-11-04T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-10-30T13:41:28-06:00">
+    <meta property="article:modified_time" content="2019-11-04T06:49:25-06:00">
   
 
   
@@ -138,7 +134,7 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
 
 
 
-  <title>GPUs and CUDA | HPSC</title>
+  <title>ISPC, OpenMP target, OpenACC, and all that | HPSC</title>
 
 </head>
 
@@ -373,7 +369,7 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
         <a href="/fall2019/coprocessor/">2019-10-28 Coprocessors</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/cuda/">2019-10-30 GPUs and CUDA</a>
       </li>
       
@@ -381,7 +377,7 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
         <a href="/fall2019/cuda-practical/">2019-11-01 Practical CUDA</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/openmp-target/">2019-11-04 ISP/OpenMP/OpenACC</a>
       </li>
       
@@ -418,25 +414,13 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
 <ul>
 <li>
 <ul>
-<li><a href="#graphics-processing-units">Graphics Processing Units</a></li>
-<li><a href="#cuda">CUDA</a>
+<li><a href="#ispc-intel-spmd-program-compiler-https-ispc-github-io-ispc-html"><a href="https://ispc.github.io/ispc.html" target="_blank">ISPC: Intel SPMD Program Compiler</a></a></li>
+<li><a href="#openmp-target-offload-and-openacc">OpenMP target offload and OpenACC</a>
 <ul>
-<li><a href="#kernel-syntax-example">Kernel syntax example</a></li>
-<li><a href="#thread-heirarchy">Thread Heirarchy</a></li>
-<li><a href="#memory">Memory</a></li>
-<li><a href="#memory-transfer-example">Memory transfer example</a></li>
-</ul></li>
-<li><a href="#optimization-details">Optimization Details</a>
-<ul>
-<li><a href="#intrinsic-function-instructions">Intrinsic function instructions</a></li>
-<li><a href="#memory-1">Memory</a>
-<ul>
-<li><a href="#hiding-memory-transfers">Hiding Memory Transfers:</a></li>
-<li><a href="#global-memory-access-size-and-alignment">Global memory access size and alignment:</a></li>
-<li><a href="#coalescence">Coalescence:</a></li>
-<li><a href="#bank-distribution">Bank Distribution:</a></li>
-<li><a href="#texture-specific-memory-features">Texture-specific memory features:</a></li>
-</ul></li>
+<li><a href="#terminology">Terminology</a></li>
+<li><a href="#incremental-porting-with-unified-memory">Incremental porting with unified memory</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#resources">Resources</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -451,251 +435,261 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">GPUs and CUDA</h1>
+          <h1 itemprop="name">ISPC, OpenMP target, OpenACC, and all that</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<ul>
-<li>GPU vs CPU characterization</li>
-<li>CUDA preview</li>
-<li>Execution heirarchy</li>
-<li>Memory managerie</li>
-<li>Optimizations</li>
-</ul>
+<pre><code class="language-python">def render_c(filename):
+    from IPython.display import Markdown
+    with open(filename) as f:
+        contents = f.read()
+    return Markdown(&quot;```c\n&quot; + contents + &quot;```\n&quot;)
+</code></pre>
 
-<h2 id="graphics-processing-units">Graphics Processing Units</h2>
+<table>
+<thead>
+<tr>
+<th>Architecture</th>
+<th>Directives</th>
+<th>SIMD</th>
+<th>SPMD</th>
+</tr>
+</thead>
 
-<p>Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics.  HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.</p>
+<tbody>
+<tr>
+<td>Intel AVX+ (SIMD)</td>
+<td><code>#pragma omp simd</code></td>
+<td><a href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#" target="_blank">intrinsics</a></td>
+<td><a href="https://ispc.github.io/ispc.html" target="_blank">ISPC</a></td>
+</tr>
 
-<p>GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.</p>
+<tr>
+<td>CUDA (SIMT)</td>
+<td><code>#pragma omp target</code></td>
+<td>C++ templates and other high-level APIs</td>
+<td>CUDA</td>
+</tr>
+</tbody>
+</table>
 
-<p><img src="gpu-devotes-more-transistors-to-data-processing.png" width="600"/>
-<center><i>Nvidia.com: real-estate difference</i></center></p>
+<h2 id="ispc-intel-spmd-program-compiler-https-ispc-github-io-ispc-html"><a href="https://ispc.github.io/ispc.html" target="_blank">ISPC: Intel SPMD Program Compiler</a></h2>
 
-<p>GPUs have no* branch prediction and no speculative execution.  (In the early days, computational uses even needed to implement their own error correction in software!)  Longer memory access latencies from tiny cache size is meant to be hidden behind co-resident compute.  The difference in mentality allowed GPUs to far surpass CPU compute efficiency.</p>
+<p>We can program SIMT (e.g., CUDA) devices using directives, but we can also program SIMD (e.g., Intel CPUs) using a SPMD (CUDA-like, acronym comes from &ldquo;single program&rdquo; versus &ldquo;single instruction&rdquo;) programming model.</p>
 
-<p><em>*: recent devices use branch prediction to group divergent threads</em></p>
+<pre><code class="language-python">render_c('simple-ispc.ispc')
+</code></pre>
 
-<p><img src="karlrupp.net_costpercomputetrend.png" alt="karlrupp.net: compute efficiency" />
-<center><i>karlrupp.net: compute efficiency</i></center></p>
+<pre><code class="language-c">export void simple_ispc(uniform double vin[], uniform double vout[],
+                        uniform int count) {
+  foreach (index = 0 ... count) {
+    double v = vin[index];
+    if (v &lt; 3.)
+      v = v * v;
+    else
+      v = sqrt(v);
+    vout[index] = v;
+  }
+}
+</code></pre>
 
-<p>Power can dominant the cost in HPC. Consider the Summit supercomputer:</p>
+<p>This function is callable from native C code.</p>
 
-<ul>
-<li>#2 GREEN500 (was #3, but #1 was decomissioned)</li>
-<li>cost \$200 million to build</li>
-<li>13 MW to run compute+interconnect+file systems =&gt; roughly \$7 million/year in raw electricity to power</li>
-<li>(does not count facilities/infrastructure cost to actually supply this power, nor cooling)</li>
-</ul>
+<pre><code class="language-python">render_c('simple.c')
+</code></pre>
 
-<p>The drawbacks: GPU efficiency needs the problem to fit well into SIMD and have a relatively high computation intensity.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
 
-<h2 id="cuda">CUDA</h2>
+void simple_ispc(double vin[], double vout[], int count);
 
-<p>Early general purpose computing GPU efforts required formulating problems in terms of graphics primatives (e.g. DirectX).</p>
+void simple_c(double vin[], double vout[], int count) {
+  for (int index=0; index&lt;count; index++) {
+    double v = vin[index];
+    if (v &lt; 3.)
+      v = v * v;
+    else
+      v = sqrt(v);
+    vout[index] = v;
+  }
+}
 
-<p>NVIDIA publicly launched CUDA in 2006, allowing programming in C (and Fortran).</p>
+int main() {
+  double vin[16], vout[16];
+  for (int i = 0; i &lt; 16; ++i)
+    vin[i] = i;
 
-<p>Flash forward to 2019: AMD has its own language and there are also several vendor-independent languages (dominant: OpenCL), but CUDA still dominates overall.</p>
+  simple_ispc(vin, vout, 16);
 
-<p>Nvidia maintains good documentation to ease adoption, like its <a href="programming guide" target="_blank">https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html</a>.</p>
+  for (int i = 0; i &lt; 16; ++i)
+    printf(&quot;%d: simple_ispc(%f) = %f\n&quot;, i, vin[i], vout[i]);
 
-<h3 id="kernel-syntax-example">Kernel syntax example</h3>
+  simple_c(vin, vout, 16);
 
-<pre><code>// Add two matrices A and B of size NxN and stores the result into matrix C:
-// Kernel definition
-__global__ void MatAdd(float A[N][N], float B[N][N], float C[N][N])
+  for (int i = 0; i &lt; 16; ++i)
+    printf(&quot;%d: simple_c(%f) = %f\n&quot;, i, vin[i], vout[i]);
+  return 0;
+}
+</code></pre>
+
+<pre><code class="language-python">! make -B simple &amp;&amp; ./simple
+</code></pre>
+
+<pre><code>cc -O3 -march=native   -c -o simple.o simple.c
+ispc -O3 --target=avx2-i32x8 simple-ispc.ispc -o simple-ispc.o
+cc   simple.o simple-ispc.o  -lm -o simple
+0: simple_ispc(0.000000) = 0.000000
+1: simple_ispc(1.000000) = 1.000000
+2: simple_ispc(2.000000) = 4.000000
+3: simple_ispc(3.000000) = 1.732051
+4: simple_ispc(4.000000) = 2.000000
+5: simple_ispc(5.000000) = 2.236068
+6: simple_ispc(6.000000) = 2.449490
+7: simple_ispc(7.000000) = 2.645751
+8: simple_ispc(8.000000) = 2.828427
+9: simple_ispc(9.000000) = 3.000000
+10: simple_ispc(10.000000) = 3.162278
+11: simple_ispc(11.000000) = 3.316625
+12: simple_ispc(12.000000) = 3.464102
+13: simple_ispc(13.000000) = 3.605551
+14: simple_ispc(14.000000) = 3.741657
+15: simple_ispc(15.000000) = 3.872983
+0: simple_c(0.000000) = 0.000000
+1: simple_c(1.000000) = 1.000000
+2: simple_c(2.000000) = 4.000000
+3: simple_c(3.000000) = 1.732051
+4: simple_c(4.000000) = 2.000000
+5: simple_c(5.000000) = 2.236068
+6: simple_c(6.000000) = 2.449490
+7: simple_c(7.000000) = 2.645751
+8: simple_c(8.000000) = 2.828427
+9: simple_c(9.000000) = 3.000000
+10: simple_c(10.000000) = 3.162278
+11: simple_c(11.000000) = 3.316625
+12: simple_c(12.000000) = 3.464102
+13: simple_c(13.000000) = 3.605551
+14: simple_c(14.000000) = 3.741657
+15: simple_c(15.000000) = 3.872983
+</code></pre>
+
+<pre><code class="language-python">! objdump -d --prefix-addresses -M intel simple | grep sqrt
+</code></pre>
+
+<pre><code>0000000000001050 &lt;sqrt@plt&gt; jmp    QWORD PTR [rip+0x2fd2]        # 0000000000004028 &lt;sqrt@GLIBC_2.2.5&gt;
+0000000000001056 &lt;sqrt@plt+0x6&gt; push   0x2
+000000000000105b &lt;sqrt@plt+0xb&gt; jmp    0000000000001020 &lt;.plt&gt;
+00000000000012ec &lt;simple_c+0x4c&gt; vsqrtsd xmm1,xmm0,xmm0
+0000000000001302 &lt;simple_c+0x62&gt; call   0000000000001050 &lt;sqrt@plt&gt;
+000000000000142d &lt;simple_ispc___un_3C_und_3E_un_3C_und_3E_uni+0xdd&gt; vsqrtpd ymm1,ymm4
+0000000000001431 &lt;simple_ispc___un_3C_und_3E_un_3C_und_3E_uni+0xe1&gt; vsqrtpd ymm7,ymm5
+000000000000156e &lt;simple_ispc___un_3C_und_3E_un_3C_und_3E_uni+0x21e&gt; vsqrtpd ymm2,ymm6
+0000000000001577 &lt;simple_ispc___un_3C_und_3E_un_3C_und_3E_uni+0x227&gt; vsqrtpd ymm3,ymm7
+000000000000168d &lt;simple_ispc+0xdd&gt; vsqrtpd ymm1,ymm4
+0000000000001691 &lt;simple_ispc+0xe1&gt; vsqrtpd ymm7,ymm5
+00000000000017ce &lt;simple_ispc+0x21e&gt; vsqrtpd ymm2,ymm6
+00000000000017d7 &lt;simple_ispc+0x227&gt; vsqrtpd ymm3,ymm7
+</code></pre>
+
+<p>ISPC is a good option for code with cross-lane dependencies or vector lane divergence (branches that affect some lanes differently than others).  Writing such code with intrinsics is laborious and compilers often do a poor job of inferring good vectorization strategies (despite <code>#pragma omp simd</code> and the like).  An example of successful use of ISPC is Intel&rsquo;s <a href="https://www.embree.org/" target="_blank">Embree</a> ray tracing engine.</p>
+
+<p>(As with most vendor-reported performance numbers, we can probably take this with a grain of salt. But it indicates that CPUs remain highly competitive for ray tracing.)</p>
+
+<p><img src="embree-performance.png" alt="" /></p>
+
+<h2 id="openmp-target-offload-and-openacc">OpenMP target offload and OpenACC</h2>
+
+<p>CUDA is relatively hard to maintain and logic/tuning is spread out (between the kernel launch and the device code).  OpenMP target offload and OpenACC attempt to provide a more friendly story for maintenance and incremental migration of legacy code.</p>
+
+<h3 id="terminology">Terminology</h3>
+
+<table>
+<thead>
+<tr>
+<th>CUDA Concept</th>
+<th>CUDA keyword</th>
+<th>OpenACC</th>
+<th>OpenMP <code>target</code></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Thread block</td>
+<td><code>blockIdx</code></td>
+<td><code>gang</code></td>
+<td><code>teams</code></td>
+</tr>
+
+<tr>
+<td>Warp</td>
+<td>(implicit)</td>
+<td><code>worker</code></td>
+<td>thread</td>
+</tr>
+
+<tr>
+<td>Thread</td>
+<td><code>threadIdx</code></td>
+<td><code>vector</code></td>
+<td><code>simd</code></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="incremental-porting-with-unified-memory">Incremental porting with unified memory</h3>
+
+<p><img src="openacc-steps.png" alt="" /></p>
+
+<h3 id="example">Example</h3>
+
+<p>OpenACC example from a Lattice-Boltzman miniapp</p>
+
+<pre><code class="language-cpp">void LBM::stream(Real* const __restrict a_f,
+                 const Real* const __restrict a_f_post,
+                 const int* a_loStr,
+                 const int* a_hiStr,
+                 const int* a_loAll,
+                 const int* a_hiAll,
+                 const int a_numPts) const
 {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int j = blockIdx.y * blockDim.y + threadIdx.y;
-    if (i &lt; N &amp;&amp; j &lt; N)
-        C[i][j] = A[i][j] + B[i][j];
-}
 
-int main()
-{
-    ...
-    // Kernel invocation
-    dim3 threadsPerBlock(16, 16);
-    dim3 numBlocks(N / threadsPerBlock.x, N / threadsPerBlock.y);
-    MatAdd&lt;&lt;&lt;numBlocks, threadsPerBlock&gt;&gt;&gt;(A, B, C);
-    ...
-}
-</code></pre>
+  const int* const __restrict latI = &amp;m_lattice[0][0];
+  const int* const __restrict latJ = &amp;m_lattice[1][0];
+  const int* const __restrict latK = &amp;m_lattice[2][0];
 
-<p>CUDA-specific additions:
-* Kernels are defined with a <code>__global__</code> specifier (when called by the host).
-* <code>&lt;&lt;&lt;numBlocks, threadsPerBlock&gt;&gt;&gt;</code> gives the <em>execution configuration</em>.
-* Ways for threads to query their location: <code>threadIdx</code>, <code>blockIdx</code>.</p>
+  const int
+    klo = a_loStr[2], khi = a_hiStr[2],
+    jlo = a_loStr[1], jhi = a_hiStr[1],
+    ilo = a_loStr[0], ihi = a_hiStr[0];
 
-<h3 id="thread-heirarchy">Thread Heirarchy</h3>
-
-<p>Threads each have their own register allocation.  They are always executed in &ldquo;SIMT&rdquo; <strong>warps</strong> of up to 32 (could change, but hasn&rsquo;t yet).  This means:
-* any divergence of instructions between threads within a warp causes some of the threads to no-op (relaxed recently);
-* <code>product(threadsPerBlock)</code> should be a multiple of 32 (maximum 1024) where possible.</p>
-
-<p>Blocks each have their own shared memory allocation.  All threads in a block are resident on the same processing core.  Thread layout can be up to three dimensions.
-* can perform a lightweight synchronization within a block;
-* co-resident blocks can be helpful at masking latency, but this is limited by block memory and register use.</p>
-
-<p>Blocks themselves are layed out on a <strong>grid</strong> of up to three dimensions (on recent compute capabilities).  They must be logically executable in parallel or any serial order.
-* no synchronization across blocks within a kernel;
-* embarassingly parallel only, although caches can be reused.</p>
-
-<p><img src="grid-of-thread-blocks.png" width="400"/>
-<center><i>Nvidia.com: 2d grid and threads</i></center></p>
-
-<h3 id="memory">Memory</h3>
-
-<p><img src="hardware-model.png" width="400"/>
-<center><i>Nvidia.com: model of memory connections</i></center></p>
-
-<p><strong>Global</strong>, <strong>constant</strong>, and <strong>texture</strong> memories persist across kernel calls, and each has its own cache per SM (L2 cache shared by SMs).  By default, host and device are assumed to maintain separate memory:
-* explicit device allocation and deallocation;
-* explicit transfer between host and device.</p>
-
-<p>Alternatively, there is a &ldquo;Unified Memory&rdquo; configuration that automates these on an as-needed basis, pretending there is one common address space.</p>
-
-<p>Each block has <strong>shared</strong> memory which tends to be fast (equivalent to a user-managed L1 cache).</p>
-
-<p>Each thread has &ldquo;<strong>local</strong>&rdquo; memory (that is actually no more local than global memory!), which is mostly used for register spilling.  (Register and shared memory usage are reported by the compiler when compiling with the <code>-ptxas-options=-v</code> option.)</p>
-
-<h3 id="memory-transfer-example">Memory transfer example</h3>
-
-<pre><code>__global__ void VecAdd(float* A, float* B, float* C, int N)
-{
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-    if (i &lt; N)
-        C[i] = A[i] + B[i];
-}
-
-int main()
-{
-    int N = ...;
-    size_t size = N * sizeof(float);
-    
-    // Allocate input vectors h_A and h_B in host memory
-    float* h_A = (float*)malloc(size);
-    float* h_B = (float*)malloc(size);
-    float* h_C = (float*)malloc(size);
-
-    // Initialize input vectors
-    ...
-
-    
-    // Allocate vectors in device memory
-    float* d_A;
-    cudaMalloc(&amp;d_A, size);
-    float* d_B;
-    cudaMalloc(&amp;d_B, size);
-    float* d_C;
-    cudaMalloc(&amp;d_C, size);
-
-    // Copy vectors from host memory to device memory
-    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
-
-
-    // Invoke kernel
-    int threadsPerBlock = 256;
-    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
-    VecAdd&lt;&lt;&lt;blocksPerGrid, threadsPerBlock&gt;&gt;&gt;(d_A, d_B, d_C, N);
-
-
-    // Copy result from device memory to host memory
-    // h_C contains the result in host memory
-    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
-
-    // Free device memory
-    cudaFree(d_A);
-    cudaFree(d_B);
-    cudaFree(d_C);
-            
-    // Free host memory
-    ...
+#pragma acc parallel loop independent collapse(3) \
+        copyin(a_loAll[SPACEDIM],a_hiAll[SPACEDIM],a_f_post[a_numPts*m_numVels]) \
+        copyout(a_f[a_numPts*m_numVels]) vector_length(256)
+  for (int k = klo; k &lt;= khi; ++k) {
+    for (int j = jlo; j &lt;= jhi; ++j) {
+      for (int i = ilo; i &lt;= ihi; ++i) {
+#pragma acc loop seq independent
+        for (int m = 0; m &lt; NUMV; ++m) {
+          const long int offset = m * a_numPts;
+          const long int index0 = INDEX(i          ,           j,           k, a_loAll, a_hiAll);
+          const long int index2 = INDEX(i - latI[m], j - latJ[m], k - latK[m], a_loAll, a_hiAll);
+          a_f[index0 + offset]    = a_f_post[index2 + offset];  // new f comes from upwind
+        }
+      }
+    }
+  }
 }
 </code></pre>
 
-<p><hline></p>
-
-<pre><code class="language-python">
-</code></pre>
-
-<h2 id="optimization-details">Optimization Details</h2>
-
-<p>Often details depend on the particular &ldquo;compute capability&rdquo; of the device.</p>
-
-<h3 id="intrinsic-function-instructions">Intrinsic function instructions</h3>
+<h3 id="resources">Resources</h3>
 
 <ul>
-<li>similar tradeoffs to &ndash;ffast-math</li>
-</ul>
-
-<h3 id="memory-1">Memory</h3>
-
-<h4 id="hiding-memory-transfers">Hiding Memory Transfers:</h4>
-
-<p>Memory transfers between host and device generally have the greatest latency.  Modern capabilities can hide data transfer between host and device by giving the device other tasks to work on and having the host use asynchronous versions of the transfer functions.</p>
-
-<p>This is managed through  <strong>streams</strong> on the host, where cuda calls within a stream are guaranteed to execute on the device in order, but those between streams may be out of order or overlap <em>depending on the compute capability</em>.</p>
-
-<p>To minimize waiting with the following code, the compute capability needs to allow concurrent data transfers, concurrent kernel execution, and overlap of data transfer and kernel execution.</p>
-
-<pre><code>for (int i = 0; i &lt; 2; ++i) {
-    cudaMemcpyAsync(inputDevPtr + i * size, hostPtr + i * size,
-                    size, cudaMemcpyHostToDevice, stream[i]);
-    MyKernel &lt;&lt;&lt;100, 512, 0, stream[i]&gt;&gt;&gt;
-          (outputDevPtr + i * size, inputDevPtr + i * size, size);
-    cudaMemcpyAsync(hostPtr + i * size, outputDevPtr + i * size,
-                    size, cudaMemcpyDeviceToHost, stream[i]);
-}
-</code></pre>
-
-<h4 id="global-memory-access-size-and-alignment">Global memory access size and alignment:</h4>
-
-<p>Example: an array of this struct would have elements that aren&rsquo;t aligned if not for the <code>__align__(16)</code>:</p>
-
-<pre><code>struct __align__(16) {
-    float x;
-    float y;
-    float z;
-};
-</code></pre>
-
-<p>This usually crops up with 2d arrays, which are more efficient if width-padded to a multiple of the warp size.</p>
-
-<h4 id="coalescence">Coalescence:</h4>
-
-<p>Global (and local*) memory requests must be <strong>coalesced</strong>&mdash;falling into the same 128-byte wide+aligned window (for all modern capabilities)&mdash;or they will require multiple instructions.</p>
-
-<p><em>*: the compiler will generally ensure that local memory use is coalesced</em></p>
-
-<h4 id="bank-distribution">Bank Distribution:</h4>
-
-<p>Similar, but different from global-memory coalescence.  Shared memory is divided into <strong>banks</strong> (typically 32), where each bank can be accessed simultaneously.</p>
-
-<p><img src="six-examples-of-shared-memory-accesses.png" width="450"/>
-<center><i>Nvidia.com: A) conflict-free, B) conflict depth 2, C) conflict-free, D) conflict-free, E) conflict-free, F) conflict-free</i></center></p>
-
-<p><em>My impression is that most programmers rely on the compiler to sensibly structure bank accesses for temporary variables, but occasionally breaking into the &ldquo;CUDA assembly&rdquo; language <code>PTX</code> will yeild significant performance improvements.</em></p>
-
-<p>The combination of coalescence and shared banks can cause an interesting interplay for certain problems.  Consider:
-* Mx31 array made of structs of 2 32-bit floats.
-* Coalescence would suggest padding the array to 32 wide when reading from global memory, but then once it resides in a shared memory with 32-bit strided banks, a warp of threads accessing the first of the pair of floats will cause bank conflicts of depth 2.
-* Shared memory would be better served by padding the array width to 31.5.</p>
-
-<p>(the better solution might be to pull the struct apart&hellip;)</p>
-
-<h4 id="texture-specific-memory-features">Texture-specific memory features:</h4>
-
-<ul>
-<li>Optimized for 2d locality; can be faster than non-coalesced global/constant memory requests.</li>
-
-<li><p>Ability to automatically cast <sup>8</sup>&frasl;<sub>16</sub>-bit integers into [0,1] 32-bit floats.</p>
-
-<pre><code class="language-python">
-</code></pre></li>
+<li><a href="https://devblogs.nvidia.com/getting-started-openacc/" target="_blank">Getting started with OpenACC</a></li>
+<li><a href="http://icl.cs.utk.edu/classes/cosc462/2017/pdf/OpenACC_3.pdf" target="_blank">Advanced OpenACC</a></li>
+<li><a href="https://www.openmp.org/resources/openmp-presentations/resources-openmp-presentations-sc18-booth-talks/" target="_blank">SC18 OpenMP Presentations (with videos)</a></li>
+<li><a href="https://developer.download.nvidia.com/video/gputechconf/gtc/2019/presentation/s9353-openmp-5-for-accelerators-and-what-comes-next.pdf" target="_blank">OpenMP 5.0 for Accelerators and What Comes Next</a></li>
+<li><a href="https://www.openacc.org/hackathons" target="_blank"><strong>Hackathon series</strong></a></li>
 </ul>
 
           </div>
@@ -713,14 +707,14 @@ int main()
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/cuda-practical/" rel="next">Practical CUDA</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/coprocessor/" rel="prev">Coprocessor architectures</a>
+    <a href="/fall2019/cuda-practical/" rel="prev">Practical CUDA</a>
   </div>
   
 </div>
@@ -730,11 +724,11 @@ int main()
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Oct 30, 2019</p>
+          <p>Last updated on Nov 4, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/cuda/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/openmp-target/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

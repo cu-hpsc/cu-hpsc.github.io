@@ -325,6 +325,267 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>ISPC, OpenMP target, OpenACC, and all that</title>
+      <link>https://cucs-hpsc.github.io/fall2019/openmp-target/</link>
+      <pubDate>Mon, 04 Nov 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/openmp-target/</guid>
+      <description>
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def render_c(filename):
+    from IPython.display import Markdown
+    with open(filename) as f:
+        contents = f.read()
+    return Markdown(&amp;quot;```c\n&amp;quot; + contents + &amp;quot;```\n&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Architecture&lt;/th&gt;
+&lt;th&gt;Directives&lt;/th&gt;
+&lt;th&gt;SIMD&lt;/th&gt;
+&lt;th&gt;SPMD&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Intel AVX+ (SIMD)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;#pragma omp simd&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://software.intel.com/sites/landingpage/IntrinsicsGuide/#&#34; target=&#34;_blank&#34;&gt;intrinsics&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://ispc.github.io/ispc.html&#34; target=&#34;_blank&#34;&gt;ISPC&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;CUDA (SIMT)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;#pragma omp target&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;C++ templates and other high-level APIs&lt;/td&gt;
+&lt;td&gt;CUDA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;ispc-intel-spmd-program-compiler-https-ispc-github-io-ispc-html&#34;&gt;&lt;a href=&#34;https://ispc.github.io/ispc.html&#34; target=&#34;_blank&#34;&gt;ISPC: Intel SPMD Program Compiler&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;We can program SIMT (e.g., CUDA) devices using directives, but we can also program SIMD (e.g., Intel CPUs) using a SPMD (CUDA-like, acronym comes from &amp;ldquo;single program&amp;rdquo; versus &amp;ldquo;single instruction&amp;rdquo;) programming model.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;render_c(&#39;simple-ispc.ispc&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;export void simple_ispc(uniform double vin[], uniform double vout[],
+                        uniform int count) {
+  foreach (index = 0 ... count) {
+    double v = vin[index];
+    if (v &amp;lt; 3.)
+      v = v * v;
+    else
+      v = sqrt(v);
+    vout[index] = v;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This function is callable from native C code.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;render_c(&#39;simple.c&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;math.h&amp;gt;
+
+void simple_ispc(double vin[], double vout[], int count);
+
+void simple_c(double vin[], double vout[], int count) {
+  for (int index=0; index&amp;lt;count; index++) {
+    double v = vin[index];
+    if (v &amp;lt; 3.)
+      v = v * v;
+    else
+      v = sqrt(v);
+    vout[index] = v;
+  }
+}
+
+int main() {
+  double vin[16], vout[16];
+  for (int i = 0; i &amp;lt; 16; ++i)
+    vin[i] = i;
+
+  simple_ispc(vin, vout, 16);
+
+  for (int i = 0; i &amp;lt; 16; ++i)
+    printf(&amp;quot;%d: simple_ispc(%f) = %f\n&amp;quot;, i, vin[i], vout[i]);
+
+  simple_c(vin, vout, 16);
+
+  for (int i = 0; i &amp;lt; 16; ++i)
+    printf(&amp;quot;%d: simple_c(%f) = %f\n&amp;quot;, i, vin[i], vout[i]);
+  return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! make -B simple &amp;amp;&amp;amp; ./simple
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;cc -O3 -march=native   -c -o simple.o simple.c
+ispc -O3 --target=avx2-i32x8 simple-ispc.ispc -o simple-ispc.o
+cc   simple.o simple-ispc.o  -lm -o simple
+0: simple_ispc(0.000000) = 0.000000
+1: simple_ispc(1.000000) = 1.000000
+2: simple_ispc(2.000000) = 4.000000
+3: simple_ispc(3.000000) = 1.732051
+4: simple_ispc(4.000000) = 2.000000
+5: simple_ispc(5.000000) = 2.236068
+6: simple_ispc(6.000000) = 2.449490
+7: simple_ispc(7.000000) = 2.645751
+8: simple_ispc(8.000000) = 2.828427
+9: simple_ispc(9.000000) = 3.000000
+10: simple_ispc(10.000000) = 3.162278
+11: simple_ispc(11.000000) = 3.316625
+12: simple_ispc(12.000000) = 3.464102
+13: simple_ispc(13.000000) = 3.605551
+14: simple_ispc(14.000000) = 3.741657
+15: simple_ispc(15.000000) = 3.872983
+0: simple_c(0.000000) = 0.000000
+1: simple_c(1.000000) = 1.000000
+2: simple_c(2.000000) = 4.000000
+3: simple_c(3.000000) = 1.732051
+4: simple_c(4.000000) = 2.000000
+5: simple_c(5.000000) = 2.236068
+6: simple_c(6.000000) = 2.449490
+7: simple_c(7.000000) = 2.645751
+8: simple_c(8.000000) = 2.828427
+9: simple_c(9.000000) = 3.000000
+10: simple_c(10.000000) = 3.162278
+11: simple_c(11.000000) = 3.316625
+12: simple_c(12.000000) = 3.464102
+13: simple_c(13.000000) = 3.605551
+14: simple_c(14.000000) = 3.741657
+15: simple_c(15.000000) = 3.872983
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;! objdump -d --prefix-addresses -M intel simple | grep sqrt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;0000000000001050 &amp;lt;sqrt@plt&amp;gt; jmp    QWORD PTR [rip+0x2fd2]        # 0000000000004028 &amp;lt;sqrt@GLIBC_2.2.5&amp;gt;
+0000000000001056 &amp;lt;sqrt@plt+0x6&amp;gt; push   0x2
+000000000000105b &amp;lt;sqrt@plt+0xb&amp;gt; jmp    0000000000001020 &amp;lt;.plt&amp;gt;
+00000000000012ec &amp;lt;simple_c+0x4c&amp;gt; vsqrtsd xmm1,xmm0,xmm0
+0000000000001302 &amp;lt;simple_c+0x62&amp;gt; call   0000000000001050 &amp;lt;sqrt@plt&amp;gt;
+000000000000142d &amp;lt;simple_ispc___un_3C_und_3E_un_3C_und_3E_uni+0xdd&amp;gt; vsqrtpd ymm1,ymm4
+0000000000001431 &amp;lt;simple_ispc___un_3C_und_3E_un_3C_und_3E_uni+0xe1&amp;gt; vsqrtpd ymm7,ymm5
+000000000000156e &amp;lt;simple_ispc___un_3C_und_3E_un_3C_und_3E_uni+0x21e&amp;gt; vsqrtpd ymm2,ymm6
+0000000000001577 &amp;lt;simple_ispc___un_3C_und_3E_un_3C_und_3E_uni+0x227&amp;gt; vsqrtpd ymm3,ymm7
+000000000000168d &amp;lt;simple_ispc+0xdd&amp;gt; vsqrtpd ymm1,ymm4
+0000000000001691 &amp;lt;simple_ispc+0xe1&amp;gt; vsqrtpd ymm7,ymm5
+00000000000017ce &amp;lt;simple_ispc+0x21e&amp;gt; vsqrtpd ymm2,ymm6
+00000000000017d7 &amp;lt;simple_ispc+0x227&amp;gt; vsqrtpd ymm3,ymm7
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ISPC is a good option for code with cross-lane dependencies or vector lane divergence (branches that affect some lanes differently than others).  Writing such code with intrinsics is laborious and compilers often do a poor job of inferring good vectorization strategies (despite &lt;code&gt;#pragma omp simd&lt;/code&gt; and the like).  An example of successful use of ISPC is Intel&amp;rsquo;s &lt;a href=&#34;https://www.embree.org/&#34; target=&#34;_blank&#34;&gt;Embree&lt;/a&gt; ray tracing engine.&lt;/p&gt;
+
+&lt;p&gt;(As with most vendor-reported performance numbers, we can probably take this with a grain of salt. But it indicates that CPUs remain highly competitive for ray tracing.)&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;embree-performance.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;openmp-target-offload-and-openacc&#34;&gt;OpenMP target offload and OpenACC&lt;/h2&gt;
+
+&lt;p&gt;CUDA is relatively hard to maintain and logic/tuning is spread out (between the kernel launch and the device code).  OpenMP target offload and OpenACC attempt to provide a more friendly story for maintenance and incremental migration of legacy code.&lt;/p&gt;
+
+&lt;h3 id=&#34;terminology&#34;&gt;Terminology&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;CUDA Concept&lt;/th&gt;
+&lt;th&gt;CUDA keyword&lt;/th&gt;
+&lt;th&gt;OpenACC&lt;/th&gt;
+&lt;th&gt;OpenMP &lt;code&gt;target&lt;/code&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Thread block&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;blockIdx&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;gang&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;teams&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Warp&lt;/td&gt;
+&lt;td&gt;(implicit)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;worker&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;thread&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Thread&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;threadIdx&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;vector&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;simd&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;incremental-porting-with-unified-memory&#34;&gt;Incremental porting with unified memory&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;openacc-steps.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;example&#34;&gt;Example&lt;/h3&gt;
+
+&lt;p&gt;OpenACC example from a Lattice-Boltzman miniapp&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;void LBM::stream(Real* const __restrict a_f,
+                 const Real* const __restrict a_f_post,
+                 const int* a_loStr,
+                 const int* a_hiStr,
+                 const int* a_loAll,
+                 const int* a_hiAll,
+                 const int a_numPts) const
+{
+
+  const int* const __restrict latI = &amp;amp;m_lattice[0][0];
+  const int* const __restrict latJ = &amp;amp;m_lattice[1][0];
+  const int* const __restrict latK = &amp;amp;m_lattice[2][0];
+
+  const int
+    klo = a_loStr[2], khi = a_hiStr[2],
+    jlo = a_loStr[1], jhi = a_hiStr[1],
+    ilo = a_loStr[0], ihi = a_hiStr[0];
+
+#pragma acc parallel loop independent collapse(3) \
+        copyin(a_loAll[SPACEDIM],a_hiAll[SPACEDIM],a_f_post[a_numPts*m_numVels]) \
+        copyout(a_f[a_numPts*m_numVels]) vector_length(256)
+  for (int k = klo; k &amp;lt;= khi; ++k) {
+    for (int j = jlo; j &amp;lt;= jhi; ++j) {
+      for (int i = ilo; i &amp;lt;= ihi; ++i) {
+#pragma acc loop seq independent
+        for (int m = 0; m &amp;lt; NUMV; ++m) {
+          const long int offset = m * a_numPts;
+          const long int index0 = INDEX(i          ,           j,           k, a_loAll, a_hiAll);
+          const long int index2 = INDEX(i - latI[m], j - latJ[m], k - latK[m], a_loAll, a_hiAll);
+          a_f[index0 + offset]    = a_f_post[index2 + offset];  // new f comes from upwind
+        }
+      }
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;resources&#34;&gt;Resources&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://devblogs.nvidia.com/getting-started-openacc/&#34; target=&#34;_blank&#34;&gt;Getting started with OpenACC&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://icl.cs.utk.edu/classes/cosc462/2017/pdf/OpenACC_3.pdf&#34; target=&#34;_blank&#34;&gt;Advanced OpenACC&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.openmp.org/resources/openmp-presentations/resources-openmp-presentations-sc18-booth-talks/&#34; target=&#34;_blank&#34;&gt;SC18 OpenMP Presentations (with videos)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://developer.download.nvidia.com/video/gputechconf/gtc/2019/presentation/s9353-openmp-5-for-accelerators-and-what-comes-next.pdf&#34; target=&#34;_blank&#34;&gt;OpenMP 5.0 for Accelerators and What Comes Next&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.openacc.org/hackathons&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Hackathon series&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Practical CUDA</title>
       <link>https://cucs-hpsc.github.io/fall2019/cuda-practical/</link>
       <pubDate>Fri, 01 Nov 2019 06:49:25 -0600</pubDate>
