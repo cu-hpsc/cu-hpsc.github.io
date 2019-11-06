@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Jed Brown">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Hiding latency Throughout this course, we&rsquo;ve discussed ways in which computer architecture and algorithms hide latency. * instruction-level parallelism * SMT/SIMT multi-threading * memory prefetch * organizing data structures for streaming access and cache reuse * tiling, etc.
+File latency is vastly higher than memory.
+from IPython.display import IFrame IFrame(&#39;https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html&#39;, width=1200, height=700)      Device Bandwidth (GB/s) Cost (\$/TB) Seek Latency ($\mu$s)     7200 RPM disk 0.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/io/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/io/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@five9a2">
+  <meta property="twitter:creator" content="@five9a2">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/io/">
+  <meta property="og:title" content="HPC I/O | HPSC">
+  <meta property="og:description" content="Hiding latency Throughout this course, we&rsquo;ve discussed ways in which computer architecture and algorithms hide latency. * instruction-level parallelism * SMT/SIMT multi-threading * memory prefetch * organizing data structures for streaming access and cache reuse * tiling, etc.
+File latency is vastly higher than memory.
+from IPython.display import IFrame IFrame(&#39;https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html&#39;, width=1200, height=700)      Device Bandwidth (GB/s) Cost (\$/TB) Seek Latency ($\mu$s)     7200 RPM disk 0."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-11-06T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-11-06T12:04:35-07:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>HPC I/O | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp/">2019-09-11 OpenMP Basics</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-2/">2019-09-13 More OpenMP</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-3/">2019-09-16 OpenMP Tasks</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/strategies/">2019-09-18 Reductions and Scans</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/sorting-graphs/">2019-09-23 More bitonic sorting, graphs</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-2/">2019-10-02 Dense Linear Algebra and Orthogonality</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-3/">2019-10-04 Orthogonality and Conditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/elemental/">2019-10-07 Elemental</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/iterative-solvers/">2019-10-09 Sparse and Iterative</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning/">2019-10-14 DD Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning-2/">2019-10-16 DD Preconditioning 2</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/mg-preconditioning/">2019-10-18 Multilevel Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/nonlinear/">2019-10-21 Nonlinear</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/transient/">2019-10-23 Transient</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/libceed/">2019-10-25 libCEED</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/coprocessor/">2019-10-28 Coprocessors</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/cuda/">2019-10-30 GPUs and CUDA</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/cuda-practical/">2019-11-01 Practical CUDA</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-target/">2019-11-04 ISP/OpenMP/OpenACC</a>
+      </li>
+      
+      <li class="active">
+        <a href="/fall2019/io/">2019-11-06 HPC I/O</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#hiding-latency">Hiding latency</a></li>
+<li><a href="#how-much-storage-bandwidth-does-a-similation-need">How much storage bandwidth does a similation need?</a>
+<ul>
+<li><a href="#summit-file-systems-https-www-olcf-ornl-gov-for-users-system-user-guides-summit-summit-user-guide-file-systems"><a href="https://www.olcf.ornl.gov/for-users/system-user-guides/summit/summit-user-guide/#file-systems" target="_blank">Summit File Systems</a></a></li>
+</ul></li>
+<li><a href="#storage-architecture">Storage architecture</a>
+<ul>
+<li><a href="#hadoop-file-system-medium-long-term-storage-collocated-with-compute-nodes">Hadoop File System: Medium/long-term storage collocated with compute nodes</a></li>
+<li><a href="#hpc-style-parallel-storage">HPC-style parallel storage</a></li>
+<li><a href="#recommended-slide-decks">Recommended slide decks</a></li>
+<li><a href="#burst-buffers-https-www-olcf-ornl-gov-for-users-system-user-guides-summit-summit-user-guide-burst-buffer"><a href="https://www.olcf.ornl.gov/for-users/system-user-guides/summit/summit-user-guide/#burst-buffer" target="_blank">Burst buffers</a></a></li>
+<li><a href="#further-reading">Further reading</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">HPC I/O</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<h2 id="hiding-latency">Hiding latency</h2>
+
+<p>Throughout this course, we&rsquo;ve discussed ways in which computer architecture and algorithms hide latency.
+* instruction-level parallelism
+* SMT/SIMT multi-threading
+* memory prefetch
+* organizing data structures for streaming access and cache reuse
+* tiling, etc.</p>
+
+<p>File latency is vastly higher than memory.</p>
+
+<pre><code class="language-python">from IPython.display import IFrame    
+IFrame('https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html', width=1200, height=700)
+</code></pre>
+
+<iframe
+    width="1200"
+    height="700"
+    src="https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html"
+    frameborder="0"
+    allowfullscreen
+></iframe>
+
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Bandwidth (GB/s)</th>
+<th>Cost (\$/TB)</th>
+<th>Seek Latency ($\mu$s)</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>7200 RPM disk</td>
+<td>0.3</td>
+<td>50</td>
+<td>&gt;3000</td>
+</tr>
+
+<tr>
+<td>SSD (SATA 3.0)</td>
+<td>0.6</td>
+<td>100-200</td>
+<td>15-50</td>
+</tr>
+
+<tr>
+<td>SSD/NVMe (PCIe-3 x4)</td>
+<td>3</td>
+<td>200-1000</td>
+<td>10-20</td>
+</tr>
+
+<tr>
+<td>DRAM DDR4</td>
+<td>25</td>
+<td>5000</td>
+<td>0.1</td>
+</tr>
+</tbody>
+</table>
+
+<p><img src="scientific-workflows.png" alt="" />
+<a href="http://www.pdsw.org/pdsw-discs18/slides/luttgau-pdsw-discs18-slides.pdf" target="_blank">slide credit</a></p>
+
+<h2 id="how-much-storage-bandwidth-does-a-similation-need">How much storage bandwidth does a similation need?</h2>
+
+<p><img src="nek_gpu_new3.png" alt="" /></p>
+
+<pre><code class="language-python">wall_clock_per_timestep = 0.6
+dofs_per_node = 1800 * 1e4
+MBps_per_node = dofs_per_node * 8 / wall_clock_per_timestep / 1e6
+dofs = 95e6
+MBps = dofs * 8 / wall_clock_per_timestep / 1e6
+MBps_per_node, MBps
+</code></pre>
+
+<pre><code>(240.0, 1266.6666666666667)
+</code></pre>
+
+<pre><code class="language-python">seconds_per_day = 24 * 60 * 60
+TB_per_day = MBps * seconds_per_day / 1e6 # TB
+TB_per_day
+</code></pre>
+
+<pre><code>109.44
+</code></pre>
+
+<p>What if all nodes used storage at this rate?</p>
+
+<pre><code class="language-python">MBps_per_node * 4600 / 1e6 # TB/s
+</code></pre>
+
+<pre><code>1.104
+</code></pre>
+
+<pre><code class="language-python">TB_per_day * 4600 / 8 / 1e3 # PB/day
+</code></pre>
+
+<pre><code>62.928
+</code></pre>
+
+<h3 id="summit-file-systems-https-www-olcf-ornl-gov-for-users-system-user-guides-summit-summit-user-guide-file-systems"><a href="https://www.olcf.ornl.gov/for-users/system-user-guides/summit/summit-user-guide/#file-systems" target="_blank">Summit File Systems</a></h3>
+
+<ul>
+<li>Capacity: 250 PB</li>
+<li>Theoretical Bandwidth: 2.5 TB/s</li>
+</ul>
+
+<h2 id="storage-architecture">Storage architecture</h2>
+
+<h3 id="hadoop-file-system-medium-long-term-storage-collocated-with-compute-nodes">Hadoop File System: Medium/long-term storage collocated with compute nodes</h3>
+
+<p><img src="Client-Writes-Span-Cluster.PNG" alt="" /></p>
+
+<h3 id="hpc-style-parallel-storage">HPC-style parallel storage</h3>
+
+<p><img src="lockwood-parallel-storage.png" alt="" /></p>
+
+<p><a href="https://www.olcf.ornl.gov/for-users/system-user-guides/summit/summit-user-guide/#file-systems" target="_blank">https://www.olcf.ornl.gov/for-users/system-user-guides/summit/summit-user-guide/#file-systems</a></p>
+
+<h3 id="recommended-slide-decks">Recommended slide decks</h3>
+
+<ul>
+<li><a href="https://press3.mcs.anl.gov//atpesc/files/2019/08/ATPESC_2019_Track-3_1_8-2_830am_Carns-Principles_of_HPC_IO.pdf" target="_blank">ATPESC 2019: Principles of HPC I/O:Everything you always wanted to know about HPC I/O but were afraid to ask</a></li>
+<li><a href="https://press3.mcs.anl.gov//atpesc/files/2019/08/ATPESC_2019_Track-3_7_8-2_345pm_Lockwood-IO_Architectures_and_Technology.pdf" target="_blank">ATPESC 2019: I/O Architectures and Technology</a></li>
+</ul>
+
+<h3 id="burst-buffers-https-www-olcf-ornl-gov-for-users-system-user-guides-summit-summit-user-guide-burst-buffer"><a href="https://www.olcf.ornl.gov/for-users/system-user-guides/summit/summit-user-guide/#burst-buffer" target="_blank">Burst buffers</a></h3>
+
+<p><img src="Slide1-400x300.jpg" alt="" /></p>
+
+<p><img src="nvme_ior_summit.png" alt="" /></p>
+
+<pre><code class="language-python">! strace python -c 'import numpy' |&amp; grep open
+</code></pre>
+
+<pre><code>openat(AT_FDCWD, &quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/tls/haswell/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat(&quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/tls/haswell/x86_64&quot;, 0x7ffc51a1a890) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/tls/haswell/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat(&quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/tls/haswell&quot;, 0x7ffc51a1a890) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/tls/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat(&quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/tls/x86_64&quot;, 0x7ffc51a1a890) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/tls/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat(&quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/tls&quot;, 0x7ffc51a1a890) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/haswell/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat(&quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/haswell/x86_64&quot;, 0x7ffc51a1a890) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/haswell/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat(&quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/haswell&quot;, 0x7ffc51a1a890) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat(&quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/x86_64&quot;, 0x7ffc51a1a890) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat(&quot;/opt/pgi/linux86-64/19.4/mpi/openmpi/lib&quot;, 0x7ffc51a1a890) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/paraview/lib/tls/haswell/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/paraview/lib/tls/haswell/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/paraview/lib/tls/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/paraview/lib/tls/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/paraview/lib/haswell/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/paraview/lib/haswell/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/paraview/lib/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/paraview/lib/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/tls/haswell/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/tls/haswell/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/tls/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/tls/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/haswell/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/haswell/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/x86_64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libpython3.7m.so.1.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libpython3.7m.so.1.0&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libpthread.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libpthread.so.0&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libdl.so.2&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libdl.so.2&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libutil.so.1&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libutil.so.1&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libm.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libm.so.6&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/locale/locale-archive&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/gconv/gconv-modules.cache&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/gconv/gconv-modules&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/bin/pyvenv.cfg&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;pyvenv.cfg&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/home/jed/usr/lib/python3.7/site-packages&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/home/jed/petsc/lib/petsc/bin&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/codecs.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/codecs.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings/__pycache__/aliases.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings/aliases.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings/__pycache__/utf_8.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings/utf_8.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings/__pycache__/latin_1.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/encodings/latin_1.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/io.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/io.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/abc.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/abc.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/_bootlocale.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/_bootlocale.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/home/jed/usr/lib/python3.7/site-packages/__pycache__/site.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/os.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/os.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/stat.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/stat.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/posixpath.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/posixpath.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/genericpath.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/genericpath.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/_collections_abc.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/_collections_abc.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/imp.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/imp.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/types.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/types.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/warnings.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/warnings.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib/__pycache__/machinery.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib/machinery.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib/__pycache__/util.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib/util.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib/__pycache__/abc.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/importlib/abc.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/contextlib.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/contextlib.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/collections/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/collections/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/operator.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/operator.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/keyword.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/keyword.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/heapq.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/heapq.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_heapq.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/reprlib.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/reprlib.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/functools.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/functools.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/tokenize.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/tokenize.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/re.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/re.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/enum.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/enum.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/sre_compile.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/sre_compile.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/sre_parse.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/sre_parse.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/sre_constants.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/sre_constants.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/copyreg.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/copyreg.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/token.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/token.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/site.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/_sitebuiltins.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/_sitebuiltins.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/home/jed/.local/lib/python3.7/site-packages&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/home/jed/.local/lib/python3.7/site-packages/easy-install.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/home/jed/.local/lib/python3.7/site-packages/python_graph_core-1.8.2-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/home/jed/.local/lib/python3.7/site-packages&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4
+openat(AT_FDCWD, &quot;/home/jed/.local/lib/python3.7/site-packages/sphinxcontrib_spelling-4.2.0-py3.6-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/matplotlib-3.1.1-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/protobuf-3.10.0-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/pytest-cov.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/ruamel.yaml-0.16.5-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/sphinxcontrib_applehelp-1.0.1-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/home/jed/src/nbgrader&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4
+openat(AT_FDCWD, &quot;/home/jed/.local/lib/python3.7/site-packages/jupyter-1.0.0-py3.7.egg&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4
+openat(AT_FDCWD, &quot;/home/jed/src/meshio&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/sphinxcontrib_devhelp-1.0.1-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/sphinxcontrib_htmlhelp-1.0.2-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/sphinxcontrib_jsmath-1.0.1-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/sphinxcontrib_qthelp-1.0.2-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/sphinxcontrib_serializinghtml-1.1.3-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/zope.component-4.5-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/zope.deferredimport-4.3.1-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/zope.deprecation-4.4.0-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/zope.event-4.4-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/zope.hookable-4.2.0-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/zope.interface-4.6.0-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/zope.proxy-4.3.2-py3.7-nspkg.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/home/jed/usr/lib/python3.7/site-packages&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/home/jed/usr/lib/python3.7/site-packages/easy-install.pth&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/home/jed/petsc/lib/petsc/bin&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/home/jed/cu/hpsc/hpsc-class/content/fall2019/io&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/home/jed/src/python-vote-core&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/home/jed/src/academic-admin&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/__future__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__future__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__pycache__/_globals.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/_globals.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__pycache__/__config__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__config__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__pycache__/version.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/version.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__pycache__/_distributor_init.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/_distributor_init.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/info.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/info.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/multiarray.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/multiarray.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/overrides.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/overrides.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/textwrap.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/textwrap.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_multiarray_umath.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libcblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/libcblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/tls/haswell/x86_64/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/tls/haswell/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/tls/x86_64/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/tls/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/haswell/x86_64/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/haswell/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/x86_64/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libblas.so.3&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libgomp.so.1&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libgomp.so.1&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/sys/devices/system/cpu&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/sys/devices/system/cpu&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/datetime.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/datetime.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/etc/localtime&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/math.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_datetime.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/compat/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/compat/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/compat&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/compat/__pycache__/_inspect.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/compat/_inspect.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/compat/__pycache__/py3k.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/compat/py3k.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/pathlib.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/pathlib.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/fnmatch.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/fnmatch.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/ntpath.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/ntpath.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/urllib/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/urllib/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/urllib&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/urllib/__pycache__/parse.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/urllib/parse.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/pickle.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/pickle.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/struct.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/struct.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_struct.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/_compat_pickle.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/_compat_pickle.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_pickle.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/umath.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/umath.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/numerictypes.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/numerictypes.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/numbers.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/numbers.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_string_helpers.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_string_helpers.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_type_aliases.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_type_aliases.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_dtype.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_dtype.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/numeric.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/numeric.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_exceptions.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_exceptions.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_asarray.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_asarray.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_ufunc_config.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_ufunc_config.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/collections&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/collections/__pycache__/abc.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/collections/abc.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/fromnumeric.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/fromnumeric.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_methods.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_methods.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/arrayprint.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/arrayprint.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/defchararray.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/defchararray.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/records.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/records.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/memmap.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/memmap.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/function_base.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/function_base.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/machar.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/machar.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/getlimits.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/getlimits.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/shape_base.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/shape_base.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/einsumfunc.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/einsumfunc.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_add_newdocs.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_add_newdocs.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_multiarray_tests.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_dtype_ctypes.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_dtype_ctypes.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_ctypes.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libffi.so.6&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/libffi.so.6&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/ctypes/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/ctypes/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/ctypes&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/ctypes/__pycache__/_endian.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/ctypes/_endian.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/proc/self/status&quot;, O_RDONLY) = 3
+openat(AT_FDCWD, &quot;/proc/mounts&quot;, O_RDONLY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/__pycache__/_internal.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/core/_internal.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/platform.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/platform.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/subprocess.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/subprocess.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/signal.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/signal.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_posixsubprocess.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/select.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/selectors.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/selectors.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/threading.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/threading.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/traceback.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/traceback.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/linecache.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/linecache.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/_weakrefset.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/_weakrefset.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__pycache__/_pytesttester.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/_pytesttester.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/info.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/info.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/type_check.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/type_check.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/ufunclike.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/ufunclike.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/index_tricks.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/index_tricks.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/matrixlib/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/matrixlib/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/matrixlib&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/matrixlib/__pycache__/defmatrix.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/matrixlib/defmatrix.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/ast.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/ast.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg/__pycache__/info.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg/info.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg/__pycache__/linalg.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg/linalg.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/twodim_base.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/twodim_base.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg/lapack_lite.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/liblapack.so.3&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/liblapack.so.3&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libgfortran.so.5&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libgfortran.so.5&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libgcc_s.so.1&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/libgcc_s.so.1&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/../lib/tls/haswell/x86_64/libquadmath.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/../lib/tls/haswell/libquadmath.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/../lib/tls/x86_64/libquadmath.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/../lib/tls/libquadmath.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/../lib/haswell/x86_64/libquadmath.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/../lib/haswell/libquadmath.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/../lib/x86_64/libquadmath.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/usr/lib/../lib/libquadmath.so.0&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/linalg/_umath_linalg.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/function_base.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/function_base.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/histograms.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/histograms.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/stride_tricks.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/stride_tricks.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/mixins.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/mixins.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/nanfunctions.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/nanfunctions.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/shape_base.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/shape_base.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/scimath.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/scimath.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/polynomial.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/polynomial.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/utils.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/utils.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/arraysetops.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/arraysetops.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/npyio.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/npyio.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/weakref.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/weakref.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/format.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/format.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/_datasource.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/_datasource.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/shutil.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/shutil.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/zlib.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libz.so.1&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/libz.so.1&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/bz2.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/bz2.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/_compression.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/_compression.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_bz2.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libbz2.so.1.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/libbz2.so.1.0&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/lzma.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lzma.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_lzma.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/liblzma.so.5&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/liblzma.so.5&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/grp.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/_iotools.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/_iotools.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/financial.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/financial.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/decimal.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/decimal.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_decimal.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libmpdec.so.2&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/libmpdec.so.2&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/arrayterator.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/arrayterator.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/arraypad.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/arraypad.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/__pycache__/_version.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/lib/_version.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/fft/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/fft/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/fft&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/fft/__pycache__/_pocketfft.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/fft/_pocketfft.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/fft/_pocketfft_internal.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/fft/__pycache__/helper.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/fft/helper.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/polynomial.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/polynomial.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/polyutils.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/polyutils.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/_polybase.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/_polybase.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/chebyshev.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/chebyshev.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/legendre.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/legendre.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/hermite.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/hermite.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/hermite_e.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/hermite_e.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/__pycache__/laguerre.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/polynomial/laguerre.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/__pycache__/_pickle.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/_pickle.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/mtrand.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/common.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/bounded_integers.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/mt19937.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/bit_generator.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/secrets.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/secrets.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/base64.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/base64.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/binascii.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/hmac.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/hmac.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_hashlib.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/R/lib/libcrypto.so.1.1&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/libcrypto.so.1.1&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/hashlib.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/hashlib.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_blake2.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_sha3.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/random.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/random.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/bisect.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/bisect.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_bisect.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/lib-dynload/_random.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/philox.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/pcg64.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/sfc64.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/random/generator.cpython-37m-x86_64-linux-gnu.so&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/__pycache__/ctypeslib.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/ctypeslib.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/ma/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/ma/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/ma&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/ma/__pycache__/core.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/ma/core.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/ma/__pycache__/extras.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/ma/extras.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/result.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/result.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/util.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/util.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/case.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/case.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/difflib.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/difflib.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/logging/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/logging/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/string.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/string.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/pprint.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/pprint.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/suite.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/suite.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/loader.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/loader.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/main.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/main.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/argparse.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/argparse.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/gettext.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/gettext.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/locale.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/locale.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/runner.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/runner.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/__pycache__/signals.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/unittest/signals.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private/__pycache__/__init__.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private/__init__.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private/__pycache__/utils.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private/utils.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/__pycache__/tempfile.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/tempfile.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private/__pycache__/decorators.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private/decorators.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private/__pycache__/nosetester.cpython-37.pyc&quot;, O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, &quot;/usr/lib/python3.7/site-packages/numpy/testing/_private/nosetester.py&quot;, O_RDONLY|O_CLOEXEC) = 3
+</code></pre>
+
+<p><img src="pynamic-sierra.png" alt="" />
+<a href="https://www.osti.gov/servlets/purl/1088439" target="_blank">figure</a></p>
+
+<h3 id="further-reading">Further reading</h3>
+
+<ul>
+<li><a href="https://extremecomputingtraining.anl.gov/agenda-2019/" target="_blank">ATPESC 2019 Presentations</a> (see August 3 slides)</li>
+<li><a href="https://www.youtube.com/watch?v=adHRqgtL4lE&amp;list=PLGj2a3KTwhRY6N5GJG-kICMYfUBm6dK-L" target="_blank">ATPESC 2019 Videos: Data Intensive Computing and I/O</a></li>
+<li><a href="https://glennklockwood.blogspot.com/2014/05/hadoops-uncomfortable-fit-in-hpc.html?spref=tw" target="_blank">Hadoop&rsquo;s Uncomfortable Fit in HPC</a></li>
+</ul>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/openmp-target/" rel="prev">ISPC, OpenMP target, OpenACC, and all that</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Nov 6, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/io/index.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
