@@ -1024,7 +1024,7 @@ openat(AT_FDCWD, &amp;quot;/usr/lib/python3.7/site-packages/numpy/testing/_priva
 &lt;h3 id=&#34;further-reading&#34;&gt;Further reading&lt;/h3&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://extremecomputingtraining.anl.gov/agenda-2019/&#34; target=&#34;_blank&#34;&gt;ATPESC 2019 Presentations&lt;/a&gt; (see August 3 slides)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://extremecomputingtraining.anl.gov/agenda-2019/&#34; target=&#34;_blank&#34;&gt;ATPESC 2019 Presentations&lt;/a&gt; (see August 2 slides)&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=adHRqgtL4lE&amp;amp;list=PLGj2a3KTwhRY6N5GJG-kICMYfUBm6dK-L&#34; target=&#34;_blank&#34;&gt;ATPESC 2019 Videos: Data Intensive Computing and I/O&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://glennklockwood.blogspot.com/2014/05/hadoops-uncomfortable-fit-in-hpc.html?spref=tw&#34; target=&#34;_blank&#34;&gt;Hadoop&amp;rsquo;s Uncomfortable Fit in HPC&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
