@@ -28,10 +28,10 @@
   
     
   
-  <meta name="description" content="Reductions double reduce(int n, double x[]) { double y = 0; for (int i=0; i&lt;n; i&#43;&#43;) y &#43;= x[i]; return y; }  DAG properties  Work $W(n) = n$ Depth $D(n) = n$ Parallelism $P(n) = \frac{W(n)}{D(n)} = 1$  A 2-level method double reduce(int n, double x[]) { int P = sqrt(n); // ways of parallelism double y[P]; #pragma omp parallel for shared(y) for (int p=0; p&lt;P; p&#43;&#43;) { y[p] = 0; for (int i=0; i&lt;n/P; i&#43;&#43;) y[p] &#43;= x[p*(n/P) &#43; i]; } double sum = 0; for (int p=0; p&lt;P; p&#43;&#43;) sum &#43;= y[p]; return sum; }  DAG properties  Work $W(n) = n &#43; \sqrt{n}$ Depth $D(n) = 2 \sqrt{n}$ Parallelism $P(n) = \sqrt{n}$  PRAM performance model  Processing units (e.">
+  <meta name="description" content="Seismic Tomography from IPython.display import HTML ####HTML(&#39;&lt;iframe width=&quot;854&quot; height=&quot;422&quot; src=&quot;https://www.youtube.com/embed/7zuICgLxSIk?rel=0&amp;amp;controls=0&amp;amp;showinfo=0&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;&#39;)   Observed and synthectic seismograms Data sizes    Name Count/size     Seismic events (earthquakes) 100&ndash;1000   Seismic stations that observe each event 100&ndash;1000   Seismograms (observed and synthetic) 1-1000 TB   Elastic structure (3D mesh) 1-1000 GB   Simulate one earthquake 100-1000 CPU hours   Optimization iterations ~30     Problem: Local minima when high-frequency windows are included in early iterations.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/strategies/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/data-methods/">
 
   
 
@@ -98,7 +98,7 @@
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/strategies/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/data-methods/">
 
   
   
@@ -114,15 +114,15 @@
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/strategies/">
-  <meta property="og:title" content="Parallel Reductions and Scans | HPSC">
-  <meta property="og:description" content="Reductions double reduce(int n, double x[]) { double y = 0; for (int i=0; i&lt;n; i&#43;&#43;) y &#43;= x[i]; return y; }  DAG properties  Work $W(n) = n$ Depth $D(n) = n$ Parallelism $P(n) = \frac{W(n)}{D(n)} = 1$  A 2-level method double reduce(int n, double x[]) { int P = sqrt(n); // ways of parallelism double y[P]; #pragma omp parallel for shared(y) for (int p=0; p&lt;P; p&#43;&#43;) { y[p] = 0; for (int i=0; i&lt;n/P; i&#43;&#43;) y[p] &#43;= x[p*(n/P) &#43; i]; } double sum = 0; for (int p=0; p&lt;P; p&#43;&#43;) sum &#43;= y[p]; return sum; }  DAG properties  Work $W(n) = n &#43; \sqrt{n}$ Depth $D(n) = 2 \sqrt{n}$ Parallelism $P(n) = \sqrt{n}$  PRAM performance model  Processing units (e."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/data-methods/">
+  <meta property="og:title" content="Data-intensive workflows and parallelism | HPSC">
+  <meta property="og:description" content="Seismic Tomography from IPython.display import HTML ####HTML(&#39;&lt;iframe width=&quot;854&quot; height=&quot;422&quot; src=&quot;https://www.youtube.com/embed/7zuICgLxSIk?rel=0&amp;amp;controls=0&amp;amp;showinfo=0&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;&#39;)   Observed and synthectic seismograms Data sizes    Name Count/size     Seismic events (earthquakes) 100&ndash;1000   Seismic stations that observe each event 100&ndash;1000   Seismograms (observed and synthetic) 1-1000 TB   Elastic structure (3D mesh) 1-1000 GB   Simulate one earthquake 100-1000 CPU hours   Optimization iterations ~30     Problem: Local minima when high-frequency windows are included in early iterations."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-09-18T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-11-11T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-09-18T12:13:21-06:00">
+    <meta property="article:modified_time" content="2019-11-11T15:42:39-07:00">
   
 
   
@@ -134,7 +134,7 @@
 
 
 
-  <title>Parallel Reductions and Scans | HPSC</title>
+  <title>Data-intensive workflows and parallelism | HPSC</title>
 
 </head>
 
@@ -305,7 +305,7 @@
         <a href="/fall2019/openmp-3/">2019-09-16 OpenMP Tasks</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/strategies/">2019-09-18 Reductions and Scans</a>
       </li>
       
@@ -389,7 +389,7 @@
         <a href="/fall2019/mpi-io/">2019-11-08 MPI-IO</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/data-methods/">2019-11-11 Data-intensive</a>
       </li>
       
@@ -426,29 +426,14 @@
 <ul>
 <li>
 <ul>
-<li><a href="#reductions">Reductions</a>
+<li><a href="#seismic-tomography">Seismic Tomography</a>
 <ul>
-<li>
-<ul>
-<li><a href="#dag-properties">DAG properties</a></li>
+<li><a href="#observed-and-synthectic-seismograms">Observed and synthectic seismograms</a></li>
+<li><a href="#data-sizes">Data sizes</a></li>
+<li><a href="#adaptable-seismic-data-format-https-asdf-definition-readthedocs-io-en-latest-big-picture-html-based-on-hdf5"><a href="https://asdf-definition.readthedocs.io/en/latest/big_picture.html" target="_blank">Adaptable Seismic Data Format</a> (based on HDF5)</a></li>
 </ul></li>
-<li><a href="#a-2-level-method">A 2-level method</a>
-<ul>
-<li><a href="#dag-properties-1">DAG properties</a></li>
-</ul></li>
-<li><a href="#pram-performance-model">PRAM performance model</a>
-<ul>
-<li><a href="#scheduling">Scheduling</a></li>
-</ul></li>
-<li><a href="#more-levels">More levels?</a>
-<ul>
-<li><a href="#dag-properties-2">DAG properties</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#parallel-scans">Parallel scans</a>
-<ul>
-<li><a href="#application-of-scans-parallel-select">Application of scans: parallel select</a></li>
-</ul></li>
+<li><a href="#parallelism-in-machine-learning">Parallelism in Machine Learning</a></li>
+<li><a href="#curse-of-dimensionality">Curse of dimensionality</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -462,161 +447,243 @@
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Parallel Reductions and Scans</h1>
+          <h1 itemprop="name">Data-intensive workflows and parallelism</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<h2 id="reductions">Reductions</h2>
+<h2 id="seismic-tomography">Seismic Tomography</h2>
 
-<pre><code class="language-c">double reduce(int n, double x[]) {
-    double y = 0;
-    for (int i=0; i&lt;n; i++)
-        y += x[i];
-    return y;
-}
+<pre><code class="language-python">from IPython.display import HTML
+
+####HTML('&lt;iframe width=&quot;854&quot; height=&quot;422&quot; src=&quot;https://www.youtube.com/embed/7zuICgLxSIk?rel=0&amp;amp;controls=0&amp;amp;showinfo=0&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;')
 </code></pre>
 
-<p><img src="abtin-reduction-iterative.png" alt="" /></p>
+<iframe width="854" height="422" src="https://www.youtube.com/embed/7zuICgLxSIk?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
 
-<h4 id="dag-properties">DAG properties</h4>
+<h3 id="observed-and-synthectic-seismograms">Observed and synthectic seismograms</h3>
+
+<p><img src="flexwin.png" alt="" /></p>
+
+<h3 id="data-sizes">Data sizes</h3>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Count/size</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Seismic events (earthquakes)</td>
+<td>100&ndash;1000</td>
+</tr>
+
+<tr>
+<td>Seismic stations that observe each event</td>
+<td>100&ndash;1000</td>
+</tr>
+
+<tr>
+<td>Seismograms (observed and synthetic)</td>
+<td>1-1000 TB</td>
+</tr>
+
+<tr>
+<td>Elastic structure (3D mesh)</td>
+<td>1-1000 GB</td>
+</tr>
+
+<tr>
+<td>Simulate one earthquake</td>
+<td>100-1000 CPU hours</td>
+</tr>
+
+<tr>
+<td>Optimization iterations</td>
+<td>~30</td>
+</tr>
+</tbody>
+</table>
 
 <ul>
-<li>Work $W(n) = n$</li>
-<li>Depth $D(n) = n$</li>
-<li>Parallelism $P(n) = \frac{W(n)}{D(n)} = 1$</li>
+<li>Problem: Local minima when high-frequency windows are included in early iterations.</li>
 </ul>
 
-<h3 id="a-2-level-method">A 2-level method</h3>
+<h3 id="adaptable-seismic-data-format-https-asdf-definition-readthedocs-io-en-latest-big-picture-html-based-on-hdf5"><a href="https://asdf-definition.readthedocs.io/en/latest/big_picture.html" target="_blank">Adaptable Seismic Data Format</a> (based on HDF5)</h3>
 
-<pre><code class="language-c">double reduce(int n, double x[]) {
-    int P = sqrt(n); // ways of parallelism
-    double y[P];
-    #pragma omp parallel for shared(y)
-    for (int p=0; p&lt;P; p++) {
-        y[p] = 0;
-        for (int i=0; i&lt;n/P; i++)
-            y[p] += x[p*(n/P) + i];
+<p><img src="https://asdf-definition.readthedocs.io/en/latest/_images/ASDF_container.png" alt="" /></p>
+
+<p><img src="https://camo.githubusercontent.com/5be343ed266374f6108049a952b8be81e984ba27/68747470733a2f2f7261772e6769746875622e636f6d2f6f627370792f776562736974652f6d61737465722f6c6f676f2f6f627370795f6c6f676f5f66756c6c5f686967687265732e706e67" alt="" /></p>
+
+<h2 id="parallelism-in-machine-learning">Parallelism in Machine Learning</h2>
+
+<ul>
+<li><a href="http://unixer.de/publications/img/distdl-preprint.pdf" target="_blank">http://unixer.de/publications/img/distdl-preprint.pdf</a> (<a href="https://www.youtube.com/watch?v=xtxxLWZznBI" target="_blank">video</a>)</li>
+</ul>
+
+<p><img src="bennun-parallel-dl.png" alt="" /></p>
+
+<p><img src="bennun-parallel-param.png" alt="" /></p>
+
+<h2 id="curse-of-dimensionality">Curse of dimensionality</h2>
+
+<pre><code class="language-python">%matplotlib inline
+import pandas
+import seaborn
+import matplotlib.pyplot as plt
+import numpy as np
+plt.style.use('ggplot')
+plt.rc('figure', figsize=(12,8))
+
+def hypercube(d):
+    return dict(name='hypercube', dim=d, npoints=2**d, volume=1)
+
+def simplex(d):
+    return dict(name='simplex', dim=d, npoints=d+1, volume=1/np.math.factorial(d))
+
+df = pandas.DataFrame([hypercube(d) for d in range(1,20)] + [simplex(d) for d in range(1,20)])
+df.head()
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
-    double sum = 0;
-    for (int p=0; p&lt;P; p++)
-        sum += y[p];
-    return sum;
-}
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>dim</th>
+      <th>npoints</th>
+      <th>volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>hypercube</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>hypercube</td>
+      <td>2</td>
+      <td>4</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>hypercube</td>
+      <td>3</td>
+      <td>8</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>hypercube</td>
+      <td>4</td>
+      <td>16</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>hypercube</td>
+      <td>5</td>
+      <td>32</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<pre><code class="language-python">df.tail()
 </code></pre>
 
-<h4 id="dag-properties-1">DAG properties</h4>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-<ul>
-<li>Work $W(n) = n + \sqrt{n}$</li>
-<li>Depth $D(n) = 2 \sqrt{n}$</li>
-<li>Parallelism $P(n) = \sqrt{n}$</li>
-</ul>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
 
-<h3 id="pram-performance-model">PRAM performance model</h3>
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>dim</th>
+      <th>npoints</th>
+      <th>volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>33</th>
+      <td>simplex</td>
+      <td>15</td>
+      <td>16</td>
+      <td>7.647164e-13</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>simplex</td>
+      <td>16</td>
+      <td>17</td>
+      <td>4.779477e-14</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>simplex</td>
+      <td>17</td>
+      <td>18</td>
+      <td>2.811457e-15</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>simplex</td>
+      <td>18</td>
+      <td>19</td>
+      <td>1.561921e-16</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>simplex</td>
+      <td>19</td>
+      <td>20</td>
+      <td>8.220635e-18</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-<ul>
-<li>Processing units (e.g., OpenMP threads) execute local programs</li>
-<li>Communication through shared memory with no access cost</li>
-<li>Synchronous operation on a common clock
-
-<ul>
-<li>Barrier-like constructs are free</li>
-</ul></li>
-<li>Multiple Instruction, Multiple Data (MIMD)</li>
-</ul>
-
-<h4 id="scheduling">Scheduling</h4>
-
-<p>How much time does it take to execute a DAG on $p$ processors?</p>
-
-<ul>
-<li><p>Sum work of each node $i$ along critical path of length $D(n)$
-$$ \sum_{i=1}^{D(n)} W_i $$</p></li>
-
-<li><p>Partition total work $W(n)$ over $p \le P(n)$ processors (as though there were no data dependencies)
-$$ \left\lceil \frac{W(n)}{p} \right\rceil $$</p></li>
-
-<li><p>Total time must be at least as large as either of these
-$$ T(n,p) \ge \max\left( D(n), \left\lceil \frac{W(n)}{p} \right\rceil \right) $$</p></li>
-</ul>
-
-<h3 id="more-levels">More levels?</h3>
-
-<pre><code class="language-c">double reduce(int n, double x[]) {
-    if (n == 1) return x[0];
-    double y[n/2];
-    #pragma omp parallel for shared(y)
-    for (int i=0; i&lt;n/2; i++)
-        y[i] = x[2*i] + x[2*i+1];
-    return reduce(n/2, y);
-}
+<pre><code class="language-python">grid = seaborn.lineplot(x='npoints', y='volume', hue='name', data=df)
+grid.axes.set(xscale='log', xlim=(1, 1e5));
 </code></pre>
 
-<p><img src="abtin-reduction-recursive.png" alt="" /></p>
-
-<h4 id="dag-properties-2">DAG properties</h4>
-
-<ul>
-<li>$W(n) = n/2 + n/4 + n/8 + \dotsb = n$</li>
-<li>$D(n) = \log_2 n$</li>
-<li>$P(n) = n/2$</li>
-</ul>
-
-<h2 id="parallel-scans">Parallel scans</h2>
-
-<pre><code class="language-c">void scan(int n, double x[], double y[]) {
-    y[0] = x[0];
-    for (int i=1; i&lt;n; i++)
-        y[i] = y[i-1] + x[i];
-}
-</code></pre>
-
-<ul>
-<li>What are the DAG properties of this algorithm?</li>
-<li>How fast can we make it?</li>
-</ul>
-
-<p><img src="abtin-scan-recursive.png" alt="" /></p>
-
-<pre><code class="language-c">void scan_inplace(int n, double y[], int stride) {
-    if (2*stride &gt; n) return;
-    #pragma omp parallel for
-    for (int i=2*stride-1; i&lt;n; i+=2*stride)
-        y[i] += [i - stride];
-
-    scan(n, y, 2*stride);
-
-    #pragma omp parallel for
-    for (int i=3*stride-1; i&lt;n; i+=2*stride)
-        y[i] += y[i - stride];
-}
-
-// call like
-scan_inplace(n, x, 1);
-</code></pre>
-
-<h3 id="application-of-scans-parallel-select">Application of scans: parallel select</h3>
-
-<p>Select elements of array <code>x[]</code> that satisfy a condition.</p>
-
-<pre><code class="language-c">int c[n];
-#pragma omp parallel for
-for (int i=0; i&lt;n; i++)
-    c[i] = cond(x[i]); // returns 1 or 0
-
-scan_inplace(n, c, 1);
-
-double results[c[n-1]]; // allocate array with total number of items
-#pragma omp parallel for
-for (int i=0; i&lt;n; i++)
-    if (cond(x[i])) // Can use `c[i] - c[i-1]` to avoid recomputing
-        results[c[i]-1] = x[i];
-</code></pre>
-
-<hr />
-
-<p>Figures courtesy Abtin Rahimian&rsquo;s course notes.</p>
+<p><img src="./lecture_9_0.png" alt="png" /></p>
 
           </div>
 
@@ -633,14 +700,14 @@ for (int i=0; i&lt;n; i++)
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/sorting-graphs/" rel="next">More bitonic sorting, graphs</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/openmp-3/" rel="prev">OpenMP Tasks</a>
+    <a href="/fall2019/mpi-io/" rel="prev">MPI-IO and HDF5</a>
   </div>
   
 </div>
@@ -650,11 +717,11 @@ for (int i=0; i&lt;n; i++)
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Sep 18, 2019</p>
+          <p>Last updated on Nov 11, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/strategies/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/data-methods/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

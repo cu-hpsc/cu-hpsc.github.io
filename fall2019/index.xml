@@ -290,6 +290,248 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Data-intensive workflows and parallelism</title>
+      <link>https://cucs-hpsc.github.io/fall2019/data-methods/</link>
+      <pubDate>Mon, 11 Nov 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/data-methods/</guid>
+      <description>
+
+&lt;h2 id=&#34;seismic-tomography&#34;&gt;Seismic Tomography&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from IPython.display import HTML
+
+####HTML(&#39;&amp;lt;iframe width=&amp;quot;854&amp;quot; height=&amp;quot;422&amp;quot; src=&amp;quot;https://www.youtube.com/embed/7zuICgLxSIk?rel=0&amp;amp;amp;controls=0&amp;amp;amp;showinfo=0&amp;quot; frameborder=&amp;quot;0&amp;quot; allowfullscreen&amp;gt;&amp;lt;/iframe&amp;gt;&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;iframe width=&#34;854&#34; height=&#34;422&#34; src=&#34;https://www.youtube.com/embed/7zuICgLxSIk?rel=0&amp;amp;controls=0&amp;amp;showinfo=0&#34; frameborder=&#34;0&#34; allowfullscreen&gt;&lt;/iframe&gt;
+
+&lt;h3 id=&#34;observed-and-synthectic-seismograms&#34;&gt;Observed and synthectic seismograms&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;flexwin.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;data-sizes&#34;&gt;Data sizes&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Name&lt;/th&gt;
+&lt;th&gt;Count/size&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Seismic events (earthquakes)&lt;/td&gt;
+&lt;td&gt;100&amp;ndash;1000&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Seismic stations that observe each event&lt;/td&gt;
+&lt;td&gt;100&amp;ndash;1000&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Seismograms (observed and synthetic)&lt;/td&gt;
+&lt;td&gt;1-1000 TB&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Elastic structure (3D mesh)&lt;/td&gt;
+&lt;td&gt;1-1000 GB&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Simulate one earthquake&lt;/td&gt;
+&lt;td&gt;100-1000 CPU hours&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Optimization iterations&lt;/td&gt;
+&lt;td&gt;~30&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Problem: Local minima when high-frequency windows are included in early iterations.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;adaptable-seismic-data-format-https-asdf-definition-readthedocs-io-en-latest-big-picture-html-based-on-hdf5&#34;&gt;&lt;a href=&#34;https://asdf-definition.readthedocs.io/en/latest/big_picture.html&#34; target=&#34;_blank&#34;&gt;Adaptable Seismic Data Format&lt;/a&gt; (based on HDF5)&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://asdf-definition.readthedocs.io/en/latest/_images/ASDF_container.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://camo.githubusercontent.com/5be343ed266374f6108049a952b8be81e984ba27/68747470733a2f2f7261772e6769746875622e636f6d2f6f627370792f776562736974652f6d61737465722f6c6f676f2f6f627370795f6c6f676f5f66756c6c5f686967687265732e706e67&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;parallelism-in-machine-learning&#34;&gt;Parallelism in Machine Learning&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://unixer.de/publications/img/distdl-preprint.pdf&#34; target=&#34;_blank&#34;&gt;http://unixer.de/publications/img/distdl-preprint.pdf&lt;/a&gt; (&lt;a href=&#34;https://www.youtube.com/watch?v=xtxxLWZznBI&#34; target=&#34;_blank&#34;&gt;video&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;bennun-parallel-dl.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;bennun-parallel-param.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;curse-of-dimensionality&#34;&gt;Curse of dimensionality&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import pandas
+import seaborn
+import matplotlib.pyplot as plt
+import numpy as np
+plt.style.use(&#39;ggplot&#39;)
+plt.rc(&#39;figure&#39;, figsize=(12,8))
+
+def hypercube(d):
+    return dict(name=&#39;hypercube&#39;, dim=d, npoints=2**d, volume=1)
+
+def simplex(d):
+    return dict(name=&#39;simplex&#39;, dim=d, npoints=d+1, volume=1/np.math.factorial(d))
+
+df = pandas.DataFrame([hypercube(d) for d in range(1,20)] + [simplex(d) for d in range(1,20)])
+df.head()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;name&lt;/th&gt;
+      &lt;th&gt;dim&lt;/th&gt;
+      &lt;th&gt;npoints&lt;/th&gt;
+      &lt;th&gt;volume&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;hypercube&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;hypercube&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;hypercube&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;hypercube&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;16&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;hypercube&lt;/td&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;32&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df.tail()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;name&lt;/th&gt;
+      &lt;th&gt;dim&lt;/th&gt;
+      &lt;th&gt;npoints&lt;/th&gt;
+      &lt;th&gt;volume&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;33&lt;/th&gt;
+      &lt;td&gt;simplex&lt;/td&gt;
+      &lt;td&gt;15&lt;/td&gt;
+      &lt;td&gt;16&lt;/td&gt;
+      &lt;td&gt;7.647164e-13&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;34&lt;/th&gt;
+      &lt;td&gt;simplex&lt;/td&gt;
+      &lt;td&gt;16&lt;/td&gt;
+      &lt;td&gt;17&lt;/td&gt;
+      &lt;td&gt;4.779477e-14&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;35&lt;/th&gt;
+      &lt;td&gt;simplex&lt;/td&gt;
+      &lt;td&gt;17&lt;/td&gt;
+      &lt;td&gt;18&lt;/td&gt;
+      &lt;td&gt;2.811457e-15&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;36&lt;/th&gt;
+      &lt;td&gt;simplex&lt;/td&gt;
+      &lt;td&gt;18&lt;/td&gt;
+      &lt;td&gt;19&lt;/td&gt;
+      &lt;td&gt;1.561921e-16&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;37&lt;/th&gt;
+      &lt;td&gt;simplex&lt;/td&gt;
+      &lt;td&gt;19&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+      &lt;td&gt;8.220635e-18&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;grid = seaborn.lineplot(x=&#39;npoints&#39;, y=&#39;volume&#39;, hue=&#39;name&#39;, data=df)
+grid.axes.set(xscale=&#39;log&#39;, xlim=(1, 1e5));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_9_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>MPI-IO and HDF5</title>
       <link>https://cucs-hpsc.github.io/fall2019/mpi-io/</link>
       <pubDate>Fri, 08 Nov 2019 06:49:25 -0600</pubDate>
