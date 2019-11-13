@@ -325,6 +325,180 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Data and Probability</title>
+      <link>https://cucs-hpsc.github.io/fall2019/data-probability/</link>
+      <pubDate>Wed, 13 Nov 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/data-probability/</guid>
+      <description>
+
+&lt;h2 id=&#34;sampling-probability-distributions&#34;&gt;Sampling probability distributions&lt;/h2&gt;
+
+&lt;p&gt;There are many applications in which one wishes to draw samples from probability distributions.  For example, the function &lt;code&gt;np.random.randn(t)&lt;/code&gt; draws samples from the &amp;ldquo;standard normal&amp;rdquo;, or Gaussian, distribution.&lt;/p&gt;
+
+&lt;p&gt;$$ p(t) = \frac{1}{\sqrt{2\pi}} e^{-t^&lt;sup&gt;2&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2&lt;/sub&gt;} . $$&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import pandas
+import seaborn
+import matplotlib.pyplot as plt
+import numpy as np
+plt.style.use(&#39;ggplot&#39;)
+plt.rc(&#39;figure&#39;, figsize=(12,8))
+
+def stdnormal(t):
+    return np.exp(-t**2/2) / np.sqrt(2*np.pi)
+
+n = 1000
+w = np.random.randn(n)
+plt.hist(w, bins=40, range=(-3,3), density=True)
+t = np.linspace(-3, 3)
+plt.plot(t, stdnormal(t))
+plt.xlabel(&#39;$t$&#39;)
+plt.ylabel(&#39;$P(t)$&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_1_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;statistics-for-hackers&#34;&gt;Statistics for Hackers&lt;/h3&gt;
+
+&lt;p&gt;Statistical simulation as a simpler surrogate for tedious analysis (also a primer for more advanced methods in which analysis is intractable):&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://christopherroach.com/articles/statistics-for-hackers/&#34; target=&#34;_blank&#34;&gt;Notebook&lt;/a&gt; version of &lt;a href=&#34;https://youtu.be/Iq9DzN6mvYA&#34; target=&#34;_blank&#34;&gt;this talk&lt;/a&gt; (&lt;a href=&#34;https://speakerdeck.com/jakevdp/statistics-for-hackers&#34; target=&#34;_blank&#34;&gt;slides&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;transforming&#34;&gt;Transforming&lt;/h3&gt;
+
+&lt;p&gt;To say that our sample $w$ is draw from a standard normal distribution, we write&lt;/p&gt;
+
+&lt;p&gt;$$ w \sim \mathcal N(0,1) . $$&lt;/p&gt;
+
+&lt;p&gt;How do we generate samples of a distribution with nonzero mean or non-unit variance?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import statsmodels
+
+n = 1000
+w = 2 + .5*np.random.randn(n)
+plt.hist(w, bins=40, range=(-1,5), density=True)
+plt.xlabel(&#39;$t$&#39;)
+plt.ylabel(&#39;$P(t)$&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_4_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;multivariate-distributions&#34;&gt;Multivariate distributions&lt;/h3&gt;
+
+&lt;p&gt;Sometimes we have multiple variables that are related, such as the temperature in different cities.  On any given day, we observe the weather in Boulder, Denver, Fort Collins, and Seattle.  What is the probability of any given observation?&lt;/p&gt;
+
+&lt;p&gt;For convenience, suppose that each distribution is independently a Gaussian distribution.  Taking products, we can motivate a linear algebraic formulation,&lt;/p&gt;
+
+&lt;p&gt;$$ e^{-s^&lt;sup&gt;2&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2&lt;/sub&gt;} e^{-t^&lt;sup&gt;2&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2&lt;/sub&gt;} = e^{-\frac 1 2 \begin{bmatrix} s &amp;amp; t \end{bmatrix} \begin{bmatrix} 1 &amp;amp; 0 \ 0 &amp;amp; 1 \end{bmatrix} \begin{bmatrix} s \ t \end{bmatrix}} $$&lt;/p&gt;
+
+&lt;p&gt;More generally, we may express a multidimensional distribution for $\mathbf x$ with mean $\mathbf \mu$ and covariance matrix $\Sigma$ as&lt;/p&gt;
+
+&lt;p&gt;$$ P(\mathbf x) = \frac 1 Z e^{-\frac 1 2 (\mathbf x - \mathbf \mu)^T \Sigma^{-1} (\mathbf x - \mathbf \mu)} $$&lt;/p&gt;
+
+&lt;p&gt;where $Z$ is a normalizing factor necessary for the integral to equal 1.  Covaniance matrices are symmetric positive definite, and rarely sparse, though they may have exploitable structure (such as low-rank off-diagonal blocks).&lt;/p&gt;
+
+&lt;p&gt;Many statistical computations involve&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;drawing samples from such distributions (bootstrapping, etc., and Bayesian Monte-Carlo methods)&lt;/li&gt;
+&lt;li&gt;optimizing parameters (such as $\mathbf \mu$ and $\Sigma$) over a training set of observations (maximum likelihood estimation and variational inference)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;negative-log&#34;&gt;Negative log&lt;/h4&gt;
+
+&lt;p&gt;Probabilities become inconveniently small when far from the mean.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;stdnormal(10)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;7.69459862670642e-23
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Taking the negative log provides a more convenient expression&lt;/p&gt;
+
+&lt;p&gt;$$ -\log P(\mathbf x) = \frac 1 2 (\mathbf x - \mathbf \mu)^T \Sigma^{-1} (\mathbf x - \mathbf \mu) + \log Z $$&lt;/p&gt;
+
+&lt;p&gt;which involves a quadratic matrix expression (convenient for optimization) plus a regularization term.&lt;/p&gt;
+
+&lt;h4 id=&#34;normalization&#34;&gt;Normalization&lt;/h4&gt;
+
+&lt;p&gt;It can be shown that the normalization factor has the form&lt;/p&gt;
+
+&lt;p&gt;$$ Z = \sqrt{\det(2 \pi \Sigma)} . $$&lt;/p&gt;
+
+&lt;p&gt;In some circumstances, such as when estimating $\mathbf \mu$ given known $\Sigma$, it is not necessary to evaluate or optimize the determinant.  In other settings, it is necessary and a nontrivial cost.
+Computing the determinant is typically done via factorization, such as&lt;/p&gt;
+
+&lt;p&gt;$$ L L^T = \Sigma $$&lt;/p&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;p&gt;$$ L L^T = \Sigma^{-1} $$&lt;/p&gt;
+
+&lt;p&gt;if one is working directly with the &amp;ldquo;precision matrix&amp;rdquo; $\Sigma^{-1}$.  This can be advantageous when the precision matrix is sparse, which represents conditional independence and is common even when the covariance matrix is dense.&lt;/p&gt;
+
+&lt;p&gt;For example, the weather in Boulder is conditionally independent of the weather in Seattle: if we know the weather in Denver and Fort Collins, adding knowledge of the weather in Seattle provides us no additional information about the weather in Boulder.  This leads to a zero in $\Sigma^{-1}$.&lt;/p&gt;
+
+&lt;p&gt;However, knowing the weather in Seattle might help determine whether it is summer or winter, or whether we&amp;rsquo;re in an El Niño year.  This leads to a nonzero entry in $\Sigma$.&lt;/p&gt;
+
+&lt;h4 id=&#34;sampling&#34;&gt;Sampling&lt;/h4&gt;
+
+&lt;p&gt;We wish to draw samples such that the expected covariance matches our $\Sigma$,&lt;/p&gt;
+
+&lt;p&gt;$$ \mathbb E\Big[ (\mathbf x - \mathbf \mu) (\mathbf x - \mathbf \mu)^T \Big] = \Sigma . $$&lt;/p&gt;
+
+&lt;p&gt;For this, we seek a transformation $\mathbf x = \mu + T \mathbf y$ such that each entry of $y \sim \mathcal N(0,1)$.  To this end,&lt;/p&gt;
+
+&lt;p&gt;$$ \Sigma = \mathbb E\Big[ T \mathbf y \mathbf y^T T^T \Big] = T \mathbb E[\mathbf y \mathbf y^T] T^T = T T^T $$
+so we need to determine such a matrix $T$.&lt;/p&gt;
+
+&lt;p&gt;One approach is eigendecomposition,&lt;/p&gt;
+
+&lt;p&gt;$$ \Sigma = Q \Lambda Q^T = \big(Q \sqrt{\Lambda} \big) \big(Q \sqrt{\Lambda} \big)^T $$&lt;/p&gt;
+
+&lt;p&gt;and another is Cholesky factorization&lt;/p&gt;
+
+&lt;p&gt;$$ \Sigma = L L^T, $$&lt;/p&gt;
+
+&lt;p&gt;which is generally more efficient (if perhaps less intuitive).&lt;/p&gt;
+
+&lt;h2 id=&#34;gaussian-processes&#34;&gt;Gaussian processes&lt;/h2&gt;
+
+&lt;p&gt;A Gaussian process is a probability model for continuous independent variables.  In the temperature example, we might consider latitude and longitude as independent variables.  Given any finite sample of locations (Boulder, Denver, etc.), we build a covariance matrix between any two points $u$ and $v$ by evaluating a &amp;ldquo;kernel&amp;rdquo; function $k(u,v)$.  Sometimes one uses &amp;ldquo;stationary&amp;rdquo; kernels that depend only on distance,&lt;/p&gt;
+
+&lt;p&gt;$$ k(u,v) = \hat k\big(\lVert u - v \rVert \big) $$&lt;/p&gt;
+
+&lt;p&gt;and sometimes the kernels are squared exponentials,&lt;/p&gt;
+
+&lt;p&gt;$$ \hat k&amp;reg; = e^{-r^2/\ell^2} $$&lt;/p&gt;
+
+&lt;p&gt;where $\ell$ is a length scale.  But these are not essential features.&lt;/p&gt;
+
+&lt;p&gt;Note: although the squared exponential kernel has the same functional form as a Gaussian distribution, this is entirely optional and not what &amp;ldquo;Gaussian&amp;rdquo; in &amp;ldquo;Gaussian process&amp;rdquo; refers to.&lt;/p&gt;
+
+&lt;p&gt;In a &lt;a href=&#34;https://en.wikipedia.org/wiki/Kriging&#34; target=&#34;_blank&#34;&gt;Gaussian Process Regression&lt;/a&gt; (also known as &amp;ldquo;kriging&amp;rdquo;), one &amp;ldquo;trains&amp;rdquo; (optimizes) kernel parameters $\theta$ in&lt;/p&gt;
+
+&lt;p&gt;$$ k(u, v; \theta) $$&lt;/p&gt;
+
+&lt;p&gt;such that the model fits some training data.  Once trained, predictions can be made at arbitrary points $u$, and those predictions come with uncertainty.&lt;/p&gt;
+
+&lt;p&gt;The classical training involves Cholesky factorization as part of each iteration of a gradient-based optimization algorithm.&lt;/p&gt;
+
+&lt;h4 id=&#34;further-reading&#34;&gt;Further reading&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://planspace.org/20181226-gaussian_processes_are_not_so_fancy/&#34; target=&#34;_blank&#34;&gt;Gaussian Processes are Not So Fancy&lt;/a&gt; (notebook)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://adamian.github.io/talks/Damianou_GP_tutorial.html&#34; target=&#34;_blank&#34;&gt;Gaussian process introductory tutorial in Python&lt;/a&gt; (notebook)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://scikit-learn.org/stable/modules/gaussian_process.html&#34; target=&#34;_blank&#34;&gt;GPR in scikit-learn&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://gpytorch.readthedocs.io/en/latest/&#34; target=&#34;_blank&#34;&gt;GPyTorch&lt;/a&gt;, which contains some &lt;a href=&#34;https://arxiv.org/abs/1809.11165&#34; target=&#34;_blank&#34;&gt;structure-exploiting methods&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Data-intensive workflows and parallelism</title>
       <link>https://cucs-hpsc.github.io/fall2019/data-methods/</link>
       <pubDate>Mon, 11 Nov 2019 06:49:25 -0600</pubDate>
