@@ -325,6 +325,374 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Dynamic/Interactive Parallelism</title>
+      <link>https://cucs-hpsc.github.io/fall2019/interactive/</link>
+      <pubDate>Fri, 15 Nov 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/interactive/</guid>
+      <description>
+
+&lt;h2 id=&#34;interactive-parallelism&#34;&gt;Interactive Parallelism&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Batch parallelism (e.g., MPI)
+
+&lt;ul&gt;
+&lt;li&gt;Computation more expensive than data load/store&lt;/li&gt;
+&lt;li&gt;Thinking up-front to maximize efficiency&lt;/li&gt;
+&lt;li&gt;Scalable and low-latency&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Interactive/exploratory analysis
+
+&lt;ul&gt;
+&lt;li&gt;Don&amp;rsquo;t know the question until seeing data&lt;/li&gt;
+&lt;li&gt;Iterative exploration&lt;/li&gt;
+&lt;li&gt;Some analyses are cheap, others are expensive&lt;/li&gt;
+&lt;li&gt;Data load/store and preprocessing expensive compared to (some) analysis&lt;/li&gt;
+&lt;li&gt;Modest scale (single node to perhaps dozens of hundreds of nodes for the right problem)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;example-platforms&#34;&gt;Example platforms&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://hadoop.apache.org/&#34; target=&#34;_blank&#34;&gt;Hadoop&lt;/a&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Reliable MapReduce system with disk-based storage and replication for fault tolerance&lt;/li&gt;
+&lt;li&gt;Java with bindings for other languages&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://spark.apache.org/docs/latest/quick-start.html&#34; target=&#34;_blank&#34;&gt;Spark&lt;/a&gt;
+
+&lt;ul&gt;
+&lt;li&gt;In-memory child of Hadoop
+&lt;img src=&#34;https://spark.apache.org/images/logistic-regression.png&#34; alt=&#34;&#34; /&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dask.org/&#34; target=&#34;_blank&#34;&gt;Dask&lt;/a&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Python-based platform that integrates with NumPy, SciPy, Pandas, and Scikit-Learn&lt;/li&gt;
+&lt;li&gt;Lead developer employed by NVIDIA&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://ipyparallel.readthedocs.io/en/latest/&#34; target=&#34;_blank&#34;&gt;IPyParallel&lt;/a&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Control-worker design&lt;/li&gt;
+&lt;li&gt;Can use MPI&lt;/li&gt;
+&lt;li&gt;Expressive parallel algorithms&lt;/li&gt;
+&lt;li&gt;A bit flaky, especially after error conditions (in my experience)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://drive.google.com/file/d/1-OFjrk1q3L1d3uakr2xkozrPn2c2VZpZ/view&#34; target=&#34;_blank&#34;&gt;On NERSC&amp;rsquo;s Cori&lt;/a&gt;
+&lt;img src=&#34;ipyparallel-cori.png&#34; alt=&#34;&#34; /&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;http://parsl-project.org/&#34; target=&#34;_blank&#34;&gt;Parsl-python&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://drive.google.com/file/d/1Yy_jUWLvdSPHsXd4wtsfcIXoGvO2DY9g/view&#34; target=&#34;_blank&#34;&gt;Slides&lt;/a&gt;
+&lt;img src=&#34;parsl-slide.png&#34; alt=&#34;&#34; /&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://jupyter-workshop-2019.lbl.gov/agenda&#34; target=&#34;_blank&#34;&gt;Workshop: Jupyter for Science User Facilities and High Performance Computing&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;dask-notes&#34;&gt;Dask notes&lt;/h2&gt;
+
+&lt;p&gt;Distributed API operations are lazy, returning futures. Computation actually occurs when you ask for &lt;code&gt;.result()&lt;/code&gt; (gathers result locally) or call &lt;code&gt;.persist()&lt;/code&gt; to start computing a distributed result.&lt;/p&gt;
+
+&lt;h4 id=&#34;overhead&#34;&gt;Overhead&lt;/h4&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Partitions should fit comfortably in memory (smaller than a gigabyte) but also not be too many. &lt;strong&gt;Every operation on every partition takes the central scheduler a few hundred microseconds to process.&lt;/strong&gt; If you have a few thousand tasks this is barely noticeable, but it is nice to reduce the number if possible.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df = dd.read_csv(&#39;s3://bucket/path/to/*.csv&#39;)
+df = df[df.name == &#39;Alice&#39;]  # only 1/100th of the data
+df = df.repartition(npartitions=df.npartitions // 100)
+
+df = df.persist()  # if on a distributed system
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.dask.org/en/latest/dataframe-best-practices.html&#34; target=&#34;_blank&#34;&gt;https://docs.dask.org/en/latest/dataframe-best-practices.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://distributed.readthedocs.io/en/latest/limitations.html&#34; target=&#34;_blank&#34;&gt;https://distributed.readthedocs.io/en/latest/limitations.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;keeping-data-distributed&#34;&gt;Keeping data distributed&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://distributed.readthedocs.io/en/latest/efficiency.html&#34; target=&#34;_blank&#34;&gt;https://distributed.readthedocs.io/en/latest/efficiency.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from dask.distributed import Client
+
+client = Client()
+client
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table style=&#34;border: 2px solid white;&#34;&gt;
+&lt;tr&gt;
+&lt;td style=&#34;vertical-align: top; border: 0px solid white&#34;&gt;
+&lt;h3 style=&#34;text-align: left;&#34;&gt;Client&lt;/h3&gt;
+&lt;ul style=&#34;text-align: left; list-style: none; margin: 0; padding: 0;&#34;&gt;
+  &lt;li&gt;&lt;b&gt;Scheduler: &lt;/b&gt;tcp://127.0.0.1:45897&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/td&gt;
+&lt;td style=&#34;vertical-align: top; border: 0px solid white&#34;&gt;
+&lt;h3 style=&#34;text-align: left;&#34;&gt;Cluster&lt;/h3&gt;
+&lt;ul style=&#34;text-align: left; list-style:none; margin: 0; padding: 0;&#34;&gt;
+  &lt;li&gt;&lt;b&gt;Workers: &lt;/b&gt;4&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Cores: &lt;/b&gt;4&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Memory: &lt;/b&gt;16.67 GB&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import numpy as np
+
+x = client.submit(np.random.random, (1000, 1000))
+x
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;b&gt;Future: random&lt;/b&gt; &lt;font color=&#34;gray&#34;&gt;status: &lt;/font&gt;&lt;font color=&#34;black&#34;&gt;pending&lt;/font&gt;, &lt;font color=&#34;gray&#34;&gt;key: &lt;/font&gt;random-4fead107d39a451af48ce8db919b0254&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;x
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;b&gt;Future: random&lt;/b&gt; &lt;font color=&#34;gray&#34;&gt;status: &lt;/font&gt;&lt;font color=&#34;black&#34;&gt;finished&lt;/font&gt;, &lt;font color=&#34;gray&#34;&gt;type: &lt;/font&gt;numpy.ndarray, &lt;font color=&#34;gray&#34;&gt;key: &lt;/font&gt;random-4fead107d39a451af48ce8db919b0254&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;x.result().shape # Moves data to control process, then computes shape
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(1000, 1000)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;client.submit(lambda a: a.shape, x).result()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(1000, 1000)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/dask/dask-org/master/images/bokeh-task-stream.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://distributed.readthedocs.io/en/latest/diagnosing-performance.html&#34; target=&#34;_blank&#34;&gt;https://distributed.readthedocs.io/en/latest/diagnosing-performance.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;qr-factorization&#34;&gt;QR factorization&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/1301.1071.pdf&#34; target=&#34;_blank&#34;&gt;Direct QR factorizations for tall-and-skinnymatrices in MapReduce architectures&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;indirect-approach-compute-r-then-q-a-r-1&#34;&gt;Indirect approach: compute $R$, then $Q = A R^{-1}$&lt;/h3&gt;
+
+&lt;p&gt;$$ R^T R = A^T A $$&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;mapreduce-chol-qr.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;direct-householder-qr-a&#34;&gt;&amp;ldquo;Direct&amp;rdquo; Householder $QR = A$&lt;/h3&gt;
+
+&lt;p&gt;Operates one column at a time; inefficient parallel distribution and memory access.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;mapreduce-householder.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;direct-tsqr&#34;&gt;Direct TSQR&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;mapreduce-tsqr.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;mapreduce-figure6.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Name&lt;/th&gt;
+&lt;th&gt;Value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Nodes&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Processor&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://ark.intel.com/content/www/us/en/ark/products/37151/intel-core-i7-960-processor-8m-cache-3-20-ghz-4-80-gt-s-intel-qpi.html&#34; target=&#34;_blank&#34;&gt;i7-960&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Memory/node&lt;/td&gt;
+&lt;td&gt;24 GB&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Total memory&lt;/td&gt;
+&lt;td&gt;240 GB&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Memory BW/node&lt;/td&gt;
+&lt;td&gt;25 GB/s&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Cores/node&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Clock&lt;/td&gt;
+&lt;td&gt;3.2 GHz&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;flops/cycle/core&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;GF/s/node&lt;/td&gt;
+&lt;td&gt;25.6&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;flops/byte&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;img src=&#34;mapreduce-table2.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import pandas
+df = pandas.DataFrame(dict(rows=[4e9, 2.5e9, .6e9, .5e9, .15e9], cols=[4,10,25,50,100]))
+df[&#39;bytes&#39;] = 8 * df.rows * df.cols
+df[&#39;flops&#39;] = 2 * df.rows * df.cols**2
+bandwidth = 125e9  # 50% of peak
+flops = 256e9 * .2 # 20% of peak
+df[&#39;sec_mem&#39;] = df.bytes / bandwidth
+df[&#39;sec_flops&#39;] = df.flops / flops
+df
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;rows&lt;/th&gt;
+      &lt;th&gt;cols&lt;/th&gt;
+      &lt;th&gt;bytes&lt;/th&gt;
+      &lt;th&gt;flops&lt;/th&gt;
+      &lt;th&gt;sec_mem&lt;/th&gt;
+      &lt;th&gt;sec_flops&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;4.000000e+09&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;1.280000e+11&lt;/td&gt;
+      &lt;td&gt;1.280000e+11&lt;/td&gt;
+      &lt;td&gt;1.024&lt;/td&gt;
+      &lt;td&gt;2.500000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2.500000e+09&lt;/td&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;2.000000e+11&lt;/td&gt;
+      &lt;td&gt;5.000000e+11&lt;/td&gt;
+      &lt;td&gt;1.600&lt;/td&gt;
+      &lt;td&gt;9.765625&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;6.000000e+08&lt;/td&gt;
+      &lt;td&gt;25&lt;/td&gt;
+      &lt;td&gt;1.200000e+11&lt;/td&gt;
+      &lt;td&gt;7.500000e+11&lt;/td&gt;
+      &lt;td&gt;0.960&lt;/td&gt;
+      &lt;td&gt;14.648438&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;5.000000e+08&lt;/td&gt;
+      &lt;td&gt;50&lt;/td&gt;
+      &lt;td&gt;2.000000e+11&lt;/td&gt;
+      &lt;td&gt;2.500000e+12&lt;/td&gt;
+      &lt;td&gt;1.600&lt;/td&gt;
+      &lt;td&gt;48.828125&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;1.500000e+08&lt;/td&gt;
+      &lt;td&gt;100&lt;/td&gt;
+      &lt;td&gt;1.200000e+11&lt;/td&gt;
+      &lt;td&gt;3.000000e+12&lt;/td&gt;
+      &lt;td&gt;0.960&lt;/td&gt;
+      &lt;td&gt;58.593750&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&#34;mapreduce-table6.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;notes&#34;&gt;Notes&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The data always fits in (distributed) memory&lt;/li&gt;
+&lt;li&gt;Limited by flops for all numbers of columns
+
+&lt;ul&gt;
+&lt;li&gt;What about on today&amp;rsquo;s computers?&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Using disk and the present algorithm is tens to hundreds of times slower than an efficient in-memory algorithm.&lt;/li&gt;
+&lt;li&gt;The many passes over data in (unblocked) Householder is crippling&lt;/li&gt;
+&lt;li&gt;Direct TSQR and Cholesky QR with refinement are good algorithms&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;k-means-clustering-https-en-wikipedia-org-wiki-k-means-clustering&#34;&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/K-means_clustering&#34; target=&#34;_blank&#34;&gt;K-means clustering&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Given $n$ points $x_i$ in $d$-dimensional space, the k-means algorithm finds $K$ clusters by
+1. Initialize centers ${ c&lt;em&gt;k \in R^d }&lt;/em&gt;{k=1}^K $
+2. Repeat (Lloyd&amp;rsquo;s algorithm)
+  * Assign each $x_i$ to the nearest center $c_k$
+  * Shift each center $c_k$ to the mean (centroid) of its $x_i$&lt;/p&gt;
+
+&lt;p&gt;This minimizes the cost function&lt;/p&gt;
+
+&lt;p&gt;$$ \phi(\mathcal C) = \sum_{x\in X} \min_k \lVert x - c_k \rVert^2 $$&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/e/ea/K-means_convergence.gif&#34; alt=&#34;&#34; /&gt;
+By &lt;a href=&#34;//commons.wikimedia.org/wiki/User:Chire&#34; title=&#34;User:Chire&#34;&gt;Chire&lt;/a&gt; - &lt;span class=&#34;int-own-work&#34; lang=&#34;en&#34;&gt;Own work&lt;/span&gt;, &lt;a href=&#34;https://creativecommons.org/licenses/by-sa/4.0&#34; title=&#34;Creative Commons Attribution-Share Alike 4.0&#34;&gt;CC BY-SA 4.0&lt;/a&gt;, &lt;a href=&#34;https://commons.wikimedia.org/w/index.php?curid=59409335&#34;&gt;Link&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;initialization-matters&#34;&gt;Initialization matters&lt;/h3&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;K-means++ defines a seeding strategy which is approximately optimal up to a logarithmic factor. Running k-means afterward only marginally improves the quantization error (as opposed to bad seeding). &lt;a href=&#34;https://t.co/L8w45IE9gV&#34;&gt;https://t.co/L8w45IE9gV&lt;/a&gt; &lt;a href=&#34;https://t.co/7DtaTZukTU&#34;&gt;pic.twitter.com/7DtaTZukTU&lt;/a&gt;&lt;/p&gt;&amp;mdash; Gabriel Peyré (@gabrielpeyre) &lt;a href=&#34;https://twitter.com/gabrielpeyre/status/1194495104855052288?ref_src=twsrc%5Etfw&#34;&gt;November 13, 2019&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;serial-kmeans-and-parallel-kmeans&#34;&gt;Serial &lt;code&gt;kmeans++&lt;/code&gt; and parallel &lt;code&gt;kmeans||&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&#34;kmeans-plusplus.png&#34; alt=&#34;&#34; /&gt;
+&lt;img src=&#34;kmeans-parallel.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Data and Probability</title>
       <link>https://cucs-hpsc.github.io/fall2019/data-probability/</link>
       <pubDate>Wed, 13 Nov 2019 06:49:25 -0600</pubDate>
