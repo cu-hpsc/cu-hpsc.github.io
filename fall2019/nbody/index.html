@@ -28,12 +28,13 @@
   
     
   
-  <meta name="description" content="GPU vs CPU characterization CUDA preview Execution heirarchy Memory managerie Optimizations  Graphics Processing Units Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics. HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.
-GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.
-Nvidia.com: real-estate difference">
+  <meta name="description" content="Equations of motion Consider particles with mass $m_i$, position $\mathbf x_i(t) \in \mathbb R^3$, and momentum $\mathbf p_i(t) \in \mathbb R^3$, indexed by $i \in { 1, \dotsc, n }$. Then their equation of motion is the ordinary differential equation
+\begin{align} \dot{\mathbf x_i} &amp;= \frac{\mathbf p_i}{m_i} \dot{\mathbf pi} &amp;= \sum{j\ne i} \mathbf f_{ij} \end{align}
+where
+$$ \mathbf f_{ij} = G m_i m_j \frac{\mathbf x_j - \mathbf x_i}{\lVert \mathbf x_j - \mathbf x_i \rVert^3} $$">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/cuda/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/nbody/">
 
   
 
@@ -100,7 +101,7 @@ Nvidia.com: real-estate difference">
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/cuda/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/nbody/">
 
   
   
@@ -116,17 +117,18 @@ Nvidia.com: real-estate difference">
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/cuda/">
-  <meta property="og:title" content="GPUs and CUDA | HPSC">
-  <meta property="og:description" content="GPU vs CPU characterization CUDA preview Execution heirarchy Memory managerie Optimizations  Graphics Processing Units Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics. HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.
-GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.
-Nvidia.com: real-estate difference"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/nbody/">
+  <meta property="og:title" content="Intro to N-body Simulation | HPSC">
+  <meta property="og:description" content="Equations of motion Consider particles with mass $m_i$, position $\mathbf x_i(t) \in \mathbb R^3$, and momentum $\mathbf p_i(t) \in \mathbb R^3$, indexed by $i \in { 1, \dotsc, n }$. Then their equation of motion is the ordinary differential equation
+\begin{align} \dot{\mathbf x_i} &amp;= \frac{\mathbf p_i}{m_i} \dot{\mathbf pi} &amp;= \sum{j\ne i} \mathbf f_{ij} \end{align}
+where
+$$ \mathbf f_{ij} = G m_i m_j \frac{\mathbf x_j - \mathbf x_i}{\lVert \mathbf x_j - \mathbf x_i \rVert^3} $$"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-10-30T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-11-18T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-10-30T13:41:28-06:00">
+    <meta property="article:modified_time" content="2019-11-18T12:26:24-07:00">
   
 
   
@@ -138,7 +140,7 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
 
 
 
-  <title>GPUs and CUDA | HPSC</title>
+  <title>Intro to N-body Simulation | HPSC</title>
 
 </head>
 
@@ -373,7 +375,7 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
         <a href="/fall2019/coprocessor/">2019-10-28 Coprocessors</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/cuda/">2019-10-30 GPUs and CUDA</a>
       </li>
       
@@ -405,7 +407,7 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
         <a href="/fall2019/interactive/">2019-11-15 Dynamic/Interactive</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/nbody/">2019-11-18 Intro N-body</a>
       </li>
       
@@ -442,25 +444,10 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
 <ul>
 <li>
 <ul>
-<li><a href="#graphics-processing-units">Graphics Processing Units</a></li>
-<li><a href="#cuda">CUDA</a>
+<li><a href="#equations-of-motion">Equations of motion</a></li>
+<li><a href="#optimizing-force-evaluation">Optimizing force evaluation</a>
 <ul>
-<li><a href="#kernel-syntax-example">Kernel syntax example</a></li>
-<li><a href="#thread-heirarchy">Thread Heirarchy</a></li>
-<li><a href="#memory">Memory</a></li>
-<li><a href="#memory-transfer-example">Memory transfer example</a></li>
-</ul></li>
-<li><a href="#optimization-details">Optimization Details</a>
-<ul>
-<li><a href="#intrinsic-function-instructions">Intrinsic function instructions</a></li>
-<li><a href="#memory-1">Memory</a>
-<ul>
-<li><a href="#hiding-memory-transfers">Hiding Memory Transfers:</a></li>
-<li><a href="#global-memory-access-size-and-alignment">Global memory access size and alignment:</a></li>
-<li><a href="#coalescence">Coalescence:</a></li>
-<li><a href="#bank-distribution">Bank Distribution:</a></li>
-<li><a href="#texture-specific-memory-features">Texture-specific memory features:</a></li>
-</ul></li>
+<li><a href="#further-resources">Further resources</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -475,251 +462,147 @@ Nvidia.com: real-estate difference"><meta property="og:image" content="https://c
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">GPUs and CUDA</h1>
+          <h1 itemprop="name">Intro to N-body Simulation</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
+<h2 id="equations-of-motion">Equations of motion</h2>
+
+<p>Consider particles with mass $m_i$, position $\mathbf x_i(t) \in \mathbb R^3$, and momentum $\mathbf p_i(t) \in \mathbb R^3$, indexed by $i \in { 1, \dotsc, n }$.  Then their equation of motion is the ordinary differential equation</p>
+
+<p>\begin{align}
+  \dot{\mathbf x_i} &amp;= \frac{\mathbf p_i}{m_i} <br />
+  \dot{\mathbf p<em>i} &amp;= \sum</em>{j\ne i} \mathbf f_{ij} <br />
+\end{align}</p>
+
+<p>where</p>
+
+<p>$$ \mathbf f_{ij} = G m_i m_j \frac{\mathbf x_j - \mathbf x_i}{\lVert \mathbf x_j - \mathbf x_i \rVert^3} $$</p>
+
+<p>is the force exerted on particle $i$ by particle $j$, and $G$ is the <a href="https://en.wikipedia.org/wiki/Gravitational_constant" target="_blank">gravitational constant</a>.</p>
+
+<pre><code class="language-python">%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
+
+G = 6.6743015e-11 # gravitational constant
+
+def force(m, x):
+    n = len(x)
+    f = np.zeros_like(x)
+    i = np.arange(n, dtype=int)
+    for jj in range(1, n):
+        j = ((i + jj) % n).tolist()
+        r = x[j] - x  # Vector from x_i to x_j
+        f += (G * m * m[j] / np.linalg.norm(r, axis=1)**3)[:, None] * r
+    return f
+
+def init_earth_ball():
+    m = np.array([5.9722e24, 1])
+    x = np.array([[0, 0],
+                  [6.37e6, 0]])
+    return m, x
+m, x = init_earth_ball()
+force(m, x)
+</code></pre>
+
+<pre><code>array([[ 9.82338804,  0.        ],
+       [-9.82338804,  0.        ]])
+</code></pre>
+
+<p>Compare the magnitude to the acceleration due to gravity on earth ($9.8 m/s^2$) and observe symmetry (<a href="https://en.wikipedia.org/wiki/Newton's_laws_of_motion" target="_blank">Newton&rsquo;s third law</a>).</p>
+
+<pre><code class="language-python">def step(m, x, p, dt):
+    x += dt * p / m[:,None]
+    p += dt * force(m, x)
+
+m, x = init_earth_ball()
+p = np.array([[0, 0],
+             [3e3, 10e3]])
+for s in range(200):
+    plt.plot(x[:,0], x[:,1], '.')
+    step(m, x, p, 50)
+</code></pre>
+
+<p><img src="./lecture_3_0.png" alt="png" /></p>
+
+<h2 id="optimizing-force-evaluation">Optimizing force evaluation</h2>
+
+<pre><code class="language-python">def render_c(filename):
+    from IPython.display import Markdown
+    with open(filename) as f:
+        contents = f.read()
+    return Markdown(&quot;```c\n&quot; + contents + &quot;```\n&quot;)
+
+render_c('force.c')
+</code></pre>
+
+<pre><code class="language-c">#include &lt;math.h&gt;
+
+void force1(int m, const float xmass[], const float x[],
+            int n, const float ymass[], const float y[],
+            float f[]) {
+  for (int i=0; i&lt;m; i++) {
+    for (int j=0; j&lt;n; j++) {
+      float r[3] = {y[j*3+0] - x[i*3+0],
+                    y[j*3+1] - x[i*3+1],
+                    y[j*3+2] - x[i*3+2]};
+      float r2 = r[0]*r[0] + r[1]*r[1] + r[2]*r[2];
+      float Gmm = xmass[i] * ymass[j] / (r2 * sqrt(r2));
+      for (int k=0; k&lt;3; k++)
+        f[i*3+k] += Gmm * r[k];
+    }
+  }
+}
+</code></pre>
+
+<pre><code class="language-python">from IPython.display import HTML
+HTML(r'''&lt;iframe width=&quot;1200px&quot; height=&quot;800px&quot; src=&quot;https://gcc.godbolt.org/e#g:!((g:!((g:!((h:codeEditor,i:(fontScale:14,j:1,lang:___c,source:'%23include+%3Cmath.h%3E%0A%0Avoid+force1(int+m,+const+float+xmass%5B%5D,+const+float+x%5B%5D,%0A++++++++++++int+n,+const+float+ymass%5B%5D,+const+float+y%5B%5D,%0A++++++++++++float+f%5B%5D)+%7B%0A++for+(int+i%3D0%3B+i%3Cm%3B+i%2B%2B)+%7B%0A++++for+(int+j%3D0%3B+j%3Cn%3B+j%2B%2B)+%7B%0A++++++float+r%5B3%5D+%3D+%7By%5Bj*3%2B0%5D+-+x%5Bi*3%2B0%5D,%0A++++++++++++++++++++y%5Bj*3%2B1%5D+-+x%5Bi*3%2B1%5D,%0A++++++++++++++++++++y%5Bj*3%2B2%5D+-+x%5Bi*3%2B2%5D%7D%3B%0A++++++float+r2+%3D+r%5B0%5D*r%5B0%5D+%2B+r%5B1%5D*r%5B1%5D+%2B+r%5B2%5D*r%5B2%5D%3B%0A++++++float+Gmm+%3D+xmass%5Bi%5D+*+ymass%5Bj%5D+/+(r2+*+sqrt(r2))%3B%0A++++++for+(int+k%3D0%3B+k%3C3%3B+k%2B%2B)%0A++++++++f%5Bi*3%2Bk%5D+%2B%3D+Gmm+*+r%5Bk%5D%3B%0A++++%7D%0A++%7D%0A%7D%0A'),l:'5',n:'0',o:'C+source+%231',t:'0')),k:43.054234062797335,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((h:compiler,i:(compiler:cg92,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'1',directives:'0',execute:'1',intel:'0',libraryCode:'1',trim:'0'),fontScale:14,lang:___c,libs:!(),options:'-Ofast+-march%3Dskylake-avx512+-fopenmp-simd',source:1),l:'5',n:'0',o:'x86-64+gcc+9.2+(Editor+%231,+Compiler+%231)+C',t:'0')),k:56.945765937202665,l:'4',m:100,n:'0',o:'',s:0,t:'0')),l:'2',n:'0',o:'',t:'0')),version:4&quot;&gt;&lt;/iframe&gt;''')
+</code></pre>
+
+<iframe width="1200px" height="800px" src="https://gcc.godbolt.org/e#g:!((g:!((g:!((h:codeEditor,i:(fontScale:14,j:1,lang:___c,source:'%23include+%3Cmath.h%3E%0A%0Avoid+force1(int+m,+const+float+xmass%5B%5D,+const+float+x%5B%5D,%0A++++++++++++int+n,+const+float+ymass%5B%5D,+const+float+y%5B%5D,%0A++++++++++++float+f%5B%5D)+%7B%0A++for+(int+i%3D0%3B+i%3Cm%3B+i%2B%2B)+%7B%0A++++for+(int+j%3D0%3B+j%3Cn%3B+j%2B%2B)+%7B%0A++++++float+r%5B3%5D+%3D+%7By%5Bj*3%2B0%5D+-+x%5Bi*3%2B0%5D,%0A++++++++++++++++++++y%5Bj*3%2B1%5D+-+x%5Bi*3%2B1%5D,%0A++++++++++++++++++++y%5Bj*3%2B2%5D+-+x%5Bi*3%2B2%5D%7D%3B%0A++++++float+r2+%3D+r%5B0%5D*r%5B0%5D+%2B+r%5B1%5D*r%5B1%5D+%2B+r%5B2%5D*r%5B2%5D%3B%0A++++++float+Gmm+%3D+xmass%5Bi%5D+*+ymass%5Bj%5D+/+(r2+*+sqrt(r2))%3B%0A++++++for+(int+k%3D0%3B+k%3C3%3B+k%2B%2B)%0A++++++++f%5Bi*3%2Bk%5D+%2B%3D+Gmm+*+r%5Bk%5D%3B%0A++++%7D%0A++%7D%0A%7D%0A'),l:'5',n:'0',o:'C+source+%231',t:'0')),k:43.054234062797335,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((h:compiler,i:(compiler:cg92,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'1',directives:'0',execute:'1',intel:'0',libraryCode:'1',trim:'0'),fontScale:14,lang:___c,libs:!(),options:'-Ofast+-march%3Dskylake-avx512+-fopenmp-simd',source:1),l:'5',n:'0',o:'x86-64+gcc+9.2+(Editor+%231,+Compiler+%231)+C',t:'0')),k:56.945765937202665,l:'4',m:100,n:'0',o:'',s:0,t:'0')),l:'2',n:'0',o:'',t:'0')),version:4"></iframe>
+
+<pre><code class="language-python">render_c('force2.c')
+</code></pre>
+
+<pre><code class="language-c">#include &lt;math.h&gt;
+
+void force2(int m, const float xmass[], const float x[],
+            int n, const float ymass[], const float y[],
+            float f[]) {
+  for (int i=0; i&lt;m; i++) {
+    for (int j=0; j&lt;n; j++) {
+      float r[3] = {y[0*m+j] - x[0*n+i],
+                    y[1*m+j] - x[1*n+i],
+                    y[2*m+j] - x[2*n+i]};
+      float r2 = r[0]*r[0] + r[1]*r[1] + r[2]*r[2];
+      float Gmm = xmass[i] * ymass[j] / (r2 * sqrt(r2));
+      for (int k=0; k&lt;3; k++)
+        f[k*m+i] += Gmm * r[k];
+    }
+  }
+}
+</code></pre>
+
+<pre><code class="language-python">HTML(r'''&lt;iframe width=&quot;1200px&quot; height=&quot;800px&quot; src=&quot;https://gcc.godbolt.org/e#g:!((g:!((g:!((h:codeEditor,i:(fontScale:14,j:1,lang:___c,source:'%23include+%3Cmath.h%3E%0A%0Avoid+force2(int+m,+const+float+xmass%5B%5D,+const+float+x%5B%5D,+%0A++++++++++++int+n,+const+float+ymass%5B%5D,+const+float+y%5B%5D,%0A++++++++++++float+f%5B%5D)+%7B%0A++for+(int+i%3D0%3B+i%3Cm%3B+i%2B%2B)+%7B%0A++++for+(int+j%3D0%3B+j%3Cn%3B+j%2B%2B)+%7B%0A++++++float+r%5B3%5D+%3D+%7By%5B0*m%2Bj%5D+-+x%5B0*n%2Bi%5D,%0A++++++++++++++++++++y%5B1*m%2Bj%5D+-+x%5B1*n%2Bi%5D,%0A++++++++++++++++++++y%5B2*m%2Bj%5D+-+x%5B2*n%2Bi%5D%7D%3B%0A++++++float+r2+%3D+r%5B0%5D*r%5B0%5D+%2B+r%5B1%5D*r%5B1%5D+%2B+r%5B2%5D*r%5B2%5D%3B%0A++++++float+Gmm+%3D+xmass%5Bi%5D+*+ymass%5Bj%5D+/+(r2+*+sqrt(r2))%3B%0A++++++for+(int+k%3D0%3B+k%3C3%3B+k%2B%2B)%0A++++++++f%5Bk*m%2Bi%5D+%2B%3D+Gmm+*+r%5Bk%5D%3B%0A++++%7D%0A++%7D%0A%7D%0A'),l:'5',n:'0',o:'C+source+%231',t:'0')),k:43.054234062797335,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((h:compiler,i:(compiler:cg92,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'1',directives:'0',execute:'1',intel:'0',libraryCode:'1',trim:'0'),fontScale:14,lang:___c,libs:!(),options:'-Ofast+-march%3Dskylake-avx512+-fopenmp-simd',source:1),l:'5',n:'0',o:'x86-64+gcc+9.2+(Editor+%231,+Compiler+%231)+C',t:'0')),k:56.945765937202665,l:'4',m:100,n:'0',o:'',s:0,t:'0')),l:'2',n:'0',o:'',t:'0')),version:4&quot;&gt;&lt;/iframe&gt;''')
+</code></pre>
+
+<iframe width="1200px" height="800px" src="https://gcc.godbolt.org/e#g:!((g:!((g:!((h:codeEditor,i:(fontScale:14,j:1,lang:___c,source:'%23include+%3Cmath.h%3E%0A%0Avoid+force2(int+m,+const+float+xmass%5B%5D,+const+float+x%5B%5D,+%0A++++++++++++int+n,+const+float+ymass%5B%5D,+const+float+y%5B%5D,%0A++++++++++++float+f%5B%5D)+%7B%0A++for+(int+i%3D0%3B+i%3Cm%3B+i%2B%2B)+%7B%0A++++for+(int+j%3D0%3B+j%3Cn%3B+j%2B%2B)+%7B%0A++++++float+r%5B3%5D+%3D+%7By%5B0*m%2Bj%5D+-+x%5B0*n%2Bi%5D,%0A++++++++++++++++++++y%5B1*m%2Bj%5D+-+x%5B1*n%2Bi%5D,%0A++++++++++++++++++++y%5B2*m%2Bj%5D+-+x%5B2*n%2Bi%5D%7D%3B%0A++++++float+r2+%3D+r%5B0%5D*r%5B0%5D+%2B+r%5B1%5D*r%5B1%5D+%2B+r%5B2%5D*r%5B2%5D%3B%0A++++++float+Gmm+%3D+xmass%5Bi%5D+*+ymass%5Bj%5D+/+(r2+*+sqrt(r2))%3B%0A++++++for+(int+k%3D0%3B+k%3C3%3B+k%2B%2B)%0A++++++++f%5Bk*m%2Bi%5D+%2B%3D+Gmm+*+r%5Bk%5D%3B%0A++++%7D%0A++%7D%0A%7D%0A'),l:'5',n:'0',o:'C+source+%231',t:'0')),k:43.054234062797335,l:'4',m:100,n:'0',o:'',s:0,t:'0'),(g:!((h:compiler,i:(compiler:cg92,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'1',directives:'0',execute:'1',intel:'0',libraryCode:'1',trim:'0'),fontScale:14,lang:___c,libs:!(),options:'-Ofast+-march%3Dskylake-avx512+-fopenmp-simd',source:1),l:'5',n:'0',o:'x86-64+gcc+9.2+(Editor+%231,+Compiler+%231)+C',t:'0')),k:56.945765937202665,l:'4',m:100,n:'0',o:'',s:0,t:'0')),l:'2',n:'0',o:'',t:'0')),version:4"></iframe>
+
 <ul>
-<li>GPU vs CPU characterization</li>
-<li>CUDA preview</li>
-<li>Execution heirarchy</li>
-<li>Memory managerie</li>
-<li>Optimizations</li>
+<li>Big-O of this algorithm?</li>
+<li>Cache reuse?</li>
+<li>Vectorization?</li>
+<li>Instruction-level parallelism?</li>
 </ul>
 
-<h2 id="graphics-processing-units">Graphics Processing Units</h2>
-
-<p>Graphics Processing Units (GPUs) evolved from commercial demand for high-definition graphics.  HPC general purpose computing with GPUs picked up after programmable shaders were added in early 2000s.</p>
-
-<p>GPU compute performance relative to CPU is not magic, rather it is based on difference in goals; GPUs were unpolluted by CPU demands for user-adaptability.</p>
-
-<p><img src="gpu-devotes-more-transistors-to-data-processing.png" width="600"/>
-<center><i>Nvidia.com: real-estate difference</i></center></p>
-
-<p>GPUs have no* branch prediction and no speculative execution.  (In the early days, computational uses even needed to implement their own error correction in software!)  Longer memory access latencies from tiny cache size is meant to be hidden behind co-resident compute.  The difference in mentality allowed GPUs to far surpass CPU compute efficiency.</p>
-
-<p><em>*: recent devices use branch prediction to group divergent threads</em></p>
-
-<p><img src="karlrupp.net_costpercomputetrend.png" alt="karlrupp.net: compute efficiency" />
-<center><i>karlrupp.net: compute efficiency</i></center></p>
-
-<p>Power can dominant the cost in HPC. Consider the Summit supercomputer:</p>
+<h3 id="further-resources">Further resources</h3>
 
 <ul>
-<li>#2 GREEN500 (was #3, but #1 was decomissioned)</li>
-<li>cost \$200 million to build</li>
-<li>13 MW to run compute+interconnect+file systems =&gt; roughly \$7 million/year in raw electricity to power</li>
-<li>(does not count facilities/infrastructure cost to actually supply this power, nor cooling)</li>
-</ul>
-
-<p>The drawbacks: GPU efficiency needs the problem to fit well into SIMD and have a relatively high computation intensity.</p>
-
-<h2 id="cuda">CUDA</h2>
-
-<p>Early general purpose computing GPU efforts required formulating problems in terms of graphics primatives (e.g. DirectX).</p>
-
-<p>NVIDIA publicly launched CUDA in 2006, allowing programming in C (and Fortran).</p>
-
-<p>Flash forward to 2019: AMD has its own language and there are also several vendor-independent languages (dominant: OpenCL), but CUDA still dominates overall.</p>
-
-<p>Nvidia maintains good documentation to ease adoption, like its <a href="programming guide" target="_blank">https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html</a>.</p>
-
-<h3 id="kernel-syntax-example">Kernel syntax example</h3>
-
-<pre><code>// Add two matrices A and B of size NxN and stores the result into matrix C:
-// Kernel definition
-__global__ void MatAdd(float A[N][N], float B[N][N], float C[N][N])
-{
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int j = blockIdx.y * blockDim.y + threadIdx.y;
-    if (i &lt; N &amp;&amp; j &lt; N)
-        C[i][j] = A[i][j] + B[i][j];
-}
-
-int main()
-{
-    ...
-    // Kernel invocation
-    dim3 threadsPerBlock(16, 16);
-    dim3 numBlocks(N / threadsPerBlock.x, N / threadsPerBlock.y);
-    MatAdd&lt;&lt;&lt;numBlocks, threadsPerBlock&gt;&gt;&gt;(A, B, C);
-    ...
-}
-</code></pre>
-
-<p>CUDA-specific additions:
-* Kernels are defined with a <code>__global__</code> specifier (when called by the host).
-* <code>&lt;&lt;&lt;numBlocks, threadsPerBlock&gt;&gt;&gt;</code> gives the <em>execution configuration</em>.
-* Ways for threads to query their location: <code>threadIdx</code>, <code>blockIdx</code>.</p>
-
-<h3 id="thread-heirarchy">Thread Heirarchy</h3>
-
-<p>Threads each have their own register allocation.  They are always executed in &ldquo;SIMT&rdquo; <strong>warps</strong> of up to 32 (could change, but hasn&rsquo;t yet).  This means:
-* any divergence of instructions between threads within a warp causes some of the threads to no-op (relaxed recently);
-* <code>product(threadsPerBlock)</code> should be a multiple of 32 (maximum 1024) where possible.</p>
-
-<p>Blocks each have their own shared memory allocation.  All threads in a block are resident on the same processing core.  Thread layout can be up to three dimensions.
-* can perform a lightweight synchronization within a block;
-* co-resident blocks can be helpful at masking latency, but this is limited by block memory and register use.</p>
-
-<p>Blocks themselves are layed out on a <strong>grid</strong> of up to three dimensions (on recent compute capabilities).  They must be logically executable in parallel or any serial order.
-* no synchronization across blocks within a kernel;
-* embarassingly parallel only, although caches can be reused.</p>
-
-<p><img src="grid-of-thread-blocks.png" width="400"/>
-<center><i>Nvidia.com: 2d grid and threads</i></center></p>
-
-<h3 id="memory">Memory</h3>
-
-<p><img src="hardware-model.png" width="400"/>
-<center><i>Nvidia.com: model of memory connections</i></center></p>
-
-<p><strong>Global</strong>, <strong>constant</strong>, and <strong>texture</strong> memories persist across kernel calls, and each has its own cache per SM (L2 cache shared by SMs).  By default, host and device are assumed to maintain separate memory:
-* explicit device allocation and deallocation;
-* explicit transfer between host and device.</p>
-
-<p>Alternatively, there is a &ldquo;Unified Memory&rdquo; configuration that automates these on an as-needed basis, pretending there is one common address space.</p>
-
-<p>Each block has <strong>shared</strong> memory which tends to be fast (equivalent to a user-managed L1 cache).</p>
-
-<p>Each thread has &ldquo;<strong>local</strong>&rdquo; memory (that is actually no more local than global memory!), which is mostly used for register spilling.  (Register and shared memory usage are reported by the compiler when compiling with the <code>-ptxas-options=-v</code> option.)</p>
-
-<h3 id="memory-transfer-example">Memory transfer example</h3>
-
-<pre><code>__global__ void VecAdd(float* A, float* B, float* C, int N)
-{
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-    if (i &lt; N)
-        C[i] = A[i] + B[i];
-}
-
-int main()
-{
-    int N = ...;
-    size_t size = N * sizeof(float);
-    
-    // Allocate input vectors h_A and h_B in host memory
-    float* h_A = (float*)malloc(size);
-    float* h_B = (float*)malloc(size);
-    float* h_C = (float*)malloc(size);
-
-    // Initialize input vectors
-    ...
-
-    
-    // Allocate vectors in device memory
-    float* d_A;
-    cudaMalloc(&amp;d_A, size);
-    float* d_B;
-    cudaMalloc(&amp;d_B, size);
-    float* d_C;
-    cudaMalloc(&amp;d_C, size);
-
-    // Copy vectors from host memory to device memory
-    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
-
-
-    // Invoke kernel
-    int threadsPerBlock = 256;
-    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
-    VecAdd&lt;&lt;&lt;blocksPerGrid, threadsPerBlock&gt;&gt;&gt;(d_A, d_B, d_C, N);
-
-
-    // Copy result from device memory to host memory
-    // h_C contains the result in host memory
-    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
-
-    // Free device memory
-    cudaFree(d_A);
-    cudaFree(d_B);
-    cudaFree(d_C);
-            
-    // Free host memory
-    ...
-}
-</code></pre>
-
-<p><hline></p>
-
-<pre><code class="language-python">
-</code></pre>
-
-<h2 id="optimization-details">Optimization Details</h2>
-
-<p>Often details depend on the particular &ldquo;compute capability&rdquo; of the device.</p>
-
-<h3 id="intrinsic-function-instructions">Intrinsic function instructions</h3>
-
-<ul>
-<li>similar tradeoffs to &ndash;ffast-math</li>
-</ul>
-
-<h3 id="memory-1">Memory</h3>
-
-<h4 id="hiding-memory-transfers">Hiding Memory Transfers:</h4>
-
-<p>Memory transfers between host and device generally have the greatest latency.  Modern capabilities can hide data transfer between host and device by giving the device other tasks to work on and having the host use asynchronous versions of the transfer functions.</p>
-
-<p>This is managed through  <strong>streams</strong> on the host, where cuda calls within a stream are guaranteed to execute on the device in order, but those between streams may be out of order or overlap <em>depending on the compute capability</em>.</p>
-
-<p>To minimize waiting with the following code, the compute capability needs to allow concurrent data transfers, concurrent kernel execution, and overlap of data transfer and kernel execution.</p>
-
-<pre><code>for (int i = 0; i &lt; 2; ++i) {
-    cudaMemcpyAsync(inputDevPtr + i * size, hostPtr + i * size,
-                    size, cudaMemcpyHostToDevice, stream[i]);
-    MyKernel &lt;&lt;&lt;100, 512, 0, stream[i]&gt;&gt;&gt;
-          (outputDevPtr + i * size, inputDevPtr + i * size, size);
-    cudaMemcpyAsync(hostPtr + i * size, outputDevPtr + i * size,
-                    size, cudaMemcpyDeviceToHost, stream[i]);
-}
-</code></pre>
-
-<h4 id="global-memory-access-size-and-alignment">Global memory access size and alignment:</h4>
-
-<p>Example: an array of this struct would have elements that aren&rsquo;t aligned if not for the <code>__align__(16)</code>:</p>
-
-<pre><code>struct __align__(16) {
-    float x;
-    float y;
-    float z;
-};
-</code></pre>
-
-<p>This usually crops up with 2d arrays, which are more efficient if width-padded to a multiple of the warp size.</p>
-
-<h4 id="coalescence">Coalescence:</h4>
-
-<p>Global (and local*) memory requests must be <strong>coalesced</strong>&mdash;falling into the same 128-byte wide+aligned window (for all modern capabilities)&mdash;or they will require multiple instructions.</p>
-
-<p><em>*: the compiler will generally ensure that local memory use is coalesced</em></p>
-
-<h4 id="bank-distribution">Bank Distribution:</h4>
-
-<p>Similar, but different from global-memory coalescence.  Shared memory is divided into <strong>banks</strong> (typically 32), where each bank can be accessed simultaneously.</p>
-
-<p><img src="six-examples-of-shared-memory-accesses.png" width="450"/>
-<center><i>Nvidia.com: A) conflict-free, B) conflict depth 2, C) conflict-free, D) conflict-free, E) conflict-free, F) conflict-free</i></center></p>
-
-<p><em>My impression is that most programmers rely on the compiler to sensibly structure bank accesses for temporary variables, but occasionally breaking into the &ldquo;CUDA assembly&rdquo; language <code>PTX</code> will yeild significant performance improvements.</em></p>
-
-<p>The combination of coalescence and shared banks can cause an interesting interplay for certain problems.  Consider:
-* Mx31 array made of structs of 2 32-bit floats.
-* Coalescence would suggest padding the array to 32 wide when reading from global memory, but then once it resides in a shared memory with 32-bit strided banks, a warp of threads accessing the first of the pair of floats will cause bank conflicts of depth 2.
-* Shared memory would be better served by padding the array width to 31.5.</p>
-
-<p>(the better solution might be to pull the struct apart&hellip;)</p>
-
-<h4 id="texture-specific-memory-features">Texture-specific memory features:</h4>
-
-<ul>
-<li>Optimized for 2d locality; can be faster than non-coalesced global/constant memory requests.</li>
-
-<li><p>Ability to automatically cast <sup>8</sup>&frasl;<sub>16</sub>-bit integers into [0,1] 32-bit floats.</p>
-
-<pre><code class="language-python">
-</code></pre></li>
+<li><a href="http://hipacc.ucsc.edu/Talk_single.php%3FTid=114&amp;SerId=12&amp;Aid=12.html" target="_blank">Michael Warren (LANL): Optimizing the inner loop of the gravitational force interaction on modern processors</a></li>
+<li><a href="https://arxiv.org/abs/1310.4502" target="_blank">2HOT: An Improved Parallel Hashed Oct-Tree N-Body Algorithm for Cosmological Simulation</a></li>
 </ul>
 
           </div>
@@ -737,14 +620,14 @@ int main()
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/cuda-practical/" rel="next">Practical CUDA</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/coprocessor/" rel="prev">Coprocessor architectures</a>
+    <a href="/fall2019/interactive/" rel="prev">Dynamic/Interactive Parallelism</a>
   </div>
   
 </div>
@@ -754,11 +637,11 @@ int main()
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Oct 30, 2019</p>
+          <p>Last updated on Nov 18, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/cuda/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/nbody/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>
