@@ -28,10 +28,13 @@
   
     
   
-  <meta name="description" content="#pragma omp parallel { for (size_t rep=0; rep&lt;args.repetitions; rep&#43;&#43;) { #pragma omp for for (size_t i=0; i&lt;args.array_len; i&#43;&#43;) y[i] &#43;= 3.14 * x[i]; } }  for (size_t rep=0; rep&lt;args.repetitions; rep&#43;&#43;) { #pragma omp parallel for for (size_t i=0; i&lt;args.array_len; i&#43;&#43;) y[i] &#43;= 3.14 * x[i]; }  ! make CFLAGS=&#39;-O3 -march=native -fopenmp -Wall&#39; -B omp-test  cc -O3 -march=native -fopenmp -Wall omp-test.c -o omp-test  ! ./omp-test -r 10000  omp for : 0.">
+  <meta name="description" content="Recall the equations of motion Consider particles with mass $m_i$, position $\mathbf x_i(t) \in \mathbb R^3$, and momentum $\mathbf p_i(t) \in \mathbb R^3$, indexed by $i \in { 1, \dotsc, n }$. Then their equation of motion is the ordinary differential equation
+\begin{align} \dot{\mathbf x_i} &amp;= \frac{\mathbf p_i}{m_i} \dot{\mathbf pi} &amp;= \sum{j\ne i} \mathbf f_{ij} \end{align}
+where
+$$ \mathbf f_{ij} = G m_i m_j \frac{\mathbf x_j - \mathbf x_i}{\lVert \mathbf x_j - \mathbf x_i \rVert^3} $$">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/dense-linalg-2/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/nbody-longrange/">
 
   
 
@@ -98,7 +101,7 @@
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/dense-linalg-2/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/nbody-longrange/">
 
   
   
@@ -114,15 +117,18 @@
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/dense-linalg-2/">
-  <meta property="og:title" content="Dense Linear Algebra and Orthogonality | HPSC">
-  <meta property="og:description" content="#pragma omp parallel { for (size_t rep=0; rep&lt;args.repetitions; rep&#43;&#43;) { #pragma omp for for (size_t i=0; i&lt;args.array_len; i&#43;&#43;) y[i] &#43;= 3.14 * x[i]; } }  for (size_t rep=0; rep&lt;args.repetitions; rep&#43;&#43;) { #pragma omp parallel for for (size_t i=0; i&lt;args.array_len; i&#43;&#43;) y[i] &#43;= 3.14 * x[i]; }  ! make CFLAGS=&#39;-O3 -march=native -fopenmp -Wall&#39; -B omp-test  cc -O3 -march=native -fopenmp -Wall omp-test.c -o omp-test  ! ./omp-test -r 10000  omp for : 0."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/nbody-longrange/">
+  <meta property="og:title" content="Long-range evaluation in N-body Simulation | HPSC">
+  <meta property="og:description" content="Recall the equations of motion Consider particles with mass $m_i$, position $\mathbf x_i(t) \in \mathbb R^3$, and momentum $\mathbf p_i(t) \in \mathbb R^3$, indexed by $i \in { 1, \dotsc, n }$. Then their equation of motion is the ordinary differential equation
+\begin{align} \dot{\mathbf x_i} &amp;= \frac{\mathbf p_i}{m_i} \dot{\mathbf pi} &amp;= \sum{j\ne i} \mathbf f_{ij} \end{align}
+where
+$$ \mathbf f_{ij} = G m_i m_j \frac{\mathbf x_j - \mathbf x_i}{\lVert \mathbf x_j - \mathbf x_i \rVert^3} $$"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-10-02T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-11-20T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-10-02T15:45:54-06:00">
+    <meta property="article:modified_time" content="2019-11-20T19:47:15-07:00">
   
 
   
@@ -134,7 +140,7 @@
 
 
 
-  <title>Dense Linear Algebra and Orthogonality | HPSC</title>
+  <title>Long-range evaluation in N-body Simulation | HPSC</title>
 
 </head>
 
@@ -321,7 +327,7 @@
         <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/dense-linalg-2/">2019-10-02 Dense Linear Algebra and Orthogonality</a>
       </li>
       
@@ -405,7 +411,7 @@
         <a href="/fall2019/nbody/">2019-11-18 Intro N-body</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/nbody-longrange/">2019-11-20 Long-range N-body</a>
       </li>
       
@@ -442,27 +448,12 @@
 <ul>
 <li>
 <ul>
-<li><a href="#matrix-matrix-multiply">Matrix-matrix multiply</a>
+<li><a href="#recall-the-equations-of-motion">Recall the equations of motion</a></li>
+<li><a href="#potential-equations">Potential equations</a></li>
+<li><a href="#computing-the-long-range-part">Computing the long-range part</a>
 <ul>
-<li><a href="#start-local">Start local</a>
-<ul>
-<li><a href="#further-reading">Further reading</a></li>
+<li><a href="#fast-evaluation">Fast evaluation</a></li>
 </ul></li>
-</ul></li>
-<li><a href="#orthogonalization-and-qr-factorization">Orthogonalization and QR factorization</a>
-<ul>
-<li>
-<ul>
-<li><a href="#column-0">Column 0</a></li>
-<li><a href="#column-1">Column 1</a></li>
-</ul></li>
-<li><a href="#theorem-all-full-rank-m-times-n-matrices-m-ge-n-have-a-unique-q-r-factorization-with-r-j-j-0">Theorem: all full-rank $m\times n$ matrices ($m \ge n$) have a unique $Q R$ factorization with $R_{j,j} &gt; 0$.</a></li>
-</ul></li>
-<li><a href="#left-looking-algorithms-reducing-the-number-of-inner-products">Left-looking algorithms: reducing the number of inner products</a>
-<ul>
-<li><a href="#right-looking-algorithms">Right-looking algorithms</a></li>
-</ul></li>
-<li><a href="#one-reduction-cholesky-qr">One reduction: Cholesky QR</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -476,229 +467,116 @@
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Dense Linear Algebra and Orthogonality</h1>
+          <h1 itemprop="name">Long-range evaluation in N-body Simulation</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<pre><code class="language-c">#pragma omp parallel
-    {
-      for (size_t rep=0; rep&lt;args.repetitions; rep++) {
-#pragma omp for
-        for (size_t i=0; i&lt;args.array_len; i++)
-          y[i] += 3.14 * x[i];
-      }
-    }
-</code></pre>
+<h2 id="recall-the-equations-of-motion">Recall the equations of motion</h2>
 
-<pre><code class="language-c">    for (size_t rep=0; rep&lt;args.repetitions; rep++) {
-#pragma omp parallel for
-      for (size_t i=0; i&lt;args.array_len; i++)
-        y[i] += 3.14 * x[i];
-    }
-</code></pre>
+<p>Consider particles with mass $m_i$, position $\mathbf x_i(t) \in \mathbb R^3$, and momentum $\mathbf p_i(t) \in \mathbb R^3$, indexed by $i \in { 1, \dotsc, n }$.  Then their equation of motion is the ordinary differential equation</p>
 
-<pre><code class="language-python">! make CFLAGS='-O3 -march=native -fopenmp -Wall' -B omp-test
-</code></pre>
+<p>\begin{align}
+  \dot{\mathbf x_i} &amp;= \frac{\mathbf p_i}{m_i} <br />
+  \dot{\mathbf p<em>i} &amp;= \sum</em>{j\ne i} \mathbf f_{ij} <br />
+\end{align}</p>
 
-<pre><code>cc -O3 -march=native -fopenmp -Wall    omp-test.c   -o omp-test
-</code></pre>
+<p>where</p>
 
-<pre><code class="language-python">! ./omp-test -r 10000
-</code></pre>
+<p>$$ \mathbf f_{ij} = G m_i m_j \frac{\mathbf x_j - \mathbf x_i}{\lVert \mathbf x_j - \mathbf x_i \rVert^3} $$</p>
 
-<pre><code>omp for         : 0.770512 ticks per entry
-omp parallel for: 1.576261 ticks per entry
-omp for         : 0.419312 ticks per entry
-omp parallel for: 1.475976 ticks per entry
-omp for         : 0.426896 ticks per entry
-omp parallel for: 1.021856 ticks per entry
-omp for         : 0.494572 ticks per entry
-omp parallel for: 1.270378 ticks per entry
-omp for         : 0.444213 ticks per entry
-omp parallel for: 1.009316 ticks per entry
-omp for         : 0.579121 ticks per entry
-omp parallel for: 1.024148 ticks per entry
-omp for         : 0.531494 ticks per entry
-omp parallel for: 1.174585 ticks per entry
-omp for         : 0.442223 ticks per entry
-omp parallel for: 1.147614 ticks per entry
-omp for         : 0.446249 ticks per entry
-omp parallel for: 1.084162 ticks per entry
-omp for         : 0.576802 ticks per entry
-omp parallel for: 1.325817 ticks per entry
-</code></pre>
+<p>is the force exerted on particle $i$ by particle $j$, and $G$ is the <a href="https://en.wikipedia.org/wiki/Gravitational_constant" target="_blank">gravitational constant</a>.</p>
 
-<h2 id="matrix-matrix-multiply">Matrix-matrix multiply</h2>
+<h2 id="potential-equations">Potential equations</h2>
 
-<h3 id="start-local">Start local</h3>
+<p>Consider a scalar-valued field defined everywhere except at point charges,</p>
 
-<p><img src="blis-gemm-kernels.png" alt="BLIS GEMM kernels" /></p>
+<p>$$ \phi(\mathbf x) = - \sum_{j=1}^n \frac{G m_j}{\lVert \mathbf x - \mathbf x_j \rVert} . $$</p>
 
-<p><img src="blis-cache.png" alt="BLIS cache levels" /></p>
+<p>We call this the <strong>gravitational potential</strong> and define the vector</p>
 
-<h4 id="further-reading">Further reading</h4>
+<p>$$ \mathbf g(\mathbf x) = -\nabla \phi(\mathbf x) = \sum_{j=1}^n G m_j \frac{\mathbf x_j - \mathbf x}{\lVert \mathbf x - \mathbf x_j \rVert^3} $$</p>
 
-<ul>
-<li><a href="http://www.cs.utexas.edu/users/flame/pubs/blis2_toms_rev3.pdf" target="_blank">http://www.cs.utexas.edu/users/flame/pubs/blis2_toms_rev3.pdf</a></li>
+<p>which we call the <strong>gravitational field</strong>.</p>
 
-<li><p><a href="http://www.cs.utexas.edu/users/flame/pubs/blis3_ipdps14.pdf" target="_blank">http://www.cs.utexas.edu/users/flame/pubs/blis3_ipdps14.pdf</a></p>
+<p>This definition reminds us of $\mathbf f_{ij}$ above, the force applied to a mass $m_i$ at location $\mathbf x_i$ is</p>
+
+<p>$$ \sum<em>{j \ne i} \mathbf f</em>{ij} = m_i \mathbf g(\mathbf x_i) $$</p>
+
+<p>where $\mathbf g$ is defined from a sum not including $i$.</p>
 
 <pre><code class="language-python">%matplotlib inline
 import numpy as np
 import matplotlib.pyplot as plt
-plt.style.use('seaborn')
-</code></pre></li>
+plt.style.use('ggplot')
+
+def potential(m, x, xx):
+    &quot;&quot;&quot;Evaluate gravitational potential from point masses at locations x&quot;&quot;&quot;
+    phi = np.zeros(xx.shape[0])
+    for i in range(len(m)):
+        phi -= m[i] / np.linalg.norm(x[i] - xx, axis=1)
+    return phi
+
+m = np.random.rand(5)
+x = np.random.rand(5,1) * 2 - 1
+xx = np.linspace(-2, 2, 200)[:, None]
+phi = potential(m, x, xx)
+plt.plot(xx, phi);
+</code></pre>
+
+<p><img src="./lecture_2_0.png" alt="png" /></p>
+
+<p>We need a way to
+* exclude self-attraction from the potential
+* avoid the need to represent the singularities in the potential
+* evaluate the potential fast</p>
+
+<p>We&rsquo;ll interpret the gravitational potential $\phi(\mathbf x)$ as an integral</p>
+
+<p>$$ \phi(\mathbf x) = -G \int_{\mathbf x&rsquo; \in \mathbb R^3} \frac{\rho(\mathbf x&rsquo;)}{\lVert \mathbf x - \mathbf x&rsquo; \rVert} $$</p>
+
+<p>in terms of the density distribution</p>
+
+<p>\begin{align}
+\rho(\mathbf x) &amp;= \sum_i m_i \delta(\mathbf x - \mathbf x_i) <br />
+&amp;= \underbrace{\sum_i m_i \delta(\mathbf x - \mathbf x<em>i) - \rho^{sm}(\mathbf x)}</em>{\text{local}} + \underbrace{\rho^{sm}(\mathbf x)}_{\text{smooth}}
+\end{align}</p>
+
+<p>where $\delta(\mathbf x)$ is the <a href="https://en.wikipedia.org/wiki/Dirac_delta_function" target="_blank">Dirac delta function</a> and $\rho^{sm}(\mathbf x)$ is chosen such that</p>
+
+<p>$$ \int<em>{\mathbf x&rsquo; \in \Omega} \frac{\rho^{sm}(\mathbf x&rsquo;)}{\lVert \mathbf x - \mathbf x&rsquo; \rVert} \approx \int</em>{\mathbf x&rsquo; \in \Omega} \frac{\rho(\mathbf x&rsquo;)}{\lVert \mathbf x - \mathbf x&rsquo; \rVert} $$</p>
+
+<p>whenever $\mathbf x$ is &ldquo;far from&rdquo; $\Omega \subset \mathbb R^3$.</p>
+
+<p>The resulting algorithm works by
+* compute smooth term via $\phi^{sm}(\mathbf x)$ from $\rho^{sm}(\mathbf x)$
+* direct $O(n^2)$ force evaluation for close-range interactions (subtracting off the close-range smooth part)</p>
+
+<h2 id="computing-the-long-range-part">Computing the long-range part</h2>
+
+<p>We need a fast way to evaluate</p>
+
+<p>$$ \phi^{sm}(\mathbf x) = -G \int_{\mathbf x&rsquo; \in \mathbb R^3} \frac{\rho^{sm}(\mathbf x&rsquo;)}{\lVert \mathbf x - \mathbf x&rsquo; \rVert} $$</p>
+
+<p>which is the solution of a Poisson equation</p>
+
+<p>$$ -\nabla\cdot \big( \nabla \phi^{sm} \big) = G \rho^{sm}(\mathbf x) . $$</p>
+
+<h3 id="fast-evaluation">Fast evaluation</h3>
+
+<p>| Method | Complexity | Representation |
+|&ndash;|&ndash;|&ndash;|
+| Multigrid | $O(n)$ | field |
+| Fast Fourier Transform | $O(n \log n)$ | field |
+| Treecodes | $O(n \log n)$ | particle&ndash;multipole |
+| Fast Multipole Method | $O(n)$ | particle&ndash;multipole, multipole-multipole, multipole&ndash;particle |</p>
+
+<ul>
+<li><a href="https://link.aps.org/pdf/10.1103/PhysRevE.88.063308" target="_blank">Comparison of scalable fast methods for long-range interactions</a></li>
+<li><a href="https://arxiv.org/abs/1209.3516" target="_blank">An FMM Based on Dual Tree Traversal for Many-core Architectures</a> (compares different FMM representations)</li>
 </ul>
 
-<h2 id="orthogonalization-and-qr-factorization">Orthogonalization and QR factorization</h2>
-
-<p>Given a collection of vectors (columns of a matrix), we can find an orthogonal basis by applying the above procedure one column at a time and saving the result.  Let&rsquo;s think of the first two columns,
-$$ \Bigg[ a_0 \, \Bigg| \, a_1 \Bigg] = \Bigg[ q_0 \,\Bigg|\, q<em>1 \Bigg]
-\begin{bmatrix} r</em>{00} &amp; r<em>{01} \ 0 &amp; r</em>{11} \end{bmatrix} . $$</p>
-
-<h4 id="column-0">Column 0</h4>
-
-<p>The equation for column 0 reads
-$$ a_0 = q<em>0 r</em>{00} $$
-and we require that $\lVert q<em>0 \rVert = 1$, thus
-$$ r</em>{00} = \lVert a_0 \rVert $$
-and
-$$ q_0 = a<em>0 / r</em>{00} . $$</p>
-
-<h4 id="column-1">Column 1</h4>
-
-<p>This equation reads
-$$ a_1 = q<em>0 r</em>{01} + q<em>1 r</em>{11} $$
-where $a_1$ and $q_0$ are known and we will require that $q_0^T q_1 = 0$.
-We can find the part of $a_1$ that is orthogonal to $q_0$ via
-$$ (I - q_0 q_0^T) a_1 = a_1 - q_0 \underbrace{q_0^T a<em>1}</em>{r_{01}} $$
-leaving a sub-problem equivalent to that of column 0.</p>
-
-<pre><code class="language-python">def gram_schmidt_naive(A):
-    &quot;&quot;&quot;Compute a QR factorization of A using the Gram-Schmidt algorithm&quot;&quot;&quot;
-    Q = np.zeros_like(A)
-    R = np.zeros((A.shape[1], A.shape[1]))
-    for i in range(len(Q.T)):
-        v = A[:,i].copy()
-        for j in range(i):
-            r = Q[:,j] @ v
-            R[j,i] = r
-            v -= Q[:,j] * r # &quot;modified Gram-Schmidt&quot;
-        R[i,i] = np.linalg.norm(v)
-        Q[:,i] = v / R[i,i]
-    return Q, R
-
-x = np.linspace(-1, 1)
-A = np.vander(x, 4, increasing=True)
-Q, R = gram_schmidt_naive(A)
-print(Q.T @ Q)
-print(np.linalg.norm(Q @ R - A))
-plt.plot(x, Q);
-</code></pre>
-
-<pre><code>[[ 1.00000000e+00  2.06727448e-17 -7.22457952e-17 -2.05232865e-16]
- [ 2.06727448e-17  1.00000000e+00  1.13635722e-16 -5.08904737e-16]
- [-7.22457952e-17  1.13635722e-16  1.00000000e+00  4.66276733e-17]
- [-2.05232865e-16 -5.08904737e-16  4.66276733e-17  1.00000000e+00]]
-4.744563050812836e-16
-</code></pre>
-
-<p><img src="./lecture_9_1.png" alt="png" /></p>
-
-<h3 id="theorem-all-full-rank-m-times-n-matrices-m-ge-n-have-a-unique-q-r-factorization-with-r-j-j-0">Theorem: all full-rank $m\times n$ matrices ($m \ge n$) have a unique $Q R$ factorization with $R_{j,j} &gt; 0$.</h3>
-
-<pre><code class="language-python">m = 20
-V = np.vander(np.linspace(-1,1,m), increasing=True)
-Q, R = gram_schmidt_naive(V)
-
-def qr_test(qr, V):
-    Q, R = qr(V)
-    m = len(Q.T)
-    print('{:20} {:.2e} {:.2e}'.format(
-        qr.__name__,
-        np.linalg.norm(Q @ R - V),
-        np.linalg.norm(Q.T @ Q - np.eye(m))))
-    
-qr_test(gram_schmidt_naive, V)
-qr_test(np.linalg.qr, V)
-</code></pre>
-
-<pre><code>gram_schmidt_naive   9.52e-16 3.04e-09
-qr                   2.74e-15 2.39e-15
-</code></pre>
-
-<h2 id="left-looking-algorithms-reducing-the-number-of-inner-products">Left-looking algorithms: reducing the number of inner products</h2>
-
-<pre><code class="language-python">def gram_schmidt_classical(A):
-    Q = np.zeros_like(A)
-    R = np.zeros((len(A.T),len(A.T)))
-    for i in range(len(Q.T)):
-        v = A[:,i].copy()
-        R[:i,i] = Q[:,:i].T @ v
-        v -= Q[:,:i] @ R[:i,i]
-        R[i,i] = np.linalg.norm(v)
-        Q[:,i] = v / R[i,i]
-    return Q, R
-
-qr_test(gram_schmidt_classical, V)
-</code></pre>
-
-<pre><code>gram_schmidt_classical 9.14e-16 1.42e+00
-</code></pre>
-
-<p>Classical Gram-Schmidt is highly parallel, but unstable, as evidenced by the lack of orthogonality in $Q$.</p>
-
-<h3 id="right-looking-algorithms">Right-looking algorithms</h3>
-
-<p>The implementations above have been &ldquo;left-looking&rdquo;; when working on column $i$, we compare it only to columns to the left (i.e., $j &lt; i$).  We can reorder the algorithm to look to the right by projecting $q_i$ out of all columns $j &gt; i$.  This algorithm is stable while being just as parallel as <code>gram_schmidt_classical</code>.</p>
-
-<pre><code class="language-python">def gram_schmidt_modified(A):
-    Q = A.copy()
-    R = np.zeros((len(A.T), len(A.T)))
-    for i in range(len(Q.T)):
-        R[i,i] = np.linalg.norm(Q[:,i])
-        Q[:,i] /= R[i,i]
-        R[i,i+1:] = Q[:,i].T @ Q[:,i+1:]
-        Q[:,i+1:] -= np.outer(Q[:,i], R[i,i+1:])
-    return Q, R
-
-qr_test(gram_schmidt_modified, V)
-</code></pre>
-
-<pre><code>gram_schmidt_modified 8.32e-16 1.32e-08
-</code></pre>
-
-<h2 id="one-reduction-cholesky-qr">One reduction: Cholesky QR</h2>
-
-<pre><code class="language-python">def chol_qr(A):
-    import scipy.linalg as la
-    B = A.T @ A
-    R = la.cholesky(B)
-    Q = A @ la.inv(R)
-    return Q, R
-    
-qr_test(chol_qr, V)
-</code></pre>
-
-<pre><code>chol_qr              8.12e-15 1.07e-01
-</code></pre>
-
-<pre><code class="language-python">def chol_qr2(A):
-    import scipy.linalg as la
-    B = A.T @ A
-    R = la.cholesky(B)
-    Q = A @ la.inv(R)
-    R2 = la.cholesky(Q.T @ Q)
-    Q = Q @ la.inv(R2)
-    R = R2 @ R
-    return Q, R
-
-qr_test(chol_qr2, V)
-</code></pre>
-
-<pre><code>chol_qr2             8.36e-15 1.29e-15
-</code></pre>
+<p><img src="yokota-treecodes.png" alt="" /></p>
 
           </div>
 
@@ -715,14 +593,14 @@ qr_test(chol_qr2, V)
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/dense-linalg-3/" rel="next">Orthogonality and Conditioning</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/dense-linalg/" rel="prev">Dense Linear Algebra and Networks</a>
+    <a href="/fall2019/nbody/" rel="prev">Intro to N-body Simulation</a>
   </div>
   
 </div>
@@ -732,11 +610,11 @@ qr_test(chol_qr2, V)
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Oct 2, 2019</p>
+          <p>Last updated on Nov 20, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/dense-linalg-2/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/nbody-longrange/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>
