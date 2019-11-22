@@ -325,6 +325,89 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Molecular Dynamics</title>
+      <link>https://cucs-hpsc.github.io/fall2019/md/</link>
+      <pubDate>Fri, 22 Nov 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/md/</guid>
+      <description>
+
+&lt;h2 id=&#34;news-from-this-week-at-supercomputing&#34;&gt;News from this week at Supercomputing&lt;/h2&gt;
+
+&lt;h3 id=&#34;a64fx&#34;&gt;A64FX&lt;/h3&gt;
+
+&lt;p&gt;The most energy-efficient HPL machine today is pure CPU.  It is also among the &lt;em&gt;least&lt;/em&gt; &amp;ldquo;made for HPL&amp;rdquo; architectures on the list.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.top500.org/green500/list/2019/11/&#34; target=&#34;_blank&#34;&gt;https://www.top500.org/green500/list/2019/11/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;daos-filesystem-performance&#34;&gt;DAOS filesystem performance&lt;/h3&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;DAOS declares #1 in IO-500 on the basis of performance-per-node (Weka on AWS was absolute performance). They maxed out I/O read bandwidth of the NVDIMMs in their cluster; iops were client limited. Pretty crazy efficiency. &lt;a href=&#34;https://twitter.com/hashtag/SC19?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#SC19&lt;/a&gt; &lt;a href=&#34;https://t.co/u1cauolk1y&#34;&gt;pic.twitter.com/u1cauolk1y&lt;/a&gt;&lt;/p&gt;&amp;mdash; Glenn K. Lockwood (@glennklockwood) &lt;a href=&#34;https://twitter.com/glennklockwood/status/1197291164275109890?ref_src=twsrc%5Etfw&#34;&gt;November 20, 2019&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;EJ2h9s8U8AAbmNJ.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.vi4io.org/io500/start&#34; target=&#34;_blank&#34;&gt;https://www.vi4io.org/io500/start&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;force-models&#34;&gt;Force models&lt;/h2&gt;
+
+&lt;p&gt;$$ V_{LJ}&amp;reg; = 4 \epsilon \Big[ \big(\frac{\sigma}{r}\big)^{12} - \big(\frac{\sigma}{r}\big)^6 \Big] $$&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/12-6-Lennard-Jones-Potential.svg/640px-12-6-Lennard-Jones-Potential.svg.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use(&#39;ggplot&#39;)
+
+# https://pubs.acs.org/doi/abs/10.1021/acs.inorgchem.7b00207
+def phi_lj(r):
+    eps = .4308
+    sigma = 3.310
+    return 4*eps*((sigma/r)**12 - (sigma/r)**6)
+
+def phi_buckingham(r):
+    A = 318418
+    rho = .294276
+    C = 2007.88
+    return A * np.exp(-r/rho) - C/r**6
+
+r = np.linspace(0.01, 10)
+plt.plot(r, phi_lj(r), label=&#39;LJ&#39;);
+plt.plot(r, phi_buckingham(r), label=&#39;Buckingham&#39;)
+plt.ylim(-1,1)
+plt.legend();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_2_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&#34;https://en.wikipedia.org/wiki/Atomic_orbital#Orbitals_table&#34; target=&#34;_blank&#34;&gt;orbitals of real atoms&lt;/a&gt; are far more complicated than a radial function, and depend on other nearby atoms.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/5/5f/Lysine_fisher_structure_and_3d_ball.svg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;amber-http-ambermd-org-ambermodels-php-is-a-sophisticated-force-model-evaluator&#34;&gt;&lt;a href=&#34;http://ambermd.org/AmberModels.php&#34; target=&#34;_blank&#34;&gt;Amber&lt;/a&gt; is a sophisticated force model evaluator&lt;/h2&gt;
+
+&lt;p&gt;Amber force fields can be used in other molecular dynamics packages, such as GROMACS and NAMD.&lt;/p&gt;
+
+&lt;p&gt;The parameters in the force fields are estimated using optimization, &lt;a href=&#34;https://pubs.acs.org/doi/abs/10.1021/acs.jctc.5b00255&#34; target=&#34;_blank&#34;&gt;like this&lt;/a&gt; (see &lt;a href=&#34;https://pubs.acs.org/doi/suppl/10.1021/acs.jctc.5b00255/suppl_file/ct5b00255_si_001.pdf&#34; target=&#34;_blank&#34;&gt;supplement&lt;/a&gt; for coefficient values).  Some &lt;a href=&#34;https://www.nature.com/articles/s41467-018-06169-2&#34; target=&#34;_blank&#34;&gt;recent&lt;/a&gt; &lt;a href=&#34;https://www.nature.com/articles/s41467-019-12875-2&#34; target=&#34;_blank&#34;&gt;work&lt;/a&gt; seeks to use black-box machine learning methods (such as neural networks) to build multi-atom force models similar to the more explicit methods above.&lt;/p&gt;
+
+&lt;h2 id=&#34;anton-2&#34;&gt;Anton-2&lt;/h2&gt;
+
+&lt;p&gt;A special-purpose computer for molecular dynamics; winner of the &lt;a href=&#34;https://dl.acm.org/citation.cfm?id=2683599&#34; target=&#34;_blank&#34;&gt;2014 Gordon Bell Prize&lt;/a&gt; at Supercomputing.&lt;/p&gt;
+
+&lt;h2 id=&#34;ab-initio-molecular-dynamics&#34;&gt;Ab initio molecular dynamics&lt;/h2&gt;
+
+&lt;p&gt;The prior methods were all about molecular dynamics that calculate forces based on positions of nuclei.  Ab initio methods solve for electronic structure (electrons are fields/waves for this purpose), which is far more expensive.  There are a hierarchy of models.  Some examples, in order of increasing expense:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Density Functional Theory&lt;/li&gt;
+&lt;li&gt;Coupled Cluster and Tensor Networks&lt;/li&gt;
+&lt;li&gt;Quantum Monte-Carlo&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Combined, these methods account for a large fraction of global supercomputing time.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Long-range evaluation in N-body Simulation</title>
       <link>https://cucs-hpsc.github.io/fall2019/nbody-longrange/</link>
       <pubDate>Wed, 20 Nov 2019 06:49:25 -0600</pubDate>
