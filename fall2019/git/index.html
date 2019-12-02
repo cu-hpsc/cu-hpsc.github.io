@@ -28,10 +28,10 @@
   
     
   
-  <meta name="description" content="GPUs have 2-4x greater floating point and bandwidth peak for the watts  also for the $ if you buy enterprise gear better for the $ if you buy gaming gear  Step 1 is to assess workload and latency requirements   Don&rsquo;t waste time with GPUs if  your problem size or time to solution requirements don&rsquo;t align if the work you&rsquo;d like to move to the GPU is not a bottleneck if the computation cost will be dwarfed by moving data to/from the GPU often you need to restructure so that caller passes in data already on the device can require nonlocal refactoring  Almost never: pick one kernel at a time and move it to the GPU  DOE ACME/E3SM (to pick on one high-profile application) has basically done this for five years and it still doesn&rsquo;t help their production workloads so they bought a non-GPU machine    Okay, okay, okay.">
+  <meta name="description" content="Project roles  Users stress features, report issues, ask questions that steer project. Developers fix bugs and create features. They write code and docs and generally are agents of change in a software project. There are often many more developers than reviewers or maintainers. Reviewers are known experts in a part of a project and are called on to review the work of developers, mostly to make sure that the developers don’t break anything, but also to point them to related work, ensure common development practices, and pass on institutional knowledge.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/cuda-practical/">
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/git/">
 
   
 
@@ -98,7 +98,7 @@
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/cuda-practical/">
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/git/">
 
   
   
@@ -114,15 +114,15 @@
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/cuda-practical/">
-  <meta property="og:title" content="Practical CUDA | HPSC">
-  <meta property="og:description" content="GPUs have 2-4x greater floating point and bandwidth peak for the watts  also for the $ if you buy enterprise gear better for the $ if you buy gaming gear  Step 1 is to assess workload and latency requirements   Don&rsquo;t waste time with GPUs if  your problem size or time to solution requirements don&rsquo;t align if the work you&rsquo;d like to move to the GPU is not a bottleneck if the computation cost will be dwarfed by moving data to/from the GPU often you need to restructure so that caller passes in data already on the device can require nonlocal refactoring  Almost never: pick one kernel at a time and move it to the GPU  DOE ACME/E3SM (to pick on one high-profile application) has basically done this for five years and it still doesn&rsquo;t help their production workloads so they bought a non-GPU machine    Okay, okay, okay."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/git/">
+  <meta property="og:title" content="Git Workflows | HPSC">
+  <meta property="og:description" content="Project roles  Users stress features, report issues, ask questions that steer project. Developers fix bugs and create features. They write code and docs and generally are agents of change in a software project. There are often many more developers than reviewers or maintainers. Reviewers are known experts in a part of a project and are called on to review the work of developers, mostly to make sure that the developers don’t break anything, but also to point them to related work, ensure common development practices, and pass on institutional knowledge."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
   <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
-      <meta property="article:published_time" content="2019-11-01T06:49:25-06:00">
+      <meta property="article:published_time" content="2019-12-02T06:49:25-06:00">
     
-    <meta property="article:modified_time" content="2019-11-01T12:27:17-06:00">
+    <meta property="article:modified_time" content="2019-12-02T14:28:50-07:00">
   
 
   
@@ -134,7 +134,7 @@
 
 
 
-  <title>Practical CUDA | HPSC</title>
+  <title>Git Workflows | HPSC</title>
 
 </head>
 
@@ -373,7 +373,7 @@
         <a href="/fall2019/cuda/">2019-10-30 GPUs and CUDA</a>
       </li>
       
-      <li class="active">
+      <li >
         <a href="/fall2019/cuda-practical/">2019-11-01 Practical CUDA</a>
       </li>
       
@@ -413,7 +413,7 @@
         <a href="/fall2019/md/">2019-11-22 Molecular Dynamics</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/fall2019/git/">2019-12-02 Git Workflows</a>
       </li>
       
@@ -450,26 +450,20 @@
 <ul>
 <li>
 <ul>
-<li><a href="#terminology-intro">Terminology/intro</a>
+<li><a href="#project-roles">Project roles</a></li>
+<li><a href="#principles-of-git-workflows">Principles of Git workflows</a></li>
+<li><a href="#examples">Examples</a>
 <ul>
-<li>
+<li><a href="#gitworkflows-7-https-git-scm-com-docs-gitworkflows"><a href="https://git-scm.com/docs/gitworkflows" target="_blank"><code>gitworkflows(7)</code></a></a>
 <ul>
-<li><a href="#how-does-this-relate-to-the-hardware">How does this relate to the hardware?</a></li>
+<li><a href="#inspecting-history-in-the-git-project">Inspecting history in the Git project</a></li>
 </ul></li>
-</ul></li>
-<li><a href="#practical-cuda">Practical CUDA</a>
+<li><a href="#git-flow-https-nvie-com-posts-a-successful-git-branching-model"><a href="https://nvie.com/posts/a-successful-git-branching-model/" target="_blank">git-flow</a></a></li>
+<li><a href="#rebase-squash">Rebase &amp; Squash</a></li>
+<li><a href="#on-merging-from-upstream">On merging from upstream</a>
 <ul>
-<li><a href="#cuda-best-practices-guide-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html"><a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html" target="_blank">CUDA Best Practices Guide</a></a>
-<ul>
-<li><a href="#occupancy">Occupancy</a></li>
-<li><a href="#further-reading">Further reading</a></li>
+<li><a href="#philosophy">Philosophy</a></li>
 </ul></li>
-<li><a href="#memory">Memory</a>
-<ul>
-<li><a href="#getting-your-memory-into-position-is-often-the-hardest-part-of-cuda-programming">Getting your memory into position is often the hardest part of CUDA programming.</a></li>
-<li><a href="#unified-managed-memory-https-devblogs-nvidia-com-unified-memory-cuda-beginners"><a href="https://devblogs.nvidia.com/unified-memory-cuda-beginners/" target="_blank">Unified/managed memory</a></a></li>
-</ul></li>
-<li><a href="#on-memory-coalescing-and-strided-access-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html-strided-accesses">On memory coalescing and <a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#strided-accesses" target="_blank">strided access</a></a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -484,277 +478,243 @@
       <article class="article" itemscope itemtype="http://schema.org/Article">
 
         <div class="docs-article-container">
-          <h1 itemprop="name">Practical CUDA</h1>
+          <h1 itemprop="name">Git Workflows</h1>
 
           <div class="article-style" itemprop="articleBody">
             
 
-<ul>
-<li>GPUs have 2-4x greater floating point and bandwidth peak for the watts
+<h2 id="project-roles">Project roles</h2>
 
 <ul>
-<li>also for the $ if you buy enterprise gear</li>
-<li>better for the $ if you buy gaming gear</li>
-</ul></li>
-<li>Step 1 is to assess workload and latency requirements</li>
+<li><strong>Users</strong> stress features, report issues, ask questions that steer project.</li>
+<li><strong>Developers</strong> fix bugs and create features. They write code and docs and generally are agents of change in a software project. There are often many more developers than reviewers or maintainers.</li>
+<li><strong>Reviewers</strong> are known experts in a part of a project and are called on to review the work of developers, mostly to make sure that the developers don’t break anything, but also to point them to related work, ensure common development practices, and pass on institutional knowledge. There are often more developers than reviewers, and more reviewers than maintainers.</li>
+
+<li><p><strong>Maintainers</strong> are loosely aware of the entire project. They track ongoing work and make sure that it gets reviewed and merged in a timely manner. They direct the orchestra of developers and reviewers, making sure that they connect to each other appropriately, often serving as dispatcher.</p>
+
+<p>Maintainers also have final responsibility. If no reviewer can be found for an important contribution, they review. If no developer can be found to fix an important bug, they develop. If something goes wrong, it’s eventually the maintainer’s fault.</p></li>
 </ul>
 
-<p><img src="VecDot_CPU_vs_GPU_size.png" alt="" />
-<img src="VecDot_CPU_vs_GPU_time.png" alt="" /></p>
-
-<ul>
-<li>Don&rsquo;t waste time with GPUs if
-
-<ul>
-<li>your problem size or time to solution requirements don&rsquo;t align</li>
-<li>if the work you&rsquo;d like to move to the GPU is not a bottleneck</li>
-<li>if the computation cost will be dwarfed by moving data to/from the GPU</li>
-<li>often you need to restructure so that caller passes in data already on the device</li>
-<li>can require nonlocal refactoring</li>
-</ul></li>
-<li>Almost never: pick one kernel at a time and move it to the GPU
-
-<ul>
-<li>DOE ACME/E3SM (to pick on one high-profile application) has basically done this for five years and it still doesn&rsquo;t help their production workloads so they bought a non-GPU machine
-<br /></li>
-</ul></li>
-</ul>
-
-<p><strong>Okay, okay, okay.  What if I have the right workload?</strong></p>
-
-<h2 id="terminology-intro">Terminology/intro</h2>
-
-<ul>
-<li><a href="https://devblogs.nvidia.com/even-easier-introduction-cuda/" target="_blank">An even easier introduction to CUDA</a></li>
-
-<li><p><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#programming-model" target="_blank">CUDA Programming Model</a></p></li>
-
-<li><p>On the CPU, we have a thread with vector registers/instructions</p></li>
-
-<li><p>In CUDA, we write code inside a single vector lane (&ldquo;confusingly&rdquo; called a CUDA thread)</p></li>
-
-<li><p>To get inside the lane, we launch a <strong>kernel</strong> from the CPU using special syntax</p>
-
-<pre><code class="language-c">add&lt;&lt;&lt;numBlocks, blockSize&gt;&gt;&gt;(N, x, y);
-</code></pre>
-
-<ul>
-<li>needs to be compiled using <code>nvcc</code></li>
-<li>Logically 1D/2D/3D rectangular tiled iteration space</li>
-</ul></li>
-</ul>
-
-<p><img src="grid-of-thread-blocks.png" width="40%"></p>
-
-<ul>
-<li>There are <a href="https://en.wikipedia.org/wiki/CUDA#Version_features_and_specifications" target="_blank">many</a> constraints and limitations to the iteration &ldquo;grid&rdquo;</li>
-</ul>
-
-<p><img src="cuda-constraints.png" alt="" /></p>
-
-<ul>
-<li>Control flow for CUDA threads is nominally independent, but performance will be poor if you don&rsquo;t coordinate threads within each block.
-
-<ul>
-<li>Implicit coordination</li>
-<li>Memory coalescing</li>
-<li>Organize your algorithm to limit &ldquo;divergence&rdquo;</li>
-<li>Explicit coordination</li>
-<li>Shared memory</li>
-<li><code>__syncthreads()</code></li>
-<li>Warp shuffles</li>
-</ul></li>
-<li>We implement the kernel by using the <code>__global__</code> attribute
-
-<ul>
-<li>Visible from the CPU</li>
-<li>Special <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#built-in-variables" target="_blank">built-in variables</a> are defined</li>
-<li><code>gridDim</code></li>
-<li><code>blockIdx</code></li>
-<li><code>blockDim</code></li>
-<li><code>threadIdx</code></li>
-<li>There is also <code>__device__</code>, which is callable from other device functions</li>
-<li>Can use <code>__host__ __device__</code> to compile two versions</li>
-</ul></li>
-</ul>
-
-<p><img src="cuda_indexing.png" alt="" /></p>
-
-<h4 id="how-does-this-relate-to-the-hardware">How does this relate to the hardware?</h4>
-
-<ul>
-<li>Each thread block is assigned to one streaming multiprocessor (SM)</li>
-<li>Executed in warps (number of hardware lanes)</li>
-<li>Multiple warps (from the same or different thread blocks) execute like hyperthreads</li>
-</ul>
-
-<h2 id="practical-cuda">Practical CUDA</h2>
-
-<p><img src="https://images.dailykos.com/images/201610/story_image/Question_authority_says_who_Capture.PNG?1454006844" alt="" /></p>
-
-<h3 id="cuda-best-practices-guide-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html"><a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html" target="_blank">CUDA Best Practices Guide</a></h3>
-
-<h4 id="occupancy">Occupancy</h4>
+<p>&ndash; <a href="https://matthewrocklin.com/blog//2019/05/18/maintainer" target="_blank">Rocklin: The Role of a Maintainer</a></p>
 
 <blockquote>
-<p>Thread instructions are executed sequentially in CUDA, and, as a result, executing other warps when one warp is paused or stalled is the only way to hide latencies and keep the hardware busy. Some metric related to the number of active warps on a multiprocessor is therefore important in <strong>determining how effectively the hardware is kept busy</strong> [emphasis added]. This metric is occupancy.</p>
+<p>Each change has to be reviewed. <strong>This is the single biggest cost.</strong></p>
 </blockquote>
 
-<ul>
-<li>Reality: occupancy is just one aspect, and often inversely correlated with keeping the hardware busy (and with performance).</li>
-</ul>
+<p>&ndash; <a href="https://rgommers.github.io/2019/06/the-cost-of-an-open-source-contribution/" target="_blank">Gommers: The cost of an open source contribution</a></p>
 
-<blockquote>
-<p>Occupancy is the ratio of the number of active warps per multiprocessor to the maximum number of possible active warps.</p>
-</blockquote>
+<h2 id="principles-of-git-workflows">Principles of Git workflows</h2>
 
 <ul>
-<li>If your kernel uses fewer registers/less shared memory, more warps can be scheduled.</li>
-
-<li><p>Register/shared memory usage is determined by the compiler.</p>
-
-<pre><code class="language-python">def render_c(filename):
-from IPython.display import Markdown
-with open(filename) as f:
-    contents = f.read()
-return Markdown(&quot;```c\n&quot; + contents + &quot;```\n&quot;)
-
-render_c('add.cu')
-</code></pre>
-
-<pre><code class="language-c">__global__ void add(int n, float *x, float *y) {
-int index = blockIdx.x * blockDim.x + threadIdx.x;
-int stride = blockDim.x * gridDim.x;
-for (int i = index; i &lt; n; i += stride)
-y[i] += x[i];
-}
-</code></pre>
-
-<pre><code class="language-python">! nvcc -arch sm_75 --resource-usage -c add.cu
-</code></pre>
-
-<p>ptxas info    : 0 bytes gmem
-ptxas info    : Compiling entry function &lsquo;<em>Z3addiPfS</em>&rsquo; for &lsquo;sm_75&rsquo;
-ptxas info    : Function properties for <em>Z3addiPfS</em>
-    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
-ptxas info    : Used 12 registers, 376 bytes cmem[0]</p>
-
-<pre><code class="language-python">render_c('copy.cu')
-</code></pre>
-
-<pre><code class="language-c">__global__ void copy(float *dst, float *src) {
-int iblock = blockIdx.x + blockIdx.y * gridDim.x;
-int index  = threadIdx.x + TILE_SIZE * iblock * blockDim.x;
-float a[TILE_SIZE]; // allocated in registers
-for (int i=0; i&lt;TILE_SIZE; i++)
-a[i] = src[index + i * blockDim.x];
-for (int i=0; i&lt;TILE_SIZE; i++)
-dst[index + i * blockDim.x] = a[i];
-}
-</code></pre>
-
-<pre><code class="language-python">! nvcc -arch sm_75 --resource-usage -DTILE_SIZE=16 -c copy.cu
-</code></pre>
-
-<p>ptxas info    : 0 bytes gmem
-ptxas info    : Compiling entry function &lsquo;<em>Z4copyPfS</em>&rsquo; for &lsquo;sm_75&rsquo;
-ptxas info    : Function properties for <em>Z4copyPfS</em>
-    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
-ptxas info    : Used 64 registers, 368 bytes cmem[0]</p></li>
-
-<li><p>The <a href="https://docs.nvidia.com/cuda/cuda-occupancy-calculator/index.html" target="_blank">Occupancy Calculator</a> can compute occupancy based on the register and shared memory usage.</p></li>
-
-<li><p>You can tell the compiler to reduce register usage, sometimes at the expense of spills.</p>
-
-<pre><code class="language-python">! nvcc -arch sm_75 --resource-usage -DTILE_SIZE=16 --maxrregcount 24 -c copy.cu
-</code></pre>
-
-<p>ptxas info    : 0 bytes gmem
-ptxas info    : Compiling entry function &lsquo;<em>Z4copyPfS</em>&rsquo; for &lsquo;sm_75&rsquo;
-ptxas info    : Function properties for <em>Z4copyPfS</em>
-    80 bytes stack frame, 76 bytes spill stores, 76 bytes spill loads
-ptxas info    : Used 24 registers, 368 bytes cmem[0]</p></li>
-</ul>
-
-<h4 id="further-reading">Further reading</h4>
+<li>Reviewable
 
 <ul>
-<li>Vasily Volkov (2010) <a href="https://www.nvidia.com/content/GTC-2010/pdfs/2238_GTC2010.pdf" target="_blank"><strong>Better Performance at Lower Occupancy</strong></a> (slides)</li>
-<li>Vasily Volkov (2016) <a href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf" target="_blank"><strong>Understanding Latency Hiding on GPUs</strong></a> (very in-depth)</li>
-<li>Kasia Swirydowicz (2018) <a href="https://www.paranumal.com/single-post/2018/03/02/Finite-Element-Stiffness-Matrix-Action-monolithic-kernel-optimization-on-Titan-V" target="_blank"><strong>Finite Element Stiffness Matrix Action: monolithic kernel optimization on Titan V</strong></a></li>
-</ul>
-
-<h3 id="memory">Memory</h3>
+<li>Prioritize time and accuracy for reviewers</li>
+</ul></li>
+<li>Testable
 
 <ul>
-<li>GPU memory is not CPU memory</li>
-</ul>
-
-<p><img src="https://en.wikichip.org/w/images/4/47/summit_single-socket.svg" width="50%"></p>
-
-<p><strong>Duh</strong>, so why does NVIDIA <a href="https://devblogs.nvidia.com/unified-memory-cuda-beginners/" target="_blank">publish this</a>?</p>
-
-<p><img src="https://devblogs.nvidia.com/wp-content/uploads/2017/06/Unified-Memory-MultiGPU.png" alt="" /></p>
-
-<h4 id="getting-your-memory-into-position-is-often-the-hardest-part-of-cuda-programming">Getting your memory into position is often the hardest part of CUDA programming.</h4>
+<li>Untested code is usually broken</li>
+<li>Reviewing broken code is a waste of time</li>
+<li>Exception: &ldquo;request for comment&rdquo; (RFC) commits sketch an idea for discussion; will be revised before review/merging</li>
+</ul></li>
+<li><a href="https://en.wikipedia.org/wiki/Atomic_commit#Atomic_commit_convention" target="_blank">Atomic</a>
 
 <ul>
-<li><p>Allocate memory on the GPU</p>
-
-<pre><code class="language-c">cudaMalloc(&amp;xdevice, N*sizeof(double));
-</code></pre></li>
-
-<li><p>Populate it from the host</p>
-
-<pre><code class="language-c">cudaMemcpy(xdevice, xhost, N*sizeof(double), cudaMemcpyHostToDevice);
-</code></pre></li>
-
-<li><p>Repeat for all data, including control parameters</p></li>
-
-<li><p>Easy to forget, ongoing maintenance/complexity cost</p></li>
-</ul>
-
-<h4 id="unified-managed-memory-https-devblogs-nvidia-com-unified-memory-cuda-beginners"><a href="https://devblogs.nvidia.com/unified-memory-cuda-beginners/" target="_blank">Unified/managed memory</a></h4>
+<li><a href="https://google.github.io/eng-practices/review/developer/small-cls.html" target="_blank">Small commits</a> are easier to understand and make bug-free</li>
+<li>Also easier to revert</li>
+</ul></li>
+<li><a href="https://git-scm.com/docs/git-bisect" target="_blank">Bisectable</a>
 
 <ul>
-<li><p>Allocate &ldquo;managed&rdquo; memory, accessible from CPU and GPU</p>
-
-<pre><code class="language-c">cudaMallocManaged(&amp;x, N*sizeof(float));
-</code></pre></li>
-
-<li><p>How?</p></li>
-</ul>
-
-<p><img src="maximizing-unified-memory.png" width="50%"></p>
+<li>Test suites are always incomplete</li>
+<li>When we learn about a bug</li>
+</ul></li>
+<li>Stable <code>master</code>
 
 <ul>
-<li>With OpenACC, make all dynamic allocations in managed memory: <code>pgcc -ta=tesla:managed</code>
+<li>Bugs in <code>master</code> are highly disruptive</li>
+</ul></li>
+<li>Minimize dependencies
 
 <ul>
-<li>The GPU probably has a lot less memory than you have DRAM</li>
-<li>Really convenient for incremental work in legacy code</li>
-<li>Performance isn&rsquo;t great without <code>cudaMemPrefetchAsync</code>
-<br /></li>
+<li>Deliver the bug-fix and nothing but the bug-fix</li>
+<li>To anyone who has the bug</li>
+<li>Deliver the feature and nothing but the feature</li>
 </ul></li>
 </ul>
 
-<p><img src="pngbase6479f3c9825c97fa94.png" alt="" /></p>
+<h2 id="examples">Examples</h2>
 
-<p><strong>Further reading</strong>: <a href="https://devblogs.nvidia.com/maximizing-unified-memory-performance-cuda/" target="_blank">Maximizing Unified Memory Performance in CUDA</a></p>
+<h3 id="gitworkflows-7-https-git-scm-com-docs-gitworkflows"><a href="https://git-scm.com/docs/gitworkflows" target="_blank"><code>gitworkflows(7)</code></a></h3>
 
-<h3 id="on-memory-coalescing-and-strided-access-https-docs-nvidia-com-cuda-cuda-c-best-practices-guide-index-html-strided-accesses">On memory coalescing and <a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#strided-accesses" target="_blank">strided access</a></h3>
+<p><img src="simplified-gitworkflows7.png" alt="" /></p>
 
-<pre><code class="language-c">__global__ void strideCopy(float *odata, float* idata, int stride) {
-    int xid = (blockIdx.x*blockDim.x + threadIdx.x)*stride;
-    odata[xid] = idata[xid];
-}
+<h4 id="inspecting-history-in-the-git-project">Inspecting history in the Git project</h4>
+
+<pre><code class="language-python">! git -C ~/src/git log -20 --graph --decorate --pretty=oneline --abbrev-commit
 </code></pre>
 
-<p><img src="adjacent-threads-accessing-memory-with-stride-of-2.png" alt="" /></p>
+<pre><code>* [33m228f53135a[m[33m ([m[1;36mHEAD -&gt; [m[1;32mmaster[m[33m, [m[1;31mgitster/master[m[33m)[m The second batch
+*   [33m6c630f237e[m Merge branch 'jk/gitweb-anti-xss'
+[32m|[m[33m\[m  
+[32m|[m * [33ma376e37b2c[m[33m ([m[1;31mgitster/jk/gitweb-anti-xss[m[33m)[m gitweb: escape URLs generated by href()
+[32m|[m * [33mb178c207d7[m t/gitweb-lib.sh: set $REQUEST_URI
+[32m|[m * [33mf28bceca75[m t/gitweb-lib.sh: drop confusing quotes
+[32m|[m * [33m0eba60c9b7[m t9502: pass along all arguments in xss helper
+* [33m|[m   [33m3288d99c92[m Merge branch 'ar/install-doc-update-cmds-needing-the-shell'
+[34m|[m[35m\[m [33m\[m  
+[34m|[m * [33m|[m [33m932757b0cc[m[33m ([m[1;31mgitster/ar/install-doc-update-cmds-needing-the-shell[m[33m)[m INSTALL: use existing shell scripts as example
+[34m|[m [33m|[m[33m/[m  
+* [33m|[m   [33m4775e02a5c[m Merge branch 'ma/t7004'
+[36m|[m[1;31m\[m [33m\[m  
+[36m|[m * [33m|[m [33mb018719927[m[33m ([m[1;31mgitster/ma/t7004[m[33m)[m t7004: check existence of correct tag
+[36m|[m [33m|[m[33m/[m  
+* [33m|[m   [33ma6c6f8d02a[m Merge branch 'js/complete-svn-recursive'
+[1;32m|[m[1;33m\[m [33m\[m  
+[1;32m|[m * [33m|[m [33m1f9247a3bd[m[33m ([m[1;31mgitster/js/complete-svn-recursive[m[33m)[m completion: tab-complete &quot;git svn --recursive&quot;
+[1;32m|[m [33m|[m[33m/[m  
+* [33m|[m   [33m3ae8defaf9[m Merge branch 'jk/send-pack-remote-failure'
+[1;34m|[m[1;35m\[m [33m\[m  
+[1;34m|[m * [33m|[m [33mad7a403268[m[33m ([m[1;31mgitster/jk/send-pack-remote-failure[m[33m)[m send-pack: check remote ref status on pack-objects failure
+[1;34m|[m [33m|[m[33m/[m  
+* [33m|[m   [33maec3b2e24f[m Merge branch 'jc/fsmonitor-sanity-fix'
+[1;36m|[m[31m\[m [33m\[m  
+[1;36m|[m * [33m|[m [33m61eea521fe[m[33m ([m[1;31mgitster/jc/fsmonitor-sanity-fix[m[33m)[m fsmonitor: do not compare bitmap size with size of split index
+* [31m|[m [33m|[m   [33m4ab9616c76[m Merge branch 'sg/skip-skipped-prereq'
+[32m|[m[33m\[m [31m\[m [33m\[m  
+[32m|[m * [31m|[m [33m|[m [33me0316695ec[m[33m ([m[1;31mgitster/sg/skip-skipped-prereq[m[33m)[m test-lib: don't check prereqs of test cases that won't be run anyway
+[32m|[m [33m|[m [31m|[m[33m/[m  
+[32m|[m [33m|[m[33m/[m[31m|[m   
+* [33m|[m [31m|[m   [33m723a8adba5[m Merge branch 'ds/test-read-graph'
+[34m|[m[35m\[m [33m\[m [31m\[m  
+[34m|[m * [33m|[m [31m|[m [33m4bd0593e0f[m[33m ([m[1;31mgitster/ds/test-read-graph[m[33m)[m test-tool: use 'read-graph' helper
+</code></pre>
 
-<p>Lose half your bandwidth for <code>stride=2</code>.</p>
+<pre><code class="language-python">! git -C ~/src/git log -20 --graph --decorate --pretty=oneline --abbrev-commit --topo-order
+</code></pre>
 
-<p><img src="performance-of-stridecopy-kernel.png" alt="" /></p>
+<pre><code>* [33m228f53135a[m[33m ([m[1;36mHEAD -&gt; [m[1;32mmaster[m[33m, [m[1;31mgitster/master[m[33m)[m The second batch
+*   [33m6c630f237e[m Merge branch 'jk/gitweb-anti-xss'
+[32m|[m[33m\[m  
+[32m|[m * [33ma376e37b2c[m[33m ([m[1;31mgitster/jk/gitweb-anti-xss[m[33m)[m gitweb: escape URLs generated by href()
+[32m|[m * [33mb178c207d7[m t/gitweb-lib.sh: set $REQUEST_URI
+[32m|[m * [33mf28bceca75[m t/gitweb-lib.sh: drop confusing quotes
+[32m|[m * [33m0eba60c9b7[m t9502: pass along all arguments in xss helper
+* [33m|[m   [33m3288d99c92[m Merge branch 'ar/install-doc-update-cmds-needing-the-shell'
+[34m|[m[35m\[m [33m\[m  
+[34m|[m * [33m|[m [33m932757b0cc[m[33m ([m[1;31mgitster/ar/install-doc-update-cmds-needing-the-shell[m[33m)[m INSTALL: use existing shell scripts as example
+[34m|[m [33m|[m[33m/[m  
+* [33m|[m   [33m4775e02a5c[m Merge branch 'ma/t7004'
+[36m|[m[1;31m\[m [33m\[m  
+[36m|[m * [33m|[m [33mb018719927[m[33m ([m[1;31mgitster/ma/t7004[m[33m)[m t7004: check existence of correct tag
+[36m|[m [33m|[m[33m/[m  
+* [33m|[m   [33ma6c6f8d02a[m Merge branch 'js/complete-svn-recursive'
+[1;32m|[m[1;33m\[m [33m\[m  
+[1;32m|[m * [33m|[m [33m1f9247a3bd[m[33m ([m[1;31mgitster/js/complete-svn-recursive[m[33m)[m completion: tab-complete &quot;git svn --recursive&quot;
+[1;32m|[m [33m|[m[33m/[m  
+* [33m|[m   [33m3ae8defaf9[m Merge branch 'jk/send-pack-remote-failure'
+[1;34m|[m[1;35m\[m [33m\[m  
+[1;34m|[m * [33m|[m [33mad7a403268[m[33m ([m[1;31mgitster/jk/send-pack-remote-failure[m[33m)[m send-pack: check remote ref status on pack-objects failure
+[1;34m|[m [33m|[m[33m/[m  
+* [33m|[m   [33maec3b2e24f[m Merge branch 'jc/fsmonitor-sanity-fix'
+[1;36m|[m[31m\[m [33m\[m  
+[1;36m|[m * [33m|[m [33m61eea521fe[m[33m ([m[1;31mgitster/jc/fsmonitor-sanity-fix[m[33m)[m fsmonitor: do not compare bitmap size with size of split index
+* [31m|[m [33m|[m   [33m4ab9616c76[m Merge branch 'sg/skip-skipped-prereq'
+[32m|[m[33m\[m [31m\[m [33m\[m  
+[32m|[m * [31m|[m [33m|[m [33me0316695ec[m[33m ([m[1;31mgitster/sg/skip-skipped-prereq[m[33m)[m test-lib: don't check prereqs of test cases that won't be run anyway
+[32m|[m [33m|[m [31m|[m[33m/[m  
+[32m|[m [33m|[m[33m/[m[31m|[m   
+* [33m|[m [31m|[m   [33m723a8adba5[m Merge branch 'ds/test-read-graph'
+[34m|[m[35m\[m [33m\[m [31m\[m  
+[34m|[m * [33m|[m [31m|[m [33m4bd0593e0f[m[33m ([m[1;31mgitster/ds/test-read-graph[m[33m)[m test-tool: use 'read-graph' helper
+</code></pre>
+
+<pre><code class="language-python">! cd ~/src/git &amp;&amp; gitk
+</code></pre>
+
+<h3 id="git-flow-https-nvie-com-posts-a-successful-git-branching-model"><a href="https://nvie.com/posts/a-successful-git-branching-model/" target="_blank">git-flow</a></h3>
+
+<p><img src="https://nvie.com/img/git-model@2x.png" alt="" /></p>
+
+<ul>
+<li><code>master</code> sees only releases
+
+<ul>
+<li>very stable (like <code>maint</code> in the standard model), but looks inactive</li>
+</ul></li>
+</ul>
+
+<h3 id="rebase-squash">Rebase &amp; Squash</h3>
+
+<ul>
+<li>A linear sequence of feature-complete commits</li>
+<li>Suitable for new developers</li>
+<li>Not atomic; bisection can land on huge commits</li>
+<li>Bug-fixes may be duplicated in <code>maint</code> and <code>master</code></li>
+</ul>
+
+<h3 id="on-merging-from-upstream">On merging from upstream</h3>
+
+<pre><code>commit b8ffc1990c2cdad4f847a03479b787c8e1b99c7e (HEAD -&gt; maint)
+Merge: 77ec769c3b 9ff78c21f3
+Author: Jed Brown &lt;jed@jedbrown.org&gt;
+Date:   Mon Dec 2 10:55:51 2019 -0700
+
+    Merge branch 'master' into my/feature-branch
+    
+    * master: (218 commits)
+      ex18 update
+      DMSetFromOptions_Plex: add -dm_plex_check_all option
+      doc: Make DMSetFromOptions() manpage a hub for all Check functions.
+      DMSetFromOptions_Plex: process -dm_plex_check_pointsf and -dm_plex_check_interface_cones
+      DMPlexCheckSkeleton: Pass for uninterpolated meshes.
+      DMPlexCheckConesConformOnInterfaces -&gt; DMPlexCheckInterfaceCones.
+      Update CHANGELOG
+      KSP ex49: add cholmod and superlu_dist cholesky tests
+      Mat tests ex127: add test for MatMult and MatMultAdd for sbaij + hermitian
+      MATSUPERLUDIST: fix MPIAIJ with commsize 1 case
+      MatMPIAIJGetLocalMat: fix reuse case and clarify man page
+      MATCHOLMOD: support for MatMatSolve and MatGetInfo
+      Mat: propagate properly symmetry options
+      MATSBAIJ: Fix Hermitian MatMult for Seq and MPI code paths
+      KSPComputeOperator: do not assume a DM is attached to the KSP
+      PetscLog: add utility routine to log external packages GPU time
+      PCBDDC: adjust conversions and fix solver type for sub_schurs
+      minor
+      CHOLMOD: expose customizable GPU parameters and number of methods
+      Add suitesparse to make check
+</code></pre>
+
+<ul>
+<li>This is a huge vulnerability: we get lots of features that could cause problems in this branch.</li>
+
+<li><p>Almost always better to focus on your own work in the branch.</p>
+
+<ul>
+<li><p>If you must merge from upstream, explain why</p>
+
+<pre><code>Merge branch 'master' into my/feature-branch due to BaseClass API change
+</code></pre></li>
+</ul></li>
+
+<li><p>Consider rebasing instead, but that may invalidate testing of earlier commits in your feature branch.</p></li>
+</ul>
+
+<h4 id="philosophy">Philosophy</h4>
+
+<blockquote>
+<ul>
+<li>A branch has a purpose. The most obvious is a topic branch you use for developing a new feature. A topic branch &lsquo;add-frotz&rsquo; would be about adding a new &lsquo;frotz&rsquo; feature and shouldn&rsquo;t do anything else. In a well organized project, &lsquo;master&rsquo; branch (or &lsquo;trunk&rsquo; if you are coming from subversion) has the sole purpose of containing proven-to-be-good changes to produce the next release. Your per-customer branch is to contain the changes suitable for the next customer code dump and nothing else. It typically consists of bugfixes and selected features the particular customer asked (and paid for).</li>
+<li>The act of making a commit with one or more parents and advancing the tip of a branch with that commit is to make this statement: I have considered what all of these parent commits represent, and in my belief the state I am committing is more suitable for the purpose of this branch than any of them.</li>
+</ul>
+</blockquote>
+
+<p>&ndash; <a href="https://gitster.livejournal.com/42247.html" target="_blank">Junio Hamano: Fun with merges and purposes of branches</a></p>
+
+<p>See also:
+* <a href="https://lwn.net/Articles/328436/" target="_blank">Rebasing and merging: some git best practices</a>
+* <a href="https://yarchive.net/comp/linux/git_merges_from_upstream.html" target="_blank">Linus Torvalds on merging from upstream</a></p>
 
           </div>
 
@@ -771,14 +731,14 @@ ptxas info    : Used 24 registers, 368 bytes cmem[0]</p></li>
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/fall2019/openmp-target/" rel="next">ISPC, OpenMP target, OpenACC, and all that</a>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/fall2019/cuda/" rel="prev">GPUs and CUDA</a>
+    <a href="/fall2019/md/" rel="prev">Molecular Dynamics</a>
   </div>
   
 </div>
@@ -788,11 +748,11 @@ ptxas info    : Used 24 registers, 368 bytes cmem[0]</p></li>
         </div>
 
         <div class="body-footer">
-          <p>Last updated on Nov 1, 2019</p>
+          <p>Last updated on Dec 2, 2019</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/cuda-practical/index.md">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/git/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>
