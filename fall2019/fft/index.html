@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Jed Brown">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Discrete signals Consider a function $f(x)$ defined on an integer grid $x \in \mathbb Z$.
+We also consider the Fourier modes $$ e^{i\theta x} $$ for continuous $\theta$. Is it possible to distinguish $e^{i\theta x}$ from $e^{i(\theta&#43;2\pi)x}$?
+%matplotlib inline import numpy as np import matplotlib.pyplot as plt import ipywidgets as widgets plt.style.use(&#39;ggplot&#39;) @widgets.interact(theta=widgets.FloatSlider(min=-5, max=5, value=1)) def signalplot(theta): x = np.linspace(-5, 5, 200) xx = np.linspace(-5, 5, dtype=int) plt.plot(x, np.sin(theta*x)) plt.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/fft/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/fft/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@five9a2">
+  <meta property="twitter:creator" content="@five9a2">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/fft/">
+  <meta property="og:title" content="Fourier Methods | HPSC">
+  <meta property="og:description" content="Discrete signals Consider a function $f(x)$ defined on an integer grid $x \in \mathbb Z$.
+We also consider the Fourier modes $$ e^{i\theta x} $$ for continuous $\theta$. Is it possible to distinguish $e^{i\theta x}$ from $e^{i(\theta&#43;2\pi)x}$?
+%matplotlib inline import numpy as np import matplotlib.pyplot as plt import ipywidgets as widgets plt.style.use(&#39;ggplot&#39;) @widgets.interact(theta=widgets.FloatSlider(min=-5, max=5, value=1)) def signalplot(theta): x = np.linspace(-5, 5, 200) xx = np.linspace(-5, 5, dtype=int) plt.plot(x, np.sin(theta*x)) plt."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-12-04T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-12-04T22:21:33-07:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>Fourier Methods | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp/">2019-09-11 OpenMP Basics</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-2/">2019-09-13 More OpenMP</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-3/">2019-09-16 OpenMP Tasks</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/strategies/">2019-09-18 Reductions and Scans</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/sorting-graphs/">2019-09-23 More bitonic sorting, graphs</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-2/">2019-10-02 Dense Linear Algebra and Orthogonality</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-3/">2019-10-04 Orthogonality and Conditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/elemental/">2019-10-07 Elemental</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/iterative-solvers/">2019-10-09 Sparse and Iterative</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning/">2019-10-14 DD Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning-2/">2019-10-16 DD Preconditioning 2</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/mg-preconditioning/">2019-10-18 Multilevel Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/nonlinear/">2019-10-21 Nonlinear</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/transient/">2019-10-23 Transient</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/libceed/">2019-10-25 libCEED</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/coprocessor/">2019-10-28 Coprocessors</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/cuda/">2019-10-30 GPUs and CUDA</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/cuda-practical/">2019-11-01 Practical CUDA</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-target/">2019-11-04 ISP/OpenMP/OpenACC</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/io/">2019-11-06 HPC I/O</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/mpi-io/">2019-11-08 MPI-IO</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/data-methods/">2019-11-11 Data-intensive</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/data-probability/">2019-11-13 Data and Probability</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/interactive/">2019-11-15 Dynamic/Interactive</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/nbody/">2019-11-18 Intro N-body</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/nbody-longrange/">2019-11-20 Long-range N-body</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/md/">2019-11-22 Molecular Dynamics</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/git/">2019-12-02 Git Workflows</a>
+      </li>
+      
+      <li class="active">
+        <a href="/fall2019/fft/">2019-12-04 Fourier</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/multigrid/">2019-12-06 Multigrid Intro</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#discrete-signals">Discrete signals</a>
+<ul>
+<li><a href="#approximation-via-fourier-basis">Approximation via Fourier basis</a>
+<ul>
+<li><a href="#computing-hat-f-theta">Computing $\hat f(\theta)$</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#faster">Faster!</a>
+<ul>
+<li><a href="#parallel-limitation-bisection-bandwidth">Parallel limitation: bisection bandwidth</a></li>
+<li><a href="#applications">Applications</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">Fourier Methods</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<h2 id="discrete-signals">Discrete signals</h2>
+
+<p>Consider a function $f(x)$ defined on an integer grid $x \in \mathbb Z$.</p>
+
+<p>We also consider the Fourier modes
+$$ e^{i\theta x} $$
+for continuous $\theta$.
+Is it possible to distinguish $e^{i\theta x}$ from $e^{i(\theta+2\pi)x}$?</p>
+
+<pre><code class="language-python">%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+import ipywidgets as widgets
+plt.style.use('ggplot')
+
+@widgets.interact(theta=widgets.FloatSlider(min=-5, max=5, value=1))
+def signalplot(theta):
+    x = np.linspace(-5, 5, 200)
+    xx = np.linspace(-5, 5, dtype=int)
+    plt.plot(x, np.sin(theta*x))
+    plt.plot(xx, np.sin(theta*xx), 'ok');
+    plt.plot(x, np.sin((theta-2*np.pi)*x));
+    plt.plot(x, np.sin((theta+2*np.pi)*x));
+</code></pre>
+
+<pre><code>interactive(children=(FloatSlider(value=1.0, description='theta', max=5.0, min=-5.0), Output()), _dom_classes=…
+</code></pre>
+
+<p>The limit $\theta=\pi$ is known as the Nyquist frequency, beyond which there exists a lower frequency signal that matches at all the integer points.</p>
+
+<pre><code class="language-python">@widgets.interact(n=widgets.IntSlider(min=1, max=30, value=2))
+def vplot(n):
+    x = np.linspace(-5, 5, 200)
+    plt.plot(x, np.sin(x))
+    plt.plot(x, np.sin(x) + np.sin(2*x)/2);
+    plt.plot(x, np.sum([np.sin(k*x)/k for k in range(1,n+1)], axis=0));
+</code></pre>
+
+<pre><code>interactive(children=(IntSlider(value=2, description='n', max=30, min=1), Output()), _dom_classes=('widget-int…
+</code></pre>
+
+<h3 id="approximation-via-fourier-basis">Approximation via Fourier basis</h3>
+
+<p>It turns out that we can approximate any function $f(x)$ by a linear combination of Fourier modes</p>
+
+<p>$$ f(x) \approx \sum_{k=1}^n \hat f(\theta_k) e^{i\theta_k x} . $$</p>
+
+<p>This is reminiscent of linear algebra</p>
+
+<p>$$ \Bigg[ f(x) \Bigg] = \Bigg[ e^{i\theta_1 x} \Bigg| e^{i\theta_2 x} \Bigg| \dotsm \Bigg] \begin{bmatrix} \hat f(\theta_1) \ \hat f(\theta_2) \ \vdots \end{bmatrix}
+= \Bigg[ e^{i\theta_1 x} \Bigg] \hat f(\theta_1) + \Bigg[ e^{i\theta_2 x} \Bigg] \hat f(\theta_2) + \dotsb . $$</p>
+
+<p>If we take $\theta \in (-\pi, \pi]$ as a continuous quantity (instead of a discrete set of modes), the sum becomes and integral and we get equality (for &ldquo;nice enough&rdquo; $f(x)$),</p>
+
+<p>$$ f(x) = \int_{-\pi}^\pi \hat f(\theta) e^{i\theta x} d\theta, $$</p>
+
+<p>in which $\hat f(\theta)$ is the Fourier transform (specifically, the <a href="https://en.wikipedia.org/wiki/Discrete-time_Fourier_transform" target="_blank">discrete time transform</a>) of $f(x)$.  This representation is valuable for analyzing convergence of multigrid methods, among other applications.</p>
+
+<h4 id="computing-hat-f-theta">Computing $\hat f(\theta)$</h4>
+
+<p>If we select a finite number of points $x$ and compute the square Vandermonde matrix</p>
+
+<p>$$ \mathcal F = \Bigg[ e^{i\theta_1 x} \Bigg| e^{i\theta_2 x} \Bigg| \dotsm \Bigg] $$</p>
+
+<p>then, knowing the vector $f$, we could solve</p>
+
+<p>$$ \mathcal F \hat f = f $$</p>
+
+<p>for $\hat f$.  This would require $O(n^3)$ where $n$ is the number of points.</p>
+
+<pre><code class="language-python">def fourier_vander(x, n=None):
+    &quot;&quot;&quot;Create the Vandermonde matrix with columns &quot;&quot;&quot;
+    if n is None:
+        n = len(x)
+    theta = -np.pi + 2*np.pi*np.arange(n)/n
+    F = np.exp(1j*np.outer(theta, x))
+    return F
+
+x = np.linspace(-20, 20, 41, dtype=int)
+F = fourier_vander(x)
+plt.plot(x, F[:,20:24].real);
+</code></pre>
+
+<p><img src="./lecture_5_0.png" alt="png" /></p>
+
+<pre><code class="language-python">x = np.linspace(-2, 2, 5, dtype=int)
+F = fourier_vander(x)
+np.real_if_close(F.conj().T @ F)
+</code></pre>
+
+<pre><code>array([[ 5.00000000e+00,  1.42128110e-16, -2.22044605e-16,
+        -2.58840649e-17,  8.88178420e-16],
+       [ 1.42128110e-16,  5.00000000e+00,  1.11022302e-16,
+        -4.44089210e-16, -2.58840649e-17],
+       [-2.22044605e-16,  1.11022302e-16,  5.00000000e+00,
+         1.11022302e-16, -2.22044605e-16],
+       [-2.58840649e-17, -4.44089210e-16,  1.11022302e-16,
+         5.00000000e+00,  1.42128110e-16],
+       [ 8.88178420e-16, -2.58840649e-17, -2.22044605e-16,
+         1.42128110e-16,  5.00000000e+00]])
+</code></pre>
+
+<pre><code class="language-python">np.linalg.norm(F.conj().T @ F - 5*np.eye(5))
+</code></pre>
+
+<pre><code>1.9697658314011113e-15
+</code></pre>
+
+<p>Evidently $\mathcal F$ (modulo normalization) is a unitary matrix, meaning that $\mathcal F^H \mathcal F = I$.  This means we can compute $\hat f$ with only multiplication, a cost of $O(n^2)$.  (Of course we don&rsquo;t need to store $\mathcal F$ because its action can be evaluated on the fly.)</p>
+
+<h2 id="faster">Faster!</h2>
+
+<p>In this discrete context, the transform we need to evaluate is</p>
+
+<p>$$ \hat f<em>k = \sum</em>\ell e^{-i\theta<em>k x</em>\ell} f_\ell $$</p>
+
+<p>where $f<em>\ell$ are samples $f(x</em>\ell)$ at integers $x_\ell = \ell$ and $\theta_k$ are the frequencies $2 \pi k/n$ (because the branch $(-\pi, \pi]$ is arbitrary).</p>
+
+<p>\begin{align}
+\hat f<em>k &amp;= \sum</em>{\ell=0}^{n-1} e^{-2\pi i \frac{k \ell}{n}} f<em>\ell <br />
+ &amp;= \underbrace{\sum</em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{k (2\ell)}{n}} f<em>{2\ell}}</em>{\text{even}} +
+ \underbrace{\sum<em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{k (2\ell+1)}{n}} f</em>{2\ell+1}}<em>{\text{odd}} <br />
+ &amp;= \underbrace{\sum</em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f<em>{2\ell}}</em>{\text{transform of even data}} + e^{-2\pi i \frac k n} \underbrace{\sum<em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f</em>{2\ell+1}}_{\text{transform of odd data}}
+\end{align}</p>
+
+<p>When the original signal $f$ is periodic, $f<em>{\ell} = f</em>{\ell + n \bmod n}$, then
+\begin{align}
+\hat f<em>{k+n/2} &amp;= \sum</em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{(k+n/2) \ell}{n/2}} f<em>{2\ell} + e^{-2\pi i \frac{(k+n/2)}{n}} \sum</em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{(k+n/2) \ell}{n/2}} f<em>{2\ell+1} <br />
+&amp;= \sum</em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f<em>{2\ell} + e^{-2\pi i \frac{k}{n}} e^{-\pi i} \sum</em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{k\ell}{n/2}} f<em>{2\ell+1} <br />
+&amp;= \sum</em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f<em>{2\ell} - e^{-2\pi i \frac{k}{n}} \sum</em>{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f_{2\ell+1}
+\end{align}
+where we have used that
+$$ e^{-2\pi i \ell} = \Big( e^{-2\pi i} \Big)^\ell = 1^\ell = 1 .$$</p>
+
+<p>We&rsquo;ve reduced a Fourier transform of length $n$ (at a cost of $n^2$) to two transforms of length $n/2$ (at a cost of $2 n^<sup>2</sup>&frasl;<sub>4</sub> = n^<sup>2</sup>&frasl;<sub>2</sub>$).
+Repeating this recursively yields a complexity of $O(n\log n)$.</p>
+
+<pre><code class="language-python">@widgets.interact(m=widgets.IntSlider(min=1, max=10, value=1))
+def plot_fft(m):
+    n = 64
+    x = np.arange(n)
+    f = np.exp(2j*np.pi*m*x/n)
+    fhat = np.fft.fft(f)
+    plt.plot(x, f)
+    plt.plot(fhat / np.linalg.norm(fhat, np.inf))
+</code></pre>
+
+<pre><code>interactive(children=(IntSlider(value=1, description='m', max=10, min=1), Output()), _dom_classes=('widget-int…
+</code></pre>
+
+<pre><code class="language-python">@widgets.interact(m=widgets.IntSlider(min=1, max=20, value=1))
+def plot_fft_sawtooth(m):
+    n = 64
+    x = np.arange(n)
+    g = np.sum([np.sin(2*np.pi*k*x/n)/k for k in range(1,m+1)], axis=0)
+    ghat = np.fft.fft(g)
+    plt.plot(x, g)
+    plt.plot(1j*ghat / np.linalg.norm(ghat, np.inf))
+</code></pre>
+
+<pre><code>interactive(children=(IntSlider(value=1, description='m', max=20, min=1), Output()), _dom_classes=('widget-int…
+</code></pre>
+
+<h3 id="parallel-limitation-bisection-bandwidth">Parallel limitation: bisection bandwidth</h3>
+
+<h3 id="applications">Applications</h3>
+
+<ul>
+<li>Signal processing, compression, etc.</li>
+<li>Differentiation and PDEs</li>
+<li>Chebyshev polynomials</li>
+<li>Butterfly algorithms for integral operators
+$$ (\mathcal K f)(x) = \int_{Y} K(x,y) f(y) dy $$
+See <a href="https://math.mit.edu/icg/papers/butterfly-parallel.pdf" target="_blank">Poulson et al., A parallel butterfly algorithm</a></li>
+</ul>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/multigrid/" rel="next">Multigrid Intro</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/git/" rel="prev">Git Workflows</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Dec 4, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/fft/index.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

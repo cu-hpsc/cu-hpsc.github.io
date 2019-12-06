@@ -325,6 +325,659 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     </item>
     
     <item>
+      <title>Multigrid Intro</title>
+      <link>https://cucs-hpsc.github.io/fall2019/multigrid/</link>
+      <pubDate>Fri, 06 Dec 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/multigrid/</guid>
+      <description>
+
+&lt;h1 id=&#34;geometric-multigrid&#34;&gt;Geometric Multigrid&lt;/h1&gt;
+
+&lt;p&gt;Multigrid uses a hierarchy of scales to produce an operation &amp;ldquo;$M^{-1}$&amp;rdquo; that can be applied in linear time and such that $\lVert I - M^{-1} A \rVert \le \rho &amp;lt; 1$ independent of the problem size.
+We&amp;rsquo;ll consider the one dimensional case using the stencil
+$$ \frac{1}{h^2} \begin{bmatrix} -1 &amp;amp; 2 &amp;amp; -1 \end{bmatrix} $$
+for the negative Laplacian. For convenience, we will scale the matrix by the constant $h^&lt;sup&gt;2&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2&lt;/sub&gt;$ so that the diagonal is 1.&lt;/p&gt;
+
+&lt;h2 id=&#34;spectrum-of-discrete-operator&#34;&gt;Spectrum of discrete operator&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s refresh our memory about the spectrum of the discrete Laplacian.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import numpy
+from matplotlib import pyplot
+pyplot.style.use(&#39;ggplot&#39;)
+
+def laplace_dirichlet(m):
+    x = numpy.linspace(0, 1, m)
+    A = numpy.eye(m) - .5*numpy.eye(m,k=1) - .5*numpy.eye(m,k=-1)
+    return x, A
+
+m = 101
+x, A = laplace_dirichlet(m)
+L, X  = numpy.linalg.eigh(A)
+
+pyplot.plot(L, &#39;.&#39;)
+
+print(&#39;smallest: {}&#39;.format(L[:4]))
+print(&#39;largest:  {}&#39;.format(L[-4:]))
+print(&#39;cond&#39;, L[-1]/L[0])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;smallest: [0.00047428 0.00189667 0.00426582 0.00757949]
+largest:  [1.99242051 1.99573418 1.99810333 1.99952572]
+cond 4215.915727604934
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_1_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Modes associated with the smallest eigenvalues
+for i in (-1, -2, -3):
+    pyplot.plot(x, X[:,i], label=&#39;$\lambda = %f$&#39; % L[i])
+pyplot.legend(loc=&#39;upper right&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_2_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Examples from both ends of the spectrum
+for i in (10,90):
+    pyplot.plot(x, X[:,i], &#39;-o&#39;, label=&#39;$\lambda = %f$&#39; % L[i])
+pyplot.legend(loc=&#39;upper right&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_3_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# The condition number grows with problem size
+ns = numpy.geomspace(11, 201, 15, dtype=int)
+eigs = numpy.array([numpy.linalg.eigvalsh(laplace_dirichlet(n)[1])[[0, -1]] for n in ns])
+pyplot.loglog(ns, eigs[:,0], &#39;o&#39;, label=&#39;min_eig(A)&#39;)
+pyplot.loglog(ns, eigs[:,-1], &#39;s&#39;, label=&#39;max_eig(A)&#39;)
+pyplot.loglog(ns, ns**(-2.), &#39;-&#39;, label=&#39;$n^{{-2}}$&#39;)
+pyplot.xlabel(&#39;n&#39;)
+pyplot.ylabel(&#39;cond&#39;)
+pyplot.legend();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_4_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;fourier-analysis-perspective&#34;&gt;Fourier Analysis perspective&lt;/h3&gt;
+
+&lt;p&gt;Consider the basis $\phi(x, \theta) = e^{i \theta x}$.  If we choose the grid $x \in h \mathbb Z$ with grid size $h$ then we can resolve frequencies $\lvert \theta \rvert \le \pi/h$.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def symbol(S, theta):
+    &amp;quot;&amp;quot;&amp;quot;Compute the symbol of the stencil S(theta)&amp;quot;&amp;quot;&amp;quot;
+    if len(S) % 2 != 1:
+        raise RuntimeError(&#39;Stencil length must be odd&#39;)
+    w = len(S) // 2 # integer division rounds down
+    phi = numpy.exp(1j * numpy.outer(range(-w, w+1), theta))
+    return numpy.real_if_close(S @ phi)
+
+def plot_symbol(S, ref_deriv=None, label=&#39;stencil&#39;):
+    theta = numpy.linspace(-numpy.pi, numpy.pi)
+    sym = symbol(S, theta)
+    pyplot.plot(theta, sym, &#39;.&#39;, label=label)
+    if ref_deriv is not None:
+        pyplot.plot(theta, theta**ref_deriv, &#39;-&#39;, label=&#39;exact&#39;)
+    pyplot.legend()
+    pyplot.title(&#39;Symbol of S={}&#39;.format(S))
+    pyplot.xlabel(r&#39;$\theta$&#39;)
+    pyplot.ylabel(&#39;magnitude&#39;)
+
+laplace_stencil = numpy.array([-1, 2, -1])
+plot_symbol(laplace_stencil, ref_deriv=2);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_6_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The lowest frequency function resolvable with Dirichlet boundary conditions on a grid of size $(n-1) h$ has wavelength $\lambda = 2 (n-1) h$, thus frequency $\theta_{\min} = 2\pi/\lambda$.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;theta_min = numpy.pi / (ns - 1)
+symbol_min = symbol(laplace_stencil, theta_min)
+pyplot.loglog(ns, eigs[:,0], &#39;o&#39;, label=&#39;min_eig(A)&#39;)
+pyplot.loglog(ns, eigs[:,-1], &#39;s&#39;, label=&#39;max_eig(A)&#39;)
+pyplot.loglog(ns, symbol_min * eigs[:,-1]/4, &#39;.&#39;, label=&#39;symbol&#39;)
+pyplot.loglog(ns, ns**(-2.), &#39;-&#39;, label=&#39;$n^{{-2}}$&#39;)
+pyplot.xlabel(&#39;n&#39;)
+pyplot.ylabel(&#39;cond&#39;)
+pyplot.legend();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_8_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;damping-properties-of-richardson-jacobi-relaxation&#34;&gt;Damping properties of Richardson/Jacobi relaxation&lt;/h3&gt;
+
+&lt;p&gt;Recall that we would like for $I - w A$ to have a small norm, such that powers (repeat iterations) will cause the error to decay rapidly.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;I = numpy.eye(*A.shape)
+ws = numpy.linspace(.3, 1.001, 50)
+radius = [numpy.linalg.norm(I - w*A, ord=2) for w in ws]
+pyplot.plot(ws, radius)
+pyplot.xlabel(&#39;w&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_10_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The spectrum of $A$ runs from $\theta_{\min}^2$ up to 2.  If $w &amp;gt; 1$, then $\lVert I - w A \rVert &amp;gt; 1$ because the operation amplifies the high frequencies (associated with the eigenvalue of 2).&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The value of $w$ that minimizes the norm is slightly less than 1, but the convergence rate is very slow (only barely less than 1).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;for w in numpy.linspace(.4, .9, 5):
+plot_symbol(numpy.array([0, 1, 0] - w*.5*laplace_stencil), label=&#39;w={}&#39;.format(w))
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_12_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Evidently it is very difficult to damp low frequencies.  This makes sense because $A$ and $I - w A$ move information only one grid point per iteration.&lt;/p&gt;
+
+&lt;h2 id=&#34;coarse-grids-make-low-frequencies-high-again&#34;&gt;Coarse grids: Make low frequencies high again&lt;/h2&gt;
+
+&lt;p&gt;As in domain decomposition, we will express our &amp;ldquo;coarse&amp;rdquo; subspace, consisting of a grid $x \in 2h\mathbb Z$, in terms of its interpolation to the fine space.  Here, we&amp;rsquo;ll use linear interpolation.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def interpolate(m, stride=2):
+    if stride == 2:
+        P = numpy.eye(m) + .5*numpy.eye(m,k=1) + .5*numpy.eye(m,k=-1)
+    elif stride == 3:
+        P = numpy.eye(m) + 2./3*(numpy.eye(m,k=1)+numpy.eye(m,k=-1)) + \
+            1./3*(numpy.eye(m,k=2)+numpy.eye(m,k=-2))
+    return P[:, ::stride]
+
+P = interpolate(len(A), stride=2)
+pyplot.plot(P[:10,2:4], &#39;-o&#39;)
+P.shape
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(101, 51)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_14_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can &amp;ldquo;restrict&amp;rdquo; a fine-grid vector to the coarse space by
+$$ u^{2h} = \frac 1 2 P^T u^h .$$
+This is an accurate approximation for low frequency functions, but inaccurate for high frequencies.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;pyplot.plot(1./2 *P.dot(P.T @ X[:,81]), label=&#39;coarse&#39;)
+pyplot.plot(X[:,81], label=&#39;fine&#39;)
+pyplot.legend(loc=&#39;upper right&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_16_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The &amp;ldquo;Galerkin&amp;rdquo; approximation of the operator $A$ in the coarse space is
+$$ A^{2h} = P^T A P . $$&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Ac = P.T @ A @ P
+print(Ac.shape)
+
+Lc, Xc = numpy.linalg.eigh(Ac)
+pyplot.figure()
+pyplot.plot(Lc, &#39;*&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(51, 51)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_18_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# The coarse grid operator has comparable sparsity (tridiagonal here)
+# to the fine grid operator.
+pyplot.spy(Ac)
+Ac[:5,:5]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;array([[ 0.75, -0.25,  0.  ,  0.  ,  0.  ],
+       [-0.25,  0.5 , -0.25,  0.  ,  0.  ],
+       [ 0.  , -0.25,  0.5 , -0.25,  0.  ],
+       [ 0.  ,  0.  , -0.25,  0.5 , -0.25],
+       [ 0.  ,  0.  ,  0.  , -0.25,  0.5 ]])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_19_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Evidently the coarse operator looks like a discretization of the Laplacian on a coarser grid (modulo boundary conditions).  Let&amp;rsquo;s consider the $A$-orthogonal projector onto the range of $P$,
+$$ S_c = \underbrace{P A&lt;em&gt;c^{-1} P^T}&lt;/em&gt;{M_c^{-1}} A . $$&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Consider the A-orthogonal projector into the range of P
+Sc = P @ numpy.linalg.inv(Ac) @ P.T @ A
+Ls, Xs = numpy.linalg.eig(Sc)
+print(max(abs(Ls.imag)))
+Ls = Ls.real
+idx = Ls.argsort()
+Ls = Ls[idx]; Xs = Xs[:,idx]
+
+pyplot.plot(Ls, &#39;.&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;7.26732901562168e-15
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_21_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;This spectrum is typical for a projector. For all vectors $x$ in the range of $P$, we know that $S_c x = x$.  Why?  Check
+$$ S&lt;em&gt;c \underbrace{P y}&lt;/em&gt;{x} .$$&lt;/li&gt;
+&lt;li&gt;Meanwhile, for all vectors $x$ that are $A$-orthogonal to the range of $P$, we know that $S_c x = 0$.  Why?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;two-grid-method&#34;&gt;Two-grid method&lt;/h2&gt;
+
+&lt;p&gt;The two-grid method using these coarse basis functions converges almost an order of magnitude per iteration.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Iteration matrix for a V(1,1) cycle
+Lt, Xt = numpy.linalg.eig((I - .67*A) @ (I - Sc) @ (I - .67*A))
+pyplot.plot(Lt.real, Lt.imag, &#39;.&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_24_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;fourier-perspective&#34;&gt;Fourier perspective&lt;/h3&gt;
+
+&lt;p&gt;To compute the symbol of a two-grid iteration such as
+$$ (I - w A) (I - P A&lt;em&gt;c^{-1} P^T A) (I - w A), $$
+we will need to represent the aliasing produced by grid transfers $P$ and $P^T$.  To represent this, we&amp;rsquo;ll split the spectrum $[-\pi, \pi)$ into low frequencies $\theta&lt;/em&gt;{lo} \in [-\pi/2, \pi/2)$ and high frequencies $\theta&lt;em&gt;{hi} = \theta&lt;/em&gt;{lo} + \pi$.&lt;/p&gt;
+
+&lt;p&gt;Recall that the grid functions $\phi(x,\theta) = e^{i\theta x}$ are eigenfunctions of $A$, so we can write the symbol $\hat A(\theta)$ as a scalar function of $\theta$.  The coarse correction couples each low-frequency $\theta$ with its corresponding high frequency $\theta + \pi$, so we instead write the symbol as a $2\times 2$ matrix that couples high and low frequencies,
+$$ \hat{\mathbf A}(\theta) = \begin{bmatrix} \hat A(\theta) &amp;amp; 0 \ 0 &amp;amp; \hat A(\theta + \pi) \end{bmatrix} $$
+where $\theta \in [-\pi/2, \pi/2)$ and the diagonal entries contain the usual (scalar) symbol.
+Meanwhile, restriction aliases high frequencies onto low frequencies since it only yields results at coarse points, thus we can write it as a $1\times 2$ matrix
+$$ \hat{\mathbf R}(\theta) = \begin{bmatrix} \hat R(\theta) &amp;amp; \hat R(\theta+\pi) \end{bmatrix} .$$
+Now we can define prolongation
+$$ \hat{\mathbf P}(\theta) = \hat{\mathbf R}^T(\theta), $$
+the $1\times 1$ coarse operator
+$$ \hat{\mathbf A}_c = \hat{\mathbf R} \hat{\mathbf A} \hat{\mathbf P} $$
+which can be trivially inverted, and any other operators appearing in the 2-level algorithm.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def blocktheta(n=31):
+    theta_lo = numpy.linspace(-numpy.pi/2, numpy.pi/2, n+1)[:-1]
+    return numpy.array([theta_lo, theta_lo + numpy.pi]).T
+
+def blocksymbol(stencil, restrict=False):
+    theta = blocktheta()
+    dx = numpy.array([-1, 0, 1])
+    phi = numpy.exp(1j * theta[:, :, None] * dx[None, None, :])
+    Sphi = phi @ stencil
+    if restrict:
+        return Sphi.reshape(-1, 1, 2)
+    else:
+        return Sphi[:, :, None] * numpy.eye(2)
+
+A = blocksymbol(numpy.array([-1, 2, -1]))
+R = blocksymbol(numpy.array([.5, 1, .5]), restrict=True)
+P = R.swapaxes(-2, -1) # Transpose by swapping the last two axes
+
+Ac = R @ A @ P
+Acinv = 1/Ac
+I = numpy.eye(2)[None, :, :]
+w = .6        # Tune the damping parameter (w=2/3 is optimal)
+nsmooths = 1  # What is the effect of more or less smoothing iterations
+Tcoarse = I - P @ Acinv @ R @ A
+Tsmooth = numpy.linalg.matrix_power(I - w*.5*A, nsmooths)
+T = numpy.real_if_close(Tsmooth @ Tcoarse @ Tsmooth)
+pyplot.plot(blocktheta()[:,0], T.reshape(-1, 4))
+pyplot.xlabel(r&#39;$\theta$&#39;)
+pyplot.title(&#39;Symbol of iteration matrix&#39;)
+pyplot.legend(labels=[&#39;ll&#39;, &#39;lh&#39;, &#39;hl&#39;, &#39;hh&#39;]);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_26_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;T_eig = numpy.linalg.eigvals(T)
+T_eig.sort(axis=1)
+pyplot.plot(blocktheta()[:,0], T_eig)
+pyplot.xlabel(r&#39;$\theta$&#39;)
+pyplot.title(&#39;Eigenvalues of Symbol&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_27_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;These techniques can be extended in many ways, including
+* multiple dimensions,
+* more than two levels,
+* different coarsening rates,
+* block smoothers,
+* Gauss-Seidel and &amp;ldquo;multi-colored&amp;rdquo; variants,
+* systems of equations,
+* staggered grids.&lt;/p&gt;
+
+&lt;h3 id=&#34;choices-for-linear-multigrid&#34;&gt;Choices for linear multigrid&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Smoother&lt;/li&gt;
+&lt;li&gt;Interpolation $P$ (coarse basis)&lt;/li&gt;
+&lt;li&gt;Restriction $R$ ($P^T$, or different for non-symmetric problems)&lt;/li&gt;
+&lt;li&gt;Coarse operator (Galerkin $P^T A P$, rediscretization)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;multigrid-as-factorization&#34;&gt;Multigrid as factorization&lt;/h2&gt;
+
+&lt;p&gt;We can interpret factorization as a particular multigrid or domain decomposition method.&lt;/p&gt;
+
+&lt;p&gt;We can partition an SPD matrix as
+$$J = \begin{bmatrix} F &amp;amp; B^T \ B &amp;amp; D \end{bmatrix}$$
+and define the preconditioner by the factorization
+$$      M = \begin{bmatrix} I &amp;amp; \ B F^{-1} &amp;amp; I \end{bmatrix}
+      \begin{bmatrix} F &amp;amp;  \ &amp;amp; S \end{bmatrix}
+      \begin{bmatrix} I &amp;amp; F^{-1}B^T \  &amp;amp; I \end{bmatrix}
+$$
+where $S = D - B F^{-1} B^T$.  $M$ has an inverse
+$$      M^{-1} =
+      \begin{bmatrix} I &amp;amp; -F^{-1}B^T \  &amp;amp; I \end{bmatrix}
+      \begin{bmatrix} F^{-1} &amp;amp;  \ &amp;amp; S^{-1} \end{bmatrix}
+      \begin{bmatrix} I &amp;amp; \ -B F^{-1} &amp;amp; I \end{bmatrix} .
+$$
+Define the interpolation
+$$ P_f = \begin{bmatrix} I \ 0 \end{bmatrix}, \quad P_c = \begin{bmatrix} -F^{-1} B^T \ I \end{bmatrix} $$ and rewrite as
+$$ M^{-1} = [P_f\  P_c] \begin{bmatrix} F^{-1} P_f^T \ S^{-1} P_c^T \end{bmatrix} = P_f F^{-1} P_f^T + P_c S^{-1} P_c^T.$$
+The iteration matrix is thus
+$$ I - M^{-1} J = I - P_f F^{-1} P_f^T J - P_c S^{-1} P_c^T J .$$&lt;/p&gt;
+
+&lt;h3 id=&#34;permuted-matrix-j&#34;&gt;Permuted matrix $J$&lt;/h3&gt;
+
+&lt;p&gt;In this ordering for our 1D Laplacian, the $F$ block is diagonal.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;m = 101
+x, A = laplace_dirichlet(m)
+idx = numpy.concatenate((numpy.arange(0,m,2), numpy.arange(1,m,2)))
+J = A[:,idx][idx,:]
+pyplot.spy(J);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_29_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;mf = m // 2 + 1
+Pf = numpy.concatenate((numpy.eye(mf), numpy.zeros((m-mf, mf))))
+Jf = Pf.T @ J @ Pf
+Pc = numpy.concatenate((-numpy.linalg.inv(Jf).dot(J[:mf,mf:]), numpy.eye(m-mf)))
+Jc = Pc.T.dot(J.dot(Pc))
+
+Mf = Pf.dot(numpy.linalg.inv(Jf)).dot(Pf.T)
+Mc = Pc.dot(numpy.linalg.inv(Jc)).dot(Pc.T)
+I = numpy.eye(*J.shape)
+T = I - (Mf + Mc) @ J
+#T = (I - Mf.dot(J)).dot(I - Mc.dot(J))
+#T = (I - .67*J).dot(I - Mc.dot(J))
+#T = T.dot(T)
+#T = (I - .67*J).dot(I - .67*J).dot(I - Mc.dot(J)).dot(I - .67*J)
+#T = I - .67*J - Mc.dot(J)
+Lt, Xt = numpy.linalg.eig(T)
+pyplot.plot(Lt.real, Lt.imag, &#39;.&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_30_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Invert the permutation
+idxinv = numpy.zeros(m, dtype=int)
+idxinv[idx] = numpy.arange(m)
+
+# Plot the coarse basis function in the original ordering
+pyplot.plot(Pc[:,5][idxinv], &#39;-o&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_31_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;M = numpy.array([[1,2],[2,1]])
+numpy.linalg.eigh(M)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(array([-1.,  3.]), array([[-0.70710678,  0.70710678],
+        [ 0.70710678,  0.70710678]]))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;algebraic-multigrid&#34;&gt;Algebraic Multigrid&lt;/h1&gt;
+
+&lt;p&gt;Factorization as a multigrid (or domain decomposition) method incurs significant cost in multiple dimensions due to lack of sparsity.  It is not feasible to choose enough coarse basis functions so that coarse basis functions that use minimum energy extensions $-F^{-1} B^T$ (see $P_c$ and the notation above) have sufficiently local support.&lt;/p&gt;
+
+&lt;p&gt;Algebraic multigrid methods operate by specifying a coarsening algorithm and degree of sparsity, then attempting to choose good basis functions within those constraints.  Classical AMG chooses coarse points much like the factorization methods above, but restricts the support of the basis functions and uses heuristics to weight the contributions in order to approximate selected functions (like the constant).  Smoothed aggregation chooses aggregates and &lt;em&gt;tentative&lt;/em&gt; basis functions $T$ on the aggregates (to reproduce the constants or other functions exactly), then uses Jacobi relaxation to compute an interpolation $P = (I - \omega D^{-1} J)T$ which is smoother than $T$, but with correspondingly larger support.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s examine this construction of basis functions for the 1D Laplacian.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;cfactor = 3
+agg = numpy.arange(m) // cfactor
+mc = max(agg)+1
+T = numpy.zeros((m,mc))
+T[numpy.arange(m), agg] = 1
+
+pyplot.plot(T[:6*cfactor,2:5], &#39;-o&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_34_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;### Plain aggregation&lt;/p&gt;
+
+&lt;p&gt;We can use the tentative prolongation $T$ in a multigrid algorithm.  This is called plain aggregation and converges relatively slowly (note the relatively large maximum eigenvalue of the error iteration matrix).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Ac = T.T @ A @ T
+Sc = T @ numpy.linalg.inv(Ac) @ T.T @ A
+Lt, Xt = numpy.linalg.eig((I - .67*A) @ (I - Sc) @ (I - .67*A))
+pyplot.plot(Lt.real, Lt.imag, &#39;.&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_36_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;smoothed-aggregation&#34;&gt;Smoothed aggregation&lt;/h3&gt;
+
+&lt;p&gt;By performing one iteration of Jacobi relaxation
+$$ P = (I - w A) T $$
+we create coarses basis functions that more accurately approximate the smooth functions.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;P = (I - .67*A) @ T
+
+pyplot.plot(P[:6*cfactor,2:5], &#39;-o&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_38_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can form the Galerkin coarse operator using these smoothed coarse basis functions $A_c = P^T A P$ and observe better convergence than with plain aggregation.  We alse experiment with multiple smoothing iterations and adjusting their weights.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Ac = P.T @ A @ P
+Sc = P @ numpy.linalg.inv(Ac) @ P.T @ A
+# Uniform convergence rate, though not as good as with
+# a slower coarsening rate.
+Lt, Xt = numpy.linalg.eig((I - .67*A) @ (I - Sc) @ (I - .67*A))
+## Stronger smoothing helps
+Lt, Xt = numpy.linalg.eig((I - .67*A) @ (I - .67*A) @ (I - Sc) @ (I - .67*A) @ (I - .67*A))
+## And this can be tuned
+# w1, w2 = .6, 1
+# Lt, Xt = numpy.linalg.eig((I - w2*A) @ (I - w1*A) @ (I - Sc) @ (I - w1*A) @ (I - w2*A))
+
+pyplot.plot(Lt.real, Lt.imag, &#39;.&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_40_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;What if we use a more rapid coarsening factor?&lt;/li&gt;
+&lt;li&gt;How can we replace Jacobi relaxation with Gauss-Seidel?&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Fourier Methods</title>
+      <link>https://cucs-hpsc.github.io/fall2019/fft/</link>
+      <pubDate>Wed, 04 Dec 2019 06:49:25 -0600</pubDate>
+      <guid>https://cucs-hpsc.github.io/fall2019/fft/</guid>
+      <description>
+
+&lt;h2 id=&#34;discrete-signals&#34;&gt;Discrete signals&lt;/h2&gt;
+
+&lt;p&gt;Consider a function $f(x)$ defined on an integer grid $x \in \mathbb Z$.&lt;/p&gt;
+
+&lt;p&gt;We also consider the Fourier modes
+$$ e^{i\theta x} $$
+for continuous $\theta$.
+Is it possible to distinguish $e^{i\theta x}$ from $e^{i(\theta+2\pi)x}$?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+import ipywidgets as widgets
+plt.style.use(&#39;ggplot&#39;)
+
+@widgets.interact(theta=widgets.FloatSlider(min=-5, max=5, value=1))
+def signalplot(theta):
+    x = np.linspace(-5, 5, 200)
+    xx = np.linspace(-5, 5, dtype=int)
+    plt.plot(x, np.sin(theta*x))
+    plt.plot(xx, np.sin(theta*xx), &#39;ok&#39;);
+    plt.plot(x, np.sin((theta-2*np.pi)*x));
+    plt.plot(x, np.sin((theta+2*np.pi)*x));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;interactive(children=(FloatSlider(value=1.0, description=&#39;theta&#39;, max=5.0, min=-5.0), Output()), _dom_classes=…
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The limit $\theta=\pi$ is known as the Nyquist frequency, beyond which there exists a lower frequency signal that matches at all the integer points.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;@widgets.interact(n=widgets.IntSlider(min=1, max=30, value=2))
+def vplot(n):
+    x = np.linspace(-5, 5, 200)
+    plt.plot(x, np.sin(x))
+    plt.plot(x, np.sin(x) + np.sin(2*x)/2);
+    plt.plot(x, np.sum([np.sin(k*x)/k for k in range(1,n+1)], axis=0));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;interactive(children=(IntSlider(value=2, description=&#39;n&#39;, max=30, min=1), Output()), _dom_classes=(&#39;widget-int…
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;approximation-via-fourier-basis&#34;&gt;Approximation via Fourier basis&lt;/h3&gt;
+
+&lt;p&gt;It turns out that we can approximate any function $f(x)$ by a linear combination of Fourier modes&lt;/p&gt;
+
+&lt;p&gt;$$ f(x) \approx \sum_{k=1}^n \hat f(\theta_k) e^{i\theta_k x} . $$&lt;/p&gt;
+
+&lt;p&gt;This is reminiscent of linear algebra&lt;/p&gt;
+
+&lt;p&gt;$$ \Bigg[ f(x) \Bigg] = \Bigg[ e^{i\theta_1 x} \Bigg| e^{i\theta_2 x} \Bigg| \dotsm \Bigg] \begin{bmatrix} \hat f(\theta_1) \ \hat f(\theta_2) \ \vdots \end{bmatrix}
+= \Bigg[ e^{i\theta_1 x} \Bigg] \hat f(\theta_1) + \Bigg[ e^{i\theta_2 x} \Bigg] \hat f(\theta_2) + \dotsb . $$&lt;/p&gt;
+
+&lt;p&gt;If we take $\theta \in (-\pi, \pi]$ as a continuous quantity (instead of a discrete set of modes), the sum becomes and integral and we get equality (for &amp;ldquo;nice enough&amp;rdquo; $f(x)$),&lt;/p&gt;
+
+&lt;p&gt;$$ f(x) = \int_{-\pi}^\pi \hat f(\theta) e^{i\theta x} d\theta, $$&lt;/p&gt;
+
+&lt;p&gt;in which $\hat f(\theta)$ is the Fourier transform (specifically, the &lt;a href=&#34;https://en.wikipedia.org/wiki/Discrete-time_Fourier_transform&#34; target=&#34;_blank&#34;&gt;discrete time transform&lt;/a&gt;) of $f(x)$.  This representation is valuable for analyzing convergence of multigrid methods, among other applications.&lt;/p&gt;
+
+&lt;h4 id=&#34;computing-hat-f-theta&#34;&gt;Computing $\hat f(\theta)$&lt;/h4&gt;
+
+&lt;p&gt;If we select a finite number of points $x$ and compute the square Vandermonde matrix&lt;/p&gt;
+
+&lt;p&gt;$$ \mathcal F = \Bigg[ e^{i\theta_1 x} \Bigg| e^{i\theta_2 x} \Bigg| \dotsm \Bigg] $$&lt;/p&gt;
+
+&lt;p&gt;then, knowing the vector $f$, we could solve&lt;/p&gt;
+
+&lt;p&gt;$$ \mathcal F \hat f = f $$&lt;/p&gt;
+
+&lt;p&gt;for $\hat f$.  This would require $O(n^3)$ where $n$ is the number of points.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def fourier_vander(x, n=None):
+    &amp;quot;&amp;quot;&amp;quot;Create the Vandermonde matrix with columns &amp;quot;&amp;quot;&amp;quot;
+    if n is None:
+        n = len(x)
+    theta = -np.pi + 2*np.pi*np.arange(n)/n
+    F = np.exp(1j*np.outer(theta, x))
+    return F
+
+x = np.linspace(-20, 20, 41, dtype=int)
+F = fourier_vander(x)
+plt.plot(x, F[:,20:24].real);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;./lecture_5_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;x = np.linspace(-2, 2, 5, dtype=int)
+F = fourier_vander(x)
+np.real_if_close(F.conj().T @ F)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;array([[ 5.00000000e+00,  1.42128110e-16, -2.22044605e-16,
+        -2.58840649e-17,  8.88178420e-16],
+       [ 1.42128110e-16,  5.00000000e+00,  1.11022302e-16,
+        -4.44089210e-16, -2.58840649e-17],
+       [-2.22044605e-16,  1.11022302e-16,  5.00000000e+00,
+         1.11022302e-16, -2.22044605e-16],
+       [-2.58840649e-17, -4.44089210e-16,  1.11022302e-16,
+         5.00000000e+00,  1.42128110e-16],
+       [ 8.88178420e-16, -2.58840649e-17, -2.22044605e-16,
+         1.42128110e-16,  5.00000000e+00]])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;np.linalg.norm(F.conj().T @ F - 5*np.eye(5))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;1.9697658314011113e-15
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Evidently $\mathcal F$ (modulo normalization) is a unitary matrix, meaning that $\mathcal F^H \mathcal F = I$.  This means we can compute $\hat f$ with only multiplication, a cost of $O(n^2)$.  (Of course we don&amp;rsquo;t need to store $\mathcal F$ because its action can be evaluated on the fly.)&lt;/p&gt;
+
+&lt;h2 id=&#34;faster&#34;&gt;Faster!&lt;/h2&gt;
+
+&lt;p&gt;In this discrete context, the transform we need to evaluate is&lt;/p&gt;
+
+&lt;p&gt;$$ \hat f&lt;em&gt;k = \sum&lt;/em&gt;\ell e^{-i\theta&lt;em&gt;k x&lt;/em&gt;\ell} f_\ell $$&lt;/p&gt;
+
+&lt;p&gt;where $f&lt;em&gt;\ell$ are samples $f(x&lt;/em&gt;\ell)$ at integers $x_\ell = \ell$ and $\theta_k$ are the frequencies $2 \pi k/n$ (because the branch $(-\pi, \pi]$ is arbitrary).&lt;/p&gt;
+
+&lt;p&gt;\begin{align}
+\hat f&lt;em&gt;k &amp;amp;= \sum&lt;/em&gt;{\ell=0}^{n-1} e^{-2\pi i \frac{k \ell}{n}} f&lt;em&gt;\ell &lt;br /&gt;
+ &amp;amp;= \underbrace{\sum&lt;/em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{k (2\ell)}{n}} f&lt;em&gt;{2\ell}}&lt;/em&gt;{\text{even}} +
+ \underbrace{\sum&lt;em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{k (2\ell+1)}{n}} f&lt;/em&gt;{2\ell+1}}&lt;em&gt;{\text{odd}} &lt;br /&gt;
+ &amp;amp;= \underbrace{\sum&lt;/em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f&lt;em&gt;{2\ell}}&lt;/em&gt;{\text{transform of even data}} + e^{-2\pi i \frac k n} \underbrace{\sum&lt;em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f&lt;/em&gt;{2\ell+1}}_{\text{transform of odd data}}
+\end{align}&lt;/p&gt;
+
+&lt;p&gt;When the original signal $f$ is periodic, $f&lt;em&gt;{\ell} = f&lt;/em&gt;{\ell + n \bmod n}$, then
+\begin{align}
+\hat f&lt;em&gt;{k+n/2} &amp;amp;= \sum&lt;/em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{(k+n/2) \ell}{n/2}} f&lt;em&gt;{2\ell} + e^{-2\pi i \frac{(k+n/2)}{n}} \sum&lt;/em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{(k+n/2) \ell}{n/2}} f&lt;em&gt;{2\ell+1} &lt;br /&gt;
+&amp;amp;= \sum&lt;/em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f&lt;em&gt;{2\ell} + e^{-2\pi i \frac{k}{n}} e^{-\pi i} \sum&lt;/em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{k\ell}{n/2}} f&lt;em&gt;{2\ell+1} &lt;br /&gt;
+&amp;amp;= \sum&lt;/em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f&lt;em&gt;{2\ell} - e^{-2\pi i \frac{k}{n}} \sum&lt;/em&gt;{\ell=0}^{n/2-1} e^{-2\pi i \frac{k \ell}{n/2}} f_{2\ell+1}
+\end{align}
+where we have used that
+$$ e^{-2\pi i \ell} = \Big( e^{-2\pi i} \Big)^\ell = 1^\ell = 1 .$$&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;ve reduced a Fourier transform of length $n$ (at a cost of $n^2$) to two transforms of length $n/2$ (at a cost of $2 n^&lt;sup&gt;2&lt;/sup&gt;&amp;frasl;&lt;sub&gt;4&lt;/sub&gt; = n^&lt;sup&gt;2&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2&lt;/sub&gt;$).
+Repeating this recursively yields a complexity of $O(n\log n)$.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;@widgets.interact(m=widgets.IntSlider(min=1, max=10, value=1))
+def plot_fft(m):
+    n = 64
+    x = np.arange(n)
+    f = np.exp(2j*np.pi*m*x/n)
+    fhat = np.fft.fft(f)
+    plt.plot(x, f)
+    plt.plot(fhat / np.linalg.norm(fhat, np.inf))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;interactive(children=(IntSlider(value=1, description=&#39;m&#39;, max=10, min=1), Output()), _dom_classes=(&#39;widget-int…
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;@widgets.interact(m=widgets.IntSlider(min=1, max=20, value=1))
+def plot_fft_sawtooth(m):
+    n = 64
+    x = np.arange(n)
+    g = np.sum([np.sin(2*np.pi*k*x/n)/k for k in range(1,m+1)], axis=0)
+    ghat = np.fft.fft(g)
+    plt.plot(x, g)
+    plt.plot(1j*ghat / np.linalg.norm(ghat, np.inf))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;interactive(children=(IntSlider(value=1, description=&#39;m&#39;, max=20, min=1), Output()), _dom_classes=(&#39;widget-int…
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;parallel-limitation-bisection-bandwidth&#34;&gt;Parallel limitation: bisection bandwidth&lt;/h3&gt;
+
+&lt;h3 id=&#34;applications&#34;&gt;Applications&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Signal processing, compression, etc.&lt;/li&gt;
+&lt;li&gt;Differentiation and PDEs&lt;/li&gt;
+&lt;li&gt;Chebyshev polynomials&lt;/li&gt;
+&lt;li&gt;Butterfly algorithms for integral operators
+$$ (\mathcal K f)(x) = \int_{Y} K(x,y) f(y) dy $$
+See &lt;a href=&#34;https://math.mit.edu/icg/papers/butterfly-parallel.pdf&#34; target=&#34;_blank&#34;&gt;Poulson et al., A parallel butterfly algorithm&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Git Workflows</title>
       <link>https://cucs-hpsc.github.io/fall2019/git/</link>
       <pubDate>Mon, 02 Dec 2019 06:49:25 -0600</pubDate>
