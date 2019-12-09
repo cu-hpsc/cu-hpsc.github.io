@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.4.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Jed Brown">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="%matplotlib inline import numpy as np import matplotlib.pyplot as plt plt.style.use(&#39;ggplot&#39;)  Algebraic Multigrid and Finite Element Methods Factorization as a multigrid (or domain decomposition) method incurs significant cost in multiple dimensions due to lack of sparsity. It is not feasible to choose enough coarse basis functions so that coarse basis functions that use minimum energy extensions $-F^{-1} B^T$ (see $P_c$ and the notation above) have sufficiently local support.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/amg/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.dd629241ea9333c62c071f4a25f829ff.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/amg/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@five9a2">
+  <meta property="twitter:creator" content="@five9a2">
+  
+  <meta property="og:site_name" content="HPSC">
+  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/amg/">
+  <meta property="og:title" content="Algebraic Multigrid | HPSC">
+  <meta property="og:description" content="%matplotlib inline import numpy as np import matplotlib.pyplot as plt plt.style.use(&#39;ggplot&#39;)  Algebraic Multigrid and Finite Element Methods Factorization as a multigrid (or domain decomposition) method incurs significant cost in multiple dimensions due to lack of sparsity. It is not feasible to choose enough coarse basis functions so that coarse basis functions that use minimum energy extensions $-F^{-1} B^T$ (see $P_c$ and the notation above) have sufficiently local support."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-12-09T06:49:25-06:00">
+    
+    <meta property="article:modified_time" content="2019-12-09T13:25:00-07:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>Algebraic Multigrid | HPSC</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">HPSC</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav mr-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/fall2019/"><span>Fall 2019</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-auto">
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/">Logistics</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/syllabus/">Syllabus</a>
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/intro-architecture/">Lecture Notes</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/intro-architecture/">2019-08-28 Architecture</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-vectorization/">2019-08-30 Vectorization</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-modeling/">2019-09-04 Modeling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-parallel-scaling/">2019-09-06 Parallel Scaling</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp/">2019-09-11 OpenMP Basics</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-2/">2019-09-13 More OpenMP</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-3/">2019-09-16 OpenMP Tasks</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/strategies/">2019-09-18 Reductions and Scans</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/sorting-graphs/">2019-09-23 More bitonic sorting, graphs</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/intro-mpi/">2019-09-24 Introduction to MPI</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg/">2019-09-30 Dense Linear Algebra</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-2/">2019-10-02 Dense Linear Algebra and Orthogonality</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dense-linalg-3/">2019-10-04 Orthogonality and Conditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/elemental/">2019-10-07 Elemental</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/iterative-solvers/">2019-10-09 Sparse and Iterative</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/preconditioning/">2019-10-11 Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning/">2019-10-14 DD Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/dd-preconditioning-2/">2019-10-16 DD Preconditioning 2</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/mg-preconditioning/">2019-10-18 Multilevel Preconditioning</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/nonlinear/">2019-10-21 Nonlinear</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/transient/">2019-10-23 Transient</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/libceed/">2019-10-25 libCEED</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/coprocessor/">2019-10-28 Coprocessors</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/cuda/">2019-10-30 GPUs and CUDA</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/cuda-practical/">2019-11-01 Practical CUDA</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/openmp-target/">2019-11-04 ISP/OpenMP/OpenACC</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/io/">2019-11-06 HPC I/O</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/mpi-io/">2019-11-08 MPI-IO</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/data-methods/">2019-11-11 Data-intensive</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/data-probability/">2019-11-13 Data and Probability</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/interactive/">2019-11-15 Dynamic/Interactive</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/nbody/">2019-11-18 Intro N-body</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/nbody-longrange/">2019-11-20 Long-range N-body</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/md/">2019-11-22 Molecular Dynamics</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/git/">2019-12-02 Git Workflows</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/fft/">2019-12-04 Fourier</a>
+      </li>
+      
+      <li >
+        <a href="/fall2019/multigrid/">2019-12-06 Multigrid Intro</a>
+      </li>
+      
+      <li class="active">
+        <a href="/fall2019/amg/">2019-12-09 Algebraic Multigrid</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/fall2019/trends/">Resources</a>
+    <ul class="nav docs-sidenav">
+      
+      <li >
+        <a href="/fall2019/trends/">Trends</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+<ul>
+<li><a href="#algebraic-multigrid-and-finite-element-methods">Algebraic Multigrid and Finite Element Methods</a>
+<ul>
+<li><a href="#generalize-to-multiple-dimensions">Generalize to multiple dimensions</a>
+<ul>
+<li><a href="#smoothed-aggregation">Smoothed aggregation</a></li>
+</ul></li>
+<li><a href="#amg-on-summit">AMG on Summit</a></li>
+</ul></li>
+</ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+
+        <div class="docs-article-container">
+          <h1 itemprop="name">Algebraic Multigrid</h1>
+
+          <div class="article-style" itemprop="articleBody">
+            
+
+<pre><code class="language-python">%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
+</code></pre>
+
+<h1 id="algebraic-multigrid-and-finite-element-methods">Algebraic Multigrid and Finite Element Methods</h1>
+
+<p>Factorization as a multigrid (or domain decomposition) method incurs significant cost in multiple dimensions due to lack of sparsity.  It is not feasible to choose enough coarse basis functions so that coarse basis functions that use minimum energy extensions $-F^{-1} B^T$ (see $P_c$ and the notation above) have sufficiently local support.</p>
+
+<p>Algebraic multigrid methods operate by specifying a coarsening algorithm and degree of sparsity, then attempting to choose good basis functions within those constraints.  Classical AMG chooses coarse points much like the factorization methods above, but restricts the support of the basis functions and uses heuristics to weight the contributions in order to approximate selected functions (like the constant).  Smoothed aggregation chooses aggregates and <em>tentative</em> basis functions $T$ on the aggregates (to reproduce the constants or other functions exactly), then uses Jacobi relaxation to compute an interpolation $P = (I - \omega D^{-1} J)T$ which is smoother than $T$, but with correspondingly larger support.</p>
+
+<p>Let&rsquo;s examine this construction of basis functions for the 1D Laplacian.</p>
+
+<pre><code class="language-python">m = 15
+cfactor = 3
+agg = np.arange(m) // cfactor
+mc = max(agg)+1
+T = np.zeros((m,mc))
+T[np.arange(m), agg] = 1
+
+plt.plot(T[:6*cfactor,2:5], '-o');
+</code></pre>
+
+<p><img src="./lecture_2_0.png" alt="png" /></p>
+
+<h2 id="generalize-to-multiple-dimensions">Generalize to multiple dimensions</h2>
+
+<pre><code class="language-python">import meshio
+m = meshio.read('insulated-4.1.msh')
+m
+</code></pre>
+
+<pre><code>&lt;meshio mesh object&gt;
+  Number of points: 67
+  Number of elements:
+    line: 21
+    triangle: 111
+  Cell data: gmsh:physical
+</code></pre>
+
+<pre><code class="language-python">tris = m.cells['triangle']
+vtx = m.points[:,:2]
+plt.triplot(vtx[:,0], vtx[:,1], triangles=tris);
+</code></pre>
+
+<p><img src="./lecture_5_0.png" alt="png" /></p>
+
+<pre><code class="language-python">%run femtools.py
+fe2tri(1).plot()
+</code></pre>
+
+<p><img src="./lecture_6_0.png" alt="png" /></p>
+
+<p><img src="./lecture_6_1.png" alt="png" /></p>
+
+<pre><code class="language-python">import scipy.sparse as sp
+
+def poisson(vtx, tris, K=np.eye(2)):
+    fe = fe2tri(1)
+    B = fe.B
+    D = fe.D
+    w = fe.w
+    ai = []
+    aj = []
+    aa = []
+    for e in tris:
+        x = vtx[e]
+        dxdX = D @ x
+        Jac = np.linalg.det(dxdX)
+        dXdx = np.linalg.inv(dxdX)
+        Ae = np.einsum('qYi,qYy,q,yx,qXx,qXj-&gt;ij', D, dXdx, w*Jac, K, dXdx, D)
+        ai += np.outer(e, np.ones_like(e)).flatten().tolist()
+        aj += np.outer(np.ones_like(e), e).flatten().tolist()
+        aa += Ae.flatten().tolist()
+    Ndof = len(vtx)
+    return sp.csr_matrix((aa, (ai, aj)), shape=(Ndof,Ndof))
+
+A = poisson(vtx, tris)
+plt.spy(A);
+</code></pre>
+
+<p><img src="./lecture_7_0.png" alt="png" /></p>
+
+<pre><code class="language-python">print(A[10:12,:])
+</code></pre>
+
+<pre><code>  (0, 1)    -1.5630160271053208
+  (0, 10)   6.556997868019531
+  (0, 11)   -0.4991399480099342
+  (0, 40)   -1.9953216391894464
+  (0, 45)   0.3840234553139328
+  (0, 46)   -1.7094454886739032
+  (0, 57)   -0.23058360488609603
+  (0, 62)   -0.943514615468765
+  (1, 10)   -0.49913994800993416
+  (1, 11)   5.542813429859226
+  (1, 12)   -0.10388463632263972
+  (1, 26)   -2.7474164337774893
+  (1, 46)   -0.8370082745892002
+  (1, 53)   -0.46431808983657663
+  (1, 62)   -0.8910460473233867
+</code></pre>
+
+<pre><code class="language-python">import scipy.sparse.linalg as spla
+from matplotlib.tri import Triangulation
+Tri = Triangulation(vtx[:,0], vtx[:,1], triangles=tris)
+
+L, X = spla.eigsh(A)
+print(L)
+plt.triplot(Tri)
+plt.tricontourf(Tri, X[:,-3])
+plt.colorbar();
+</code></pre>
+
+<pre><code>[ 9.4139805   9.68128117 10.27995246 10.34278686 10.93310486 11.4109622 ]
+</code></pre>
+
+<p><img src="./lecture_9_1.png" alt="png" /></p>
+
+<pre><code class="language-python">L, X = spla.eigsh(A, which='SM')
+print(L)
+plt.triplot(Tri)
+plt.tricontourf(Tri, X[:,1])
+plt.colorbar();
+</code></pre>
+
+<pre><code>[-3.45938976e-16  1.85280451e-01  1.99848301e-01  4.07947457e-01
+  5.22918574e-01  6.41992622e-01]
+</code></pre>
+
+<p><img src="./lecture_10_1.png" alt="png" /></p>
+
+<pre><code class="language-python">agg = A[15].indices
+u = np.zeros_like(X[:,0])
+u[agg] = 1
+plt.triplot(Tri)
+plt.tricontourf(Tri, u)
+plt.colorbar();
+</code></pre>
+
+<p><img src="./lecture_11_0.png" alt="png" /></p>
+
+<pre><code class="language-python"># Note: the hiccup in class was that I still used eigvalsh() (for Hermitian/symmetric matrices)
+# even though D^{-1} A is not symmetric (despite having a non-negative real spectrum).  When
+# using eigvals(), we need to explicitly sort. 
+
+sorted(np.linalg.eigvals(1/A.diagonal()[:,None] * np.array(A.todense())))[:10]
+</code></pre>
+
+<pre><code>[1.8041124150158794e-16,
+ 0.042696928864341385,
+ 0.0505115882282515,
+ 0.11183694042048116,
+ 0.1387743693449715,
+ 0.18411024946995722,
+ 0.19607371754490172,
+ 0.25917793178986664,
+ 0.28728307149386784,
+ 0.3091821071345255]
+</code></pre>
+
+<pre><code class="language-python">us = u - 0.6 / A.diagonal() * (A @ u)
+print(np.min(u), np.max(u))
+print(np.min(us), np.max(us))
+plt.triplot(Tri)
+plt.tricontourf(Tri, us)
+plt.colorbar();
+</code></pre>
+
+<pre><code>0.0 1.0
+-0.024685331055504047 1.0773930751561949
+</code></pre>
+
+<p><img src="./lecture_13_1.png" alt="png" /></p>
+
+<h3 id="smoothed-aggregation">Smoothed aggregation</h3>
+
+<p>By performing one iteration of Jacobi relaxation
+$$ P = (I - w A) T $$
+we create coarses basis functions that more accurately approximate the smooth functions. This is evaluated as</p>
+
+<pre><code class="language-python">P = A @ T
+P = T - w*P # in-place
+</code></pre>
+
+<p>We can form the Galerkin coarse operator using these smoothed coarse basis functions $A_c = P^T A P$ and observe better convergence than with plain aggregation.</p>
+
+<p>This is usually computed as $P^T (A P)$ or $R = P^T$ followed by $ R (A P)$, where the term in parentheses is either normalized into (parallel) compressed sparse row (CSR) format or held in a similar intermediate representation.  It is also possible to do efficiently in which only one row of $A P$ is generated at a time, and the entire product is never held in memory.  This <a href="https://gitlab.com/petsc/petsc/merge_requests/1640#note_205294524" target="_blank">performs</a> slightly worse, but uses much less memory.</p>
+
+<p>This triple product is usually the most expensive part of AMG setup.  At extreme levels of parallelism, the communication pattern for smoothing and restriction/interpolation on coarse grids can also be critical. Some packages (e.g., PETSc&rsquo;s GAMG) reduce the active process set while others run in-place.</p>
+
+<ul>
+<li><a href="https://epubs.siam.org/doi/abs/10.1137/110838844" target="_blank">Bell, Dalton, Olson (2012): Exposing Fine-Grained Parallelism in Algebraic Multigrid Methods</a></li>
+<li><a href="https://arxiv.org/abs/1904.05838" target="_blank">Bienz, Gropp, Olson (2019): Reducing Communication in Algebraic Multigrid with Multi-step Node Aware Communication</a></li>
+<li><a href="https://epubs.siam.org/doi/abs/10.1137/040615729" target="_blank">De Sterck, Yang, Heys (2006): Reducing Complexity in Parallel Algebraic Multigrid Preconditioners</a></li>
+</ul>
+
+<p><img src="amg-fig.png" alt="" />
+<img src="amg-table.png" alt="" /></p>
+
+<h2 id="amg-on-summit">AMG on Summit</h2>
+
+<p>This performance exploration comes from recent runs of PETSc&rsquo;s GAMG with and without GPUs on OLCF Summit, compared with a 2x28-core Skylake node.</p>
+
+<pre><code>------------------------------------------------------------------------------------------------------------------------
+Event                Count      Time (sec)     Flop                              --- Global ---  --- Stage ----  Total   GPU    - CpuToGpu -   - GpuToCpu - GPU
+                   Max Ratio  Max     Ratio   Max  Ratio  Mess   AvgLen  Reduct  %T %F %M %L %R  %T %F %M %L %R Mflop/s Mflop/s Count   Size   Count   Size  %F
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+$ rg 'MGInterp Level 4|MGSmooth Level 4' ex56*
+ex56-JLSE-skylake-56ranks-converged.txt
+254:MGSmooth Level 4      68 1.0 1.8808e+00 1.2 7.93e+08 1.3 3.6e+04 1.9e+04 3.4e+01  8 29 10 16  3  62 60 18 54 25 22391
+256:MGInterp Level 4      68 1.0 4.0043e-01 1.8 1.45e+08 1.3 2.2e+04 2.5e+03 0.0e+00  1  5  6  1  0   9 11 11  4  0 19109
+
+ex56-summit-cpu-36ranks-converged.txt
+265:MGSmooth Level 4      68 1.0 1.1531e+00 1.1 1.22e+09 1.2 2.3e+04 2.6e+04 3.4e+01  3 29  7 13  3  61 60 12 54 25 36519       0      0 0.00e+00    0 0.00e+00  0
+267:MGInterp Level 4      68 1.0 2.0749e-01 1.1 2.23e+08 1.2 1.4e+04 3.4e+03 0.0e+00  0  5  4  1  0  11 11  7  4  0 36925       0      0 0.00e+00    0 0.00e+00  0
+
+ex56-summit-gpu-24ranks-converged.txt
+275:MGSmooth Level 4      68 1.0 1.4499e-01 1.2 1.85e+09 1.2 1.0e+04 5.3e+04 3.4e+01  0 29  7 13  3  26 60 12 55 25 299156   940881    115 2.46e+01  116 8.64e+01 100
+277:MGInterp Level 4      68 1.0 1.7674e-01 1.0 3.23e+08 1.2 6.1e+03 6.7e+03 0.0e+00  0  5  4  1  0  33 11  7  4  0 42715   621223     36 2.98e+01  136 3.95e+00 100
+
+ex56-summit-gpu-36ranks-converged.txt
+275:MGSmooth Level 4      68 1.0 1.4877e-01 1.2 1.25e+09 1.2 2.3e+04 2.6e+04 3.4e+01  0 29  7 13  3  19 60 12 54 25 291548   719522    115 1.83e+01  116 5.80e+01 100
+277:MGInterp Level 4      68 1.0 2.4317e-01 1.0 2.20e+08 1.2 1.4e+04 3.4e+03 0.0e+00  0  5  4  1  0  33 11  7  4  0 31062   586044     36 1.99e+01  136 2.82e+00 100
+</code></pre>
+
+<p>The Skylake is a lot faster at PtAP.  It&rsquo;d be interesting to better
+understand why.  Perhaps it has to do with caching or aggressiveness of
+out-of-order execution.</p>
+
+<pre><code>$ rg 'PtAP' ex56*
+ex56-JLSE-skylake-56ranks-converged.txt
+164:MatPtAP                4 1.0 1.4214e+00 1.0 3.94e+08 1.5 1.1e+04 7.4e+04 4.4e+01  6 13  3 20  4   8 28  8 39  5 13754
+165:MatPtAPSymbolic        4 1.0 8.3981e-01 1.0 0.00e+00 0.0 6.5e+03 7.3e+04 2.8e+01  4  0  2 12  2   5  0  5 23  3     0
+166:MatPtAPNumeric         4 1.0 5.8402e-01 1.0 3.94e+08 1.5 4.5e+03 7.5e+04 1.6e+01  2 13  1  8  1   3 28  3 16  2 33474
+
+ex56-summit-cpu-36ranks-converged.txt
+164:MatPtAP                4 1.0 3.9077e+00 1.0 5.89e+08 1.4 1.6e+04 7.4e+04 4.4e+01  9 13  5 26  4  11 28 12 46  5  4991       0      0 0.00e+00    0 0.00e+00  0
+165:MatPtAPSymbolic        4 1.0 1.9525e+00 1.0 0.00e+00 0.0 1.2e+04 7.3e+04 2.8e+01  5  0  4 19  3   5  0  9 34  3     0       0      0 0.00e+00    0 0.00e+00  0
+166:MatPtAPNumeric         4 1.0 1.9621e+00 1.0 5.89e+08 1.4 4.0e+03 7.5e+04 1.6e+01  5 13  1  7  1   5 28  3 12  2  9940       0      0 0.00e+00    0 0.00e+00  0
+
+ex56-summit-gpu-24ranks-converged.txt
+167:MatPtAP                4 1.0 5.7210e+00 1.0 8.48e+08 1.3 7.5e+03 1.3e+05 4.4e+01  8 13  5 25  4  11 28 12 46  5  3415       0     16 3.36e+01    4 6.30e-02  0
+168:MatPtAPSymbolic        4 1.0 2.8717e+00 1.0 0.00e+00 0.0 5.5e+03 1.3e+05 2.8e+01  4  0  4 19  3   5  0  9 34  3     0       0      0 0.00e+00    0 0.00e+00  0
+169:MatPtAPNumeric         4 1.0 2.8537e+00 1.0 8.48e+08 1.3 2.0e+03 1.3e+05 1.6e+01  4 13  1  7  1   5 28  3 12  2  6846       0     16 3.36e+01    4 6.30e-02  0
+
+ex56-summit-gpu-36ranks-converged.txt
+167:MatPtAP                4 1.0 4.0340e+00 1.0 5.89e+08 1.4 1.6e+04 7.4e+04 4.4e+01  8 13  5 26  4  11 28 12 46  5  4835       0     16 2.30e+01    4 5.18e-02  0
+168:MatPtAPSymbolic        4 1.0 2.0355e+00 1.0 0.00e+00 0.0 1.2e+04 7.3e+04 2.8e+01  4  0  4 19  3   5  0  9 34  3     0       0      0 0.00e+00    0 0.00e+00  0
+169:MatPtAPNumeric         4 1.0 2.0050e+00 1.0 5.89e+08 1.4 4.0e+03 7.5e+04 1.6e+01  4 13  1  7  1   5 28  3 12  2  9728       0     16 2.30e+01    4 5.18e-02  0
+</code></pre>
+
+<p>The transpose operation is relatively more expensive with GPUs, suggesting that a better code path on GPUs is to compute an explicit transpose.</p>
+
+<pre><code>$ rg 'MGInterp|MultTrans' ex56*
+ex56-JLSE-skylake-56ranks-converged.txt
+222:MatMultTranspose     136 1.0 3.5105e-01 3.7 7.91e+07 1.3 2.5e+04 1.3e+03 0.0e+00  1  3  7  1  0   5  6 13  3  0 11755
+247:MGInterp Level 1      68 1.0 3.3894e-04 2.2 2.35e+05 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0   693
+250:MGInterp Level 2      68 1.0 1.1212e-0278.0 1.17e+06 0.0 1.8e+03 7.7e+02 0.0e+00  0  0  1  0  0   0  0  1  0  0  2172
+253:MGInterp Level 3      68 1.0 6.7105e-02 5.3 1.23e+07 1.8 2.7e+04 4.2e+02 0.0e+00  0  0  8  0  0   1  1 14  1  0  8594
+256:MGInterp Level 4      68 1.0 4.0043e-01 1.8 1.45e+08 1.3 2.2e+04 2.5e+03 0.0e+00  1  5  6  1  0   9 11 11  4  0 19109
+
+ex56-summit-cpu-36ranks-converged.txt
+229:MatMultTranspose     136 1.0 1.4832e-01 1.4 1.21e+08 1.2 1.9e+04 1.5e+03 0.0e+00  0  3  6  1  0   6  6 10  3  0 27842       0      0 0.00e+00    0 0.00e+00  0
+258:MGInterp Level 1      68 1.0 2.9145e-04 1.5 1.08e+05 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0   370       0      0 0.00e+00    0 0.00e+00  0
+261:MGInterp Level 2      68 1.0 5.7095e-03 1.5 9.16e+05 2.5 2.4e+03 7.1e+02 0.0e+00  0  0  1  0  0   0  0  1  0  0  4093       0      0 0.00e+00    0 0.00e+00  0
+264:MGInterp Level 3      68 1.0 3.5654e-02 2.8 1.77e+07 1.5 2.3e+04 3.9e+02 0.0e+00  0  0  7  0  0   1  1 12  1  0 16095       0      0 0.00e+00    0 0.00e+00  0
+267:MGInterp Level 4      68 1.0 2.0749e-01 1.1 2.23e+08 1.2 1.4e+04 3.4e+03 0.0e+00  0  5  4  1  0  11 11  7  4  0 36925       0      0 0.00e+00    0 0.00e+00  0
+
+ex56-summit-gpu-24ranks-converged.txt
+236:MatMultTranspose     136 1.0 2.1445e-01 1.0 1.72e+08 1.2 9.5e+03 2.6e+03 0.0e+00  0  3  6  1  0  39  6 11  3  0 18719   451131      8 3.11e+01  272 2.19e+00 100
+268:MGInterp Level 1      68 1.0 4.0388e-03 2.8 1.08e+05 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0    27      79     37 5.84e-04   68 6.80e-05 100
+271:MGInterp Level 2      68 1.0 2.9033e-02 2.9 1.25e+06 1.9 1.6e+03 7.8e+02 0.0e+00  0  0  1  0  0   5  0  2  0  0   812   11539     36 1.14e-01  136 5.41e-02 100
+274:MGInterp Level 3      68 1.0 4.9503e-02 1.1 2.50e+07 1.4 1.1e+04 6.3e+02 0.0e+00  0  0  7  0  0   9  1 13  1  0 11476   100889     36 2.29e+00  136 3.74e-01 100
+277:MGInterp Level 4      68 1.0 1.7674e-01 1.0 3.23e+08 1.2 6.1e+03 6.7e+03 0.0e+00  0  5  4  1  0  33 11  7  4  0 42715   621223     36 2.98e+01  136 3.95e+00 100
+
+ex56-summit-gpu-36ranks-converged.txt
+236:MatMultTranspose     136 1.0 2.9692e-01 1.0 1.17e+08 1.2 1.9e+04 1.5e+03 0.0e+00  1  3  6  1  0  40  6 10  3  0 13521   336701      8 2.08e+01  272 1.59e+00 100
+268:MGInterp Level 1      68 1.0 3.8752e-03 2.5 1.03e+05 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0    27      79     37 3.95e-04   68 4.53e-05 100
+271:MGInterp Level 2      68 1.0 3.5465e-02 2.2 9.12e+05 2.5 2.4e+03 7.1e+02 0.0e+00  0  0  1  0  0   4  0  1  0  0   655    5989     36 8.16e-02  136 4.89e-02 100
+274:MGInterp Level 3      68 1.0 6.7101e-02 1.1 1.75e+07 1.5 2.3e+04 3.9e+02 0.0e+00  0  0  7  0  0   9  1 12  1  0  8455   56175     36 1.55e+00  136 3.03e-01 100
+277:MGInterp Level 4      68 1.0 2.4317e-01 1.0 2.20e+08 1.2 1.4e+04 3.4e+03 0.0e+00  0  5  4  1  0  33 11  7  4  0 31062   586044     36 1.99e+01  136 2.82e+00 100
+</code></pre>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/fall2019/syllabus/" rel="next">Syllabus</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/fall2019/multigrid/" rel="prev">Multigrid Intro</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on Dec 9, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/amg/index.md">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/python.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/c.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
