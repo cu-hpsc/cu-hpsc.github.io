@@ -32,7 +32,7 @@
 static double dot_opt3(size_t n, const double *a, const double *b) { double sum = 0; omp_set_num_threads(4); #pragma omp parallel { #pragma omp for reduction(&#43;:sum) for (size_t i=0; i&lt;n; i&#43;&#43;) sum &#43;= a[i] * b[i]; } return sum; }  gcc -Os -march=native -fopenmp dot.c -o dot objdump -d --prefix-addresses -M intel dot | grep dot_opt3  000000000000129f &lt;main&#43;0x1af&gt; call 0000000000001779 &lt;dot_opt3&gt; 0000000000001779 &lt;dot_opt3&gt; push r12 000000000000177b &lt;dot_opt3&#43;0x2&gt; mov r12,rdx 000000000000177e &lt;dot_opt3&#43;0x5&gt; push rbp 000000000000177f &lt;dot_opt3&#43;0x6&gt; mov rbp,rsi 0000000000001782 &lt;dot_opt3&#43;0x9&gt; push rbx 0000000000001783 &lt;dot_opt3&#43;0xa&gt; mov rbx,rdi 0000000000001786 &lt;dot_opt3&#43;0xd&gt; mov edi,0x4 000000000000178b &lt;dot_opt3&#43;0x12&gt; sub rsp,0x30 000000000000178f &lt;dot_opt3&#43;0x16&gt; mov rax,QWORD PTR fs:0x28 0000000000001798 &lt;dot_opt3&#43;0x1f&gt; mov QWORD PTR [rsp&#43;0x28],rax 000000000000179d &lt;dot_opt3&#43;0x24&gt; xor eax,eax 000000000000179f &lt;dot_opt3&#43;0x26&gt; call 0000000000001070 &lt;omp_set_num_threads@plt&gt; 00000000000017a4 &lt;dot_opt3&#43;0x2b&gt; xor ecx,ecx 00000000000017a6 &lt;dot_opt3&#43;0x2d&gt; xor edx,edx 00000000000017a8 &lt;dot_opt3&#43;0x2f&gt; lea rsi,[rsp&#43;0x8] 00000000000017ad &lt;dot_opt3&#43;0x34&gt; lea rdi,[rip&#43;0xc1] # 0000000000001875 &lt;dot_opt3.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/openmp-2/">
+  <link rel="alternate" hreflang="en-us" href="https://cu-hpsc.github.io/fall2019/openmp-2/">
 
   
 
@@ -99,7 +99,7 @@ static double dot_opt3(size_t n, const double *a, const double *b) { double sum 
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/openmp-2/">
+  <link rel="canonical" href="https://cu-hpsc.github.io/fall2019/openmp-2/">
 
   
   
@@ -115,11 +115,11 @@ static double dot_opt3(size_t n, const double *a, const double *b) { double sum 
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/openmp-2/">
+  <meta property="og:url" content="https://cu-hpsc.github.io/fall2019/openmp-2/">
   <meta property="og:title" content="More OpenMP | HPSC">
   <meta property="og:description" content="What does the compiler do when we add #pragma omp parallel?
-static double dot_opt3(size_t n, const double *a, const double *b) { double sum = 0; omp_set_num_threads(4); #pragma omp parallel { #pragma omp for reduction(&#43;:sum) for (size_t i=0; i&lt;n; i&#43;&#43;) sum &#43;= a[i] * b[i]; } return sum; }  gcc -Os -march=native -fopenmp dot.c -o dot objdump -d --prefix-addresses -M intel dot | grep dot_opt3  000000000000129f &lt;main&#43;0x1af&gt; call 0000000000001779 &lt;dot_opt3&gt; 0000000000001779 &lt;dot_opt3&gt; push r12 000000000000177b &lt;dot_opt3&#43;0x2&gt; mov r12,rdx 000000000000177e &lt;dot_opt3&#43;0x5&gt; push rbp 000000000000177f &lt;dot_opt3&#43;0x6&gt; mov rbp,rsi 0000000000001782 &lt;dot_opt3&#43;0x9&gt; push rbx 0000000000001783 &lt;dot_opt3&#43;0xa&gt; mov rbx,rdi 0000000000001786 &lt;dot_opt3&#43;0xd&gt; mov edi,0x4 000000000000178b &lt;dot_opt3&#43;0x12&gt; sub rsp,0x30 000000000000178f &lt;dot_opt3&#43;0x16&gt; mov rax,QWORD PTR fs:0x28 0000000000001798 &lt;dot_opt3&#43;0x1f&gt; mov QWORD PTR [rsp&#43;0x28],rax 000000000000179d &lt;dot_opt3&#43;0x24&gt; xor eax,eax 000000000000179f &lt;dot_opt3&#43;0x26&gt; call 0000000000001070 &lt;omp_set_num_threads@plt&gt; 00000000000017a4 &lt;dot_opt3&#43;0x2b&gt; xor ecx,ecx 00000000000017a6 &lt;dot_opt3&#43;0x2d&gt; xor edx,edx 00000000000017a8 &lt;dot_opt3&#43;0x2f&gt; lea rsi,[rsp&#43;0x8] 00000000000017ad &lt;dot_opt3&#43;0x34&gt; lea rdi,[rip&#43;0xc1] # 0000000000001875 &lt;dot_opt3."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
-  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+static double dot_opt3(size_t n, const double *a, const double *b) { double sum = 0; omp_set_num_threads(4); #pragma omp parallel { #pragma omp for reduction(&#43;:sum) for (size_t i=0; i&lt;n; i&#43;&#43;) sum &#43;= a[i] * b[i]; } return sum; }  gcc -Os -march=native -fopenmp dot.c -o dot objdump -d --prefix-addresses -M intel dot | grep dot_opt3  000000000000129f &lt;main&#43;0x1af&gt; call 0000000000001779 &lt;dot_opt3&gt; 0000000000001779 &lt;dot_opt3&gt; push r12 000000000000177b &lt;dot_opt3&#43;0x2&gt; mov r12,rdx 000000000000177e &lt;dot_opt3&#43;0x5&gt; push rbp 000000000000177f &lt;dot_opt3&#43;0x6&gt; mov rbp,rsi 0000000000001782 &lt;dot_opt3&#43;0x9&gt; push rbx 0000000000001783 &lt;dot_opt3&#43;0xa&gt; mov rbx,rdi 0000000000001786 &lt;dot_opt3&#43;0xd&gt; mov edi,0x4 000000000000178b &lt;dot_opt3&#43;0x12&gt; sub rsp,0x30 000000000000178f &lt;dot_opt3&#43;0x16&gt; mov rax,QWORD PTR fs:0x28 0000000000001798 &lt;dot_opt3&#43;0x1f&gt; mov QWORD PTR [rsp&#43;0x28],rax 000000000000179d &lt;dot_opt3&#43;0x24&gt; xor eax,eax 000000000000179f &lt;dot_opt3&#43;0x26&gt; call 0000000000001070 &lt;omp_set_num_threads@plt&gt; 00000000000017a4 &lt;dot_opt3&#43;0x2b&gt; xor ecx,ecx 00000000000017a6 &lt;dot_opt3&#43;0x2d&gt; xor edx,edx 00000000000017a8 &lt;dot_opt3&#43;0x2f&gt; lea rsi,[rsp&#43;0x8] 00000000000017ad &lt;dot_opt3&#43;0x34&gt; lea rdi,[rip&#43;0xc1] # 0000000000001875 &lt;dot_opt3."><meta property="og:image" content="https://cu-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cu-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
       <meta property="article:published_time" content="2019-09-13T06:49:25-06:00">
@@ -803,7 +803,7 @@ flags like <code>-ffast-math</code>.)</p>
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/openmp-2/index.md">
+  <a href="https://github.com/cu-hpsc/hpsc-class/edit/master/content/fall2019/openmp-2/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

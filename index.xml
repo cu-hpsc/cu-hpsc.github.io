@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>HPSC</title>
-    <link>https://cucs-hpsc.github.io/</link>
-      <atom:link href="https://cucs-hpsc.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <link>https://cu-hpsc.github.io/</link>
+      <atom:link href="https://cu-hpsc.github.io/index.xml" rel="self" type="application/rss+xml" />
     <description>HPSC</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 01 Jun 2030 13:00:00 +0000</lastBuildDate>
     <image>
-      <url>https://cucs-hpsc.github.io/img/icon-192.png</url>
+      <url>https://cu-hpsc.github.io/img/icon-192.png</url>
       <title>HPSC</title>
-      <link>https://cucs-hpsc.github.io/</link>
+      <link>https://cu-hpsc.github.io/</link>
     </image>
     
     <item>
       <title>Example Page 1</title>
-      <link>https://cucs-hpsc.github.io/courses/example/example1/</link>
+      <link>https://cu-hpsc.github.io/courses/example/example1/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>https://cucs-hpsc.github.io/courses/example/example1/</guid>
+      <guid>https://cu-hpsc.github.io/courses/example/example1/</guid>
       <description>
 
 &lt;p&gt;In this tutorial, I&amp;rsquo;ll share my top 10 tips for getting started with Academic:&lt;/p&gt;
@@ -49,9 +49,9 @@
     
     <item>
       <title>Syllabus</title>
-      <link>https://cucs-hpsc.github.io/fall2019/syllabus/</link>
+      <link>https://cu-hpsc.github.io/fall2019/syllabus/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/syllabus/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/syllabus/</guid>
       <description>
 
 &lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
@@ -326,9 +326,9 @@ There is no required textbook, but the following resources may be helpful.&lt;/p
     
     <item>
       <title>Algebraic Multigrid</title>
-      <link>https://cucs-hpsc.github.io/fall2019/amg/</link>
+      <link>https://cu-hpsc.github.io/fall2019/amg/</link>
       <pubDate>Mon, 09 Dec 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/amg/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/amg/</guid>
       <description>
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
@@ -622,9 +622,9 @@ ex56-summit-gpu-36ranks-converged.txt
     
     <item>
       <title>Multigrid Intro</title>
-      <link>https://cucs-hpsc.github.io/fall2019/multigrid/</link>
+      <link>https://cu-hpsc.github.io/fall2019/multigrid/</link>
       <pubDate>Fri, 06 Dec 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/multigrid/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/multigrid/</guid>
       <description>
 
 &lt;h1 id=&#34;geometric-multigrid&#34;&gt;Geometric Multigrid&lt;/h1&gt;
@@ -1090,9 +1090,9 @@ pyplot.plot(Lt.real, Lt.imag, &#39;.&#39;);
     
     <item>
       <title>Fourier Methods</title>
-      <link>https://cucs-hpsc.github.io/fall2019/fft/</link>
+      <link>https://cu-hpsc.github.io/fall2019/fft/</link>
       <pubDate>Wed, 04 Dec 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/fft/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/fft/</guid>
       <description>
 
 &lt;h2 id=&#34;discrete-signals&#34;&gt;Discrete signals&lt;/h2&gt;
@@ -1275,9 +1275,9 @@ See &lt;a href=&#34;https://math.mit.edu/icg/papers/butterfly-parallel.pdf&#34; 
     
     <item>
       <title>Git Workflows</title>
-      <link>https://cucs-hpsc.github.io/fall2019/git/</link>
+      <link>https://cu-hpsc.github.io/fall2019/git/</link>
       <pubDate>Mon, 02 Dec 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/git/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/git/</guid>
       <description>
 
 &lt;h2 id=&#34;project-roles&#34;&gt;Project roles&lt;/h2&gt;
@@ -1517,9 +1517,9 @@ Date:   Mon Dec 2 10:55:51 2019 -0700
     
     <item>
       <title>Molecular Dynamics</title>
-      <link>https://cucs-hpsc.github.io/fall2019/md/</link>
+      <link>https://cu-hpsc.github.io/fall2019/md/</link>
       <pubDate>Fri, 22 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/md/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/md/</guid>
       <description>
 
 &lt;h2 id=&#34;news-from-this-week-at-supercomputing&#34;&gt;News from this week at Supercomputing&lt;/h2&gt;
@@ -1600,9 +1600,9 @@ plt.legend();
     
     <item>
       <title>Long-range evaluation in N-body Simulation</title>
-      <link>https://cucs-hpsc.github.io/fall2019/nbody-longrange/</link>
+      <link>https://cu-hpsc.github.io/fall2019/nbody-longrange/</link>
       <pubDate>Wed, 20 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/nbody-longrange/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/nbody-longrange/</guid>
       <description>
 
 &lt;h2 id=&#34;recall-the-equations-of-motion&#34;&gt;Recall the equations of motion&lt;/h2&gt;
@@ -1715,9 +1715,9 @@ plt.plot(xx, phi);
     
     <item>
       <title>Intro to N-body Simulation</title>
-      <link>https://cucs-hpsc.github.io/fall2019/nbody/</link>
+      <link>https://cu-hpsc.github.io/fall2019/nbody/</link>
       <pubDate>Mon, 18 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/nbody/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/nbody/</guid>
       <description>
 
 &lt;h2 id=&#34;equations-of-motion&#34;&gt;Equations of motion&lt;/h2&gt;
@@ -1862,9 +1862,9 @@ void force2(int m, const float xmass[], const float x[],
     
     <item>
       <title>Dynamic/Interactive Parallelism</title>
-      <link>https://cucs-hpsc.github.io/fall2019/interactive/</link>
+      <link>https://cu-hpsc.github.io/fall2019/interactive/</link>
       <pubDate>Fri, 15 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/interactive/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/interactive/</guid>
       <description>
 
 &lt;h2 id=&#34;interactive-parallelism&#34;&gt;Interactive Parallelism&lt;/h2&gt;
@@ -2230,9 +2230,9 @@ By &lt;a href=&#34;//commons.wikimedia.org/wiki/User:Chire&#34; title=&#34;User:
     
     <item>
       <title>Data and Probability</title>
-      <link>https://cucs-hpsc.github.io/fall2019/data-probability/</link>
+      <link>https://cu-hpsc.github.io/fall2019/data-probability/</link>
       <pubDate>Wed, 13 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/data-probability/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/data-probability/</guid>
       <description>
 
 &lt;h2 id=&#34;sampling-probability-distributions&#34;&gt;Sampling probability distributions&lt;/h2&gt;
@@ -2404,9 +2404,9 @@ so we need to determine such a matrix $T$.&lt;/p&gt;
     
     <item>
       <title>Data-intensive workflows and parallelism</title>
-      <link>https://cucs-hpsc.github.io/fall2019/data-methods/</link>
+      <link>https://cu-hpsc.github.io/fall2019/data-methods/</link>
       <pubDate>Mon, 11 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/data-methods/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/data-methods/</guid>
       <description>
 
 &lt;h2 id=&#34;seismic-tomography&#34;&gt;Seismic Tomography&lt;/h2&gt;
@@ -2646,9 +2646,9 @@ grid.axes.set(xscale=&#39;log&#39;, xlim=(1, 1e5));
     
     <item>
       <title>MPI-IO and HDF5</title>
-      <link>https://cucs-hpsc.github.io/fall2019/mpi-io/</link>
+      <link>https://cu-hpsc.github.io/fall2019/mpi-io/</link>
       <pubDate>Fri, 08 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/mpi-io/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/mpi-io/</guid>
       <description>
 
 &lt;h2 id=&#34;mpi-io&#34;&gt;MPI-IO&lt;/h2&gt;
@@ -3194,9 +3194,9 @@ GROUP &amp;quot;/&amp;quot; {
     
     <item>
       <title>HPC I/O</title>
-      <link>https://cucs-hpsc.github.io/fall2019/io/</link>
+      <link>https://cu-hpsc.github.io/fall2019/io/</link>
       <pubDate>Wed, 06 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/io/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/io/</guid>
       <description>
 
 &lt;h2 id=&#34;hiding-latency&#34;&gt;Hiding latency&lt;/h2&gt;
@@ -3901,9 +3901,9 @@ openat(AT_FDCWD, &amp;quot;/usr/lib/python3.7/site-packages/numpy/testing/_priva
     
     <item>
       <title>ISPC, OpenMP target, OpenACC, and all that</title>
-      <link>https://cucs-hpsc.github.io/fall2019/openmp-target/</link>
+      <link>https://cu-hpsc.github.io/fall2019/openmp-target/</link>
       <pubDate>Mon, 04 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/openmp-target/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/openmp-target/</guid>
       <description>
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def render_c(filename):
@@ -4162,9 +4162,9 @@ cc   simple.o simple-ispc.o  -lm -o simple
     
     <item>
       <title>Practical CUDA</title>
-      <link>https://cucs-hpsc.github.io/fall2019/cuda-practical/</link>
+      <link>https://cu-hpsc.github.io/fall2019/cuda-practical/</link>
       <pubDate>Fri, 01 Nov 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/cuda-practical/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/cuda-practical/</guid>
       <description>
 
 &lt;ul&gt;
@@ -4438,9 +4438,9 @@ ptxas info    : Used 24 registers, 368 bytes cmem[0]&lt;/p&gt;&lt;/li&gt;
     
     <item>
       <title>GPUs and CUDA</title>
-      <link>https://cucs-hpsc.github.io/fall2019/cuda/</link>
+      <link>https://cu-hpsc.github.io/fall2019/cuda/</link>
       <pubDate>Wed, 30 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/cuda/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/cuda/</guid>
       <description>
 
 &lt;ul&gt;
@@ -4689,9 +4689,9 @@ int main()
     
     <item>
       <title>Coprocessor architectures</title>
-      <link>https://cucs-hpsc.github.io/fall2019/coprocessor/</link>
+      <link>https://cu-hpsc.github.io/fall2019/coprocessor/</link>
       <pubDate>Mon, 28 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/coprocessor/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/coprocessor/</guid>
       <description>&lt;h2 id=&#34;coprocessor-architectures&#34;&gt;Coprocessor architectures&lt;/h2&gt;
 
 &lt;p&gt;&lt;figure&gt;&lt;img src=&#34;https://en.wikichip.org/w/images/0/06/summit_single-node.svg&#34; alt=&#34;&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -4965,9 +4965,9 @@ while ( error &amp;gt; tol  &amp;amp;&amp;amp;  iter  &amp;lt;  iter_max )  {
     
     <item>
       <title>libCEED</title>
-      <link>https://cucs-hpsc.github.io/fall2019/libceed/</link>
+      <link>https://cu-hpsc.github.io/fall2019/libceed/</link>
       <pubDate>Fri, 25 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/libceed/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/libceed/</guid>
       <description>&lt;p&gt;Guest lecture on &lt;a href=&#34;https://github.com/ceed/libceed&#34;&gt;libCEED&lt;/a&gt; from Dr. &lt;a href=&#34;https://csel-web.cs.colorado.edu/~vaba3353/&#34;&gt;Valeria Barra&lt;/a&gt;: &lt;a href=&#34;CUCS_HPSClecture.pdf&#34;&gt;slides&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id=&#34;hpsc-lab-9&#34;&gt;HPSC Lab 9&lt;/h2&gt;
@@ -5470,9 +5470,9 @@ for &lt;code&gt;-degree 8&lt;/code&gt;, we run all intermediate levels given by&
     
     <item>
       <title>Transient Problems</title>
-      <link>https://cucs-hpsc.github.io/fall2019/transient/</link>
+      <link>https://cu-hpsc.github.io/fall2019/transient/</link>
       <pubDate>Wed, 23 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/transient/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/transient/</guid>
       <description>&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
 import pandas
 import seaborn
@@ -5761,9 +5761,9 @@ plt.ylim(top=10);
     
     <item>
       <title>Nonlinear Solvers</title>
-      <link>https://cucs-hpsc.github.io/fall2019/nonlinear/</link>
+      <link>https://cu-hpsc.github.io/fall2019/nonlinear/</link>
       <pubDate>Mon, 21 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/nonlinear/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/nonlinear/</guid>
       <description>&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
 import pandas
 import seaborn
@@ -6044,9 +6044,9 @@ Newton 5 anorm 9.76e-07 rnorm 1.54e-07
     
     <item>
       <title>Multilevel Preconditioning</title>
-      <link>https://cucs-hpsc.github.io/fall2019/mg-preconditioning/</link>
+      <link>https://cu-hpsc.github.io/fall2019/mg-preconditioning/</link>
       <pubDate>Fri, 18 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/mg-preconditioning/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/mg-preconditioning/</guid>
       <description>&lt;h2 id=&#34;recap-domain-decomposition-convergence-theory&#34;&gt;Recap: Domain Decomposition convergence theory&lt;/h2&gt;
 
 &lt;p&gt;The formal convergence is beyond the scope of this course, but the following estimates are useful.  We let $h$ be the element diameter, $H$ be the subdomain diameter, and $\delta$ be the overlap, each normalized such that the global domain diameter is 1.  We express the convergence in terms of the condition number $\kappa$ for the preconditioned operator.&lt;/p&gt;
@@ -7500,9 +7500,9 @@ grid.axes.set(xscale=&#39;log&#39;, xlim=(1, 1e4), ylim=3);
     
     <item>
       <title>DD Preconditioning 2</title>
-      <link>https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/</link>
+      <link>https://cu-hpsc.github.io/fall2019/dd-preconditioning-2/</link>
       <pubDate>Wed, 16 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/dd-preconditioning-2/</guid>
       <description>&lt;h3 id=&#34;recap-domain-decomposition-theory&#34;&gt;Recap: Domain decomposition theory&lt;/h3&gt;
 
 &lt;p&gt;Given a linear operator $A : V \to V$, suppose we have a collection of prolongation operators $P_i : V_i \to V$.  The columns of $P_i$ are &amp;quot;basis functions&amp;quot; for the subspace $V_i$.  The Galerkin operator $A_i = P_i^T A P_i$ is the action of the original operator $A$ in the subspace.&lt;/p&gt;
@@ -8257,9 +8257,9 @@ Using libraries: -Wl,-rpath,/home/jed/petsc/ompi-optg/lib -L/home/jed/petsc/ompi
     
     <item>
       <title>Domain Decomposition Preconditioning</title>
-      <link>https://cucs-hpsc.github.io/fall2019/dd-preconditioning/</link>
+      <link>https://cu-hpsc.github.io/fall2019/dd-preconditioning/</link>
       <pubDate>Mon, 14 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/dd-preconditioning/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/dd-preconditioning/</guid>
       <description>&lt;h2 id=&#34;classical-methods&#34;&gt;Classical methods&lt;/h2&gt;
 
 &lt;p&gt;We have discussed the Jacobi preconditioner
@@ -8500,9 +8500,9 @@ In each case above, the action is expressed in terms of the error iteration oper
     
     <item>
       <title>Preconditioning</title>
-      <link>https://cucs-hpsc.github.io/fall2019/preconditioning/</link>
+      <link>https://cu-hpsc.github.io/fall2019/preconditioning/</link>
       <pubDate>Fri, 11 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/preconditioning/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/preconditioning/</guid>
       <description>
 
 &lt;h2 id=&#34;preconditioning&#34;&gt;Preconditioning&lt;/h2&gt;
@@ -8618,9 +8618,9 @@ In each case above, the action is expressed in terms of the error iteration oper
     
     <item>
       <title>Sparse and iterative linear algebra</title>
-      <link>https://cucs-hpsc.github.io/fall2019/iterative-solvers/</link>
+      <link>https://cu-hpsc.github.io/fall2019/iterative-solvers/</link>
       <pubDate>Wed, 09 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/iterative-solvers/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/iterative-solvers/</guid>
       <description>
 
 &lt;h1 id=&#34;sparse-and-iterative-linear-algebra&#34;&gt;Sparse and iterative linear algebra&lt;/h1&gt;
@@ -8820,9 +8820,9 @@ The solution of this least squares problem is achieved by incrementally updating
     
     <item>
       <title>Elemental for distributed dense linear algebra</title>
-      <link>https://cucs-hpsc.github.io/fall2019/elemental/</link>
+      <link>https://cu-hpsc.github.io/fall2019/elemental/</link>
       <pubDate>Fri, 04 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/elemental/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/elemental/</guid>
       <description>
 
 &lt;h2 id=&#34;flame-diagram-for-cholesky&#34;&gt;FLAME diagram for Cholesky&lt;/h2&gt;
@@ -8847,9 +8847,9 @@ The solution of this least squares problem is achieved by incrementally updating
     
     <item>
       <title>Orthogonality and Conditioning</title>
-      <link>https://cucs-hpsc.github.io/fall2019/dense-linalg-3/</link>
+      <link>https://cu-hpsc.github.io/fall2019/dense-linalg-3/</link>
       <pubDate>Fri, 04 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/dense-linalg-3/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/dense-linalg-3/</guid>
       <description>
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
@@ -9521,9 +9521,9 @@ Figure from &lt;a href=&#34;https://www.sandia.gov/~gmballa/talks/SIAMPP14.pdf&#
     
     <item>
       <title>Dense Linear Algebra and Orthogonality</title>
-      <link>https://cucs-hpsc.github.io/fall2019/dense-linalg-2/</link>
+      <link>https://cu-hpsc.github.io/fall2019/dense-linalg-2/</link>
       <pubDate>Wed, 02 Oct 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/dense-linalg-2/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/dense-linalg-2/</guid>
       <description>
 
 &lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;#pragma omp parallel
@@ -9749,9 +9749,9 @@ qr_test(chol_qr2, V)
     
     <item>
       <title>Dense Linear Algebra and Networks</title>
-      <link>https://cucs-hpsc.github.io/fall2019/dense-linalg/</link>
+      <link>https://cu-hpsc.github.io/fall2019/dense-linalg/</link>
       <pubDate>Mon, 30 Sep 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/dense-linalg/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/dense-linalg/</guid>
       <description>
 
 &lt;h2 id=&#34;inner-products&#34;&gt;Inner products&lt;/h2&gt;
@@ -9901,9 +9901,9 @@ plt.legend();
     
     <item>
       <title>Introduction to MPI</title>
-      <link>https://cucs-hpsc.github.io/fall2019/intro-mpi/</link>
+      <link>https://cu-hpsc.github.io/fall2019/intro-mpi/</link>
       <pubDate>Tue, 24 Sep 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/intro-mpi/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/intro-mpi/</guid>
       <description>
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def render_c(filename):
@@ -10163,9 +10163,9 @@ int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     
     <item>
       <title>More bitonic sorting, graphs</title>
-      <link>https://cucs-hpsc.github.io/fall2019/sorting-graphs/</link>
+      <link>https://cu-hpsc.github.io/fall2019/sorting-graphs/</link>
       <pubDate>Mon, 23 Sep 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/sorting-graphs/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/sorting-graphs/</guid>
       <description>
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;%matplotlib inline
@@ -10413,9 +10413,9 @@ The iterable function was deprecated in Matplotlib 3.1 and will be removed in 3.
     
     <item>
       <title>Parallel Reductions and Scans</title>
-      <link>https://cucs-hpsc.github.io/fall2019/strategies/</link>
+      <link>https://cu-hpsc.github.io/fall2019/strategies/</link>
       <pubDate>Wed, 18 Sep 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/strategies/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/strategies/</guid>
       <description>
 
 &lt;h2 id=&#34;reductions&#34;&gt;Reductions&lt;/h2&gt;
@@ -10573,9 +10573,9 @@ for (int i=0; i&amp;lt;n; i++)
     
     <item>
       <title>OpenMP Tasks</title>
-      <link>https://cucs-hpsc.github.io/fall2019/openmp-3/</link>
+      <link>https://cu-hpsc.github.io/fall2019/openmp-3/</link>
       <pubDate>Mon, 16 Sep 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/openmp-3/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/openmp-3/</guid>
       <description>
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def render_c(filename):
@@ -11305,9 +11305,9 @@ for (int i=0; i&amp;lt;N; i++)
     
     <item>
       <title>More OpenMP</title>
-      <link>https://cucs-hpsc.github.io/fall2019/openmp-2/</link>
+      <link>https://cu-hpsc.github.io/fall2019/openmp-2/</link>
       <pubDate>Fri, 13 Sep 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/openmp-2/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/openmp-2/</guid>
       <description>
 
 &lt;p&gt;What does the compiler do when we add &lt;code&gt;#pragma omp parallel&lt;/code&gt;?&lt;/p&gt;
@@ -11592,9 +11592,9 @@ flags like &lt;code&gt;-ffast-math&lt;/code&gt;.)&lt;/p&gt;
     
     <item>
       <title>OpenMP Basics</title>
-      <link>https://cucs-hpsc.github.io/fall2019/openmp/</link>
+      <link>https://cu-hpsc.github.io/fall2019/openmp/</link>
       <pubDate>Wed, 11 Sep 2019 06:49:25 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/openmp/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/openmp/</guid>
       <description>
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def render_c(filename):
@@ -11931,9 +11931,9 @@ triad-omp-simd.c:1:6: note: vectorized 1 loops in function.
     
     <item>
       <title>Intro to Parallel Scaling</title>
-      <link>https://cucs-hpsc.github.io/fall2019/intro-parallel-scaling/</link>
+      <link>https://cu-hpsc.github.io/fall2019/intro-parallel-scaling/</link>
       <pubDate>Fri, 06 Sep 2019 08:07:31 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/intro-parallel-scaling/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/intro-parallel-scaling/</guid>
       <description>
 
 &lt;h2 id=&#34;programs-with-more-than-one-part&#34;&gt;Programs with more than one part&lt;/h2&gt;
@@ -12092,9 +12092,9 @@ plt.ylim(bottom=0);
     
     <item>
       <title>Introduction to Performance Modeling</title>
-      <link>https://cucs-hpsc.github.io/fall2019/intro-modeling/</link>
+      <link>https://cu-hpsc.github.io/fall2019/intro-modeling/</link>
       <pubDate>Wed, 04 Sep 2019 09:17:28 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/intro-modeling/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/intro-modeling/</guid>
       <description>
 
 &lt;h2 id=&#34;why-model-performance&#34;&gt;Why model performance?&lt;/h2&gt;
@@ -12483,9 +12483,9 @@ plt.legend();
     
     <item>
       <title>Vectorization and Instruction-Level Parallelism</title>
-      <link>https://cucs-hpsc.github.io/fall2019/intro-vectorization/</link>
+      <link>https://cu-hpsc.github.io/fall2019/intro-vectorization/</link>
       <pubDate>Fri, 30 Aug 2019 11:00:00 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/intro-vectorization/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/intro-vectorization/</guid>
       <description>
 
 &lt;p&gt;Remember how single-thread performance has increased significantly
@@ -12521,9 +12521,9 @@ since ~2004 when clock frequency stagnated?&lt;/p&gt;
     
     <item>
       <title>Intro to Architecture</title>
-      <link>https://cucs-hpsc.github.io/fall2019/intro-architecture/</link>
+      <link>https://cu-hpsc.github.io/fall2019/intro-architecture/</link>
       <pubDate>Wed, 28 Aug 2019 08:10:18 -0600</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/intro-architecture/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/intro-architecture/</guid>
       <description>
 
 &lt;h1 id=&#34;cores-caches-and-memory&#34;&gt;Cores, caches, and memory&lt;/h1&gt;
@@ -12656,9 +12656,9 @@ movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
     
     <item>
       <title>Example Page 2</title>
-      <link>https://cucs-hpsc.github.io/courses/example/example2/</link>
+      <link>https://cu-hpsc.github.io/courses/example/example2/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>https://cucs-hpsc.github.io/courses/example/example2/</guid>
+      <guid>https://cu-hpsc.github.io/courses/example/example2/</guid>
       <description>
 
 &lt;p&gt;Here are some more tips for getting started with Academic:&lt;/p&gt;
@@ -12691,9 +12691,9 @@ movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
     
     <item>
       <title>Trends</title>
-      <link>https://cucs-hpsc.github.io/fall2019/trends/</link>
+      <link>https://cu-hpsc.github.io/fall2019/trends/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://cucs-hpsc.github.io/fall2019/trends/</guid>
+      <guid>https://cu-hpsc.github.io/fall2019/trends/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://www.karlrupp.net/2018/02/42-years-of-microprocessor-trend-data/&#34; target=&#34;_blank&#34;&gt;https://www.karlrupp.net/2018/02/42-years-of-microprocessor-trend-data/&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://www.karlrupp.net/2013/06/cpu-gpu-and-mic-hardware-characteristics-over-time/&#34; target=&#34;_blank&#34;&gt;https://www.karlrupp.net/2013/06/cpu-gpu-and-mic-hardware-characteristics-over-time/&lt;/a&gt;&lt;/p&gt;
@@ -12704,9 +12704,9 @@ movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
     
     <item>
       <title>Example Talk</title>
-      <link>https://cucs-hpsc.github.io/talk/example/</link>
+      <link>https://cu-hpsc.github.io/talk/example/</link>
       <pubDate>Sat, 01 Jun 2030 13:00:00 +0000</pubDate>
-      <guid>https://cucs-hpsc.github.io/talk/example/</guid>
+      <guid>https://cu-hpsc.github.io/talk/example/</guid>
       <description>&lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
     Click on the &lt;strong&gt;Slides&lt;/strong&gt; button above to view the built-in slides feature.
@@ -12727,9 +12727,9 @@ movsd QWORD PTR a[0+rax*8], xmm0 ; store to memory address a[i]
     
     <item>
       <title>Slides</title>
-      <link>https://cucs-hpsc.github.io/slides/example/</link>
+      <link>https://cu-hpsc.github.io/slides/example/</link>
       <pubDate>Tue, 05 Feb 2019 00:00:00 +0000</pubDate>
-      <guid>https://cucs-hpsc.github.io/slides/example/</guid>
+      <guid>https://cu-hpsc.github.io/slides/example/</guid>
       <description>
 
 &lt;h1 id=&#34;welcome-to-slides&#34;&gt;Welcome to Slides&lt;/h1&gt;
@@ -12908,17 +12908,17 @@ $$&lt;/p&gt;
     
     <item>
       <title>External Project</title>
-      <link>https://cucs-hpsc.github.io/project/external-project/</link>
+      <link>https://cu-hpsc.github.io/project/external-project/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      <guid>https://cucs-hpsc.github.io/project/external-project/</guid>
+      <guid>https://cu-hpsc.github.io/project/external-project/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Internal Project</title>
-      <link>https://cucs-hpsc.github.io/project/internal-project/</link>
+      <link>https://cu-hpsc.github.io/project/internal-project/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      <guid>https://cucs-hpsc.github.io/project/internal-project/</guid>
+      <guid>https://cu-hpsc.github.io/project/internal-project/</guid>
       <description>&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum. Sed ac faucibus dolor, scelerisque sollicitudin nisi. Cras purus urna, suscipit quis sapien eu, pulvinar tempor diam. Quisque risus orci, mollis id ante sit amet, gravida egestas nisl. Sed ac tempus magna. Proin in dui enim. Donec condimentum, sem id dapibus fringilla, tellus enim condimentum arcu, nec volutpat est felis vel metus. Vestibulum sit amet erat at nulla eleifend gravida.&lt;/p&gt;
 
 &lt;p&gt;Nullam vel molestie justo. Curabitur vitae efficitur leo. In hac habitasse platea dictumst. Sed pulvinar mauris dui, eget varius purus congue ac. Nulla euismod, lorem vel elementum dapibus, nunc justo porta mi, sed tempus est est vel tellus. Nam et enim eleifend, laoreet sem sit amet, elementum sem. Morbi ut leo congue, maximus velit ut, finibus arcu. In et libero cursus, rutrum risus non, molestie leo. Nullam congue quam et volutpat malesuada. Sed risus tortor, pulvinar et dictum nec, sodales non mi. Phasellus lacinia commodo laoreet. Nam mollis, erat in feugiat consectetur, purus eros egestas tellus, in auctor urna odio at nibh. Mauris imperdiet nisi ac magna convallis, at rhoncus ligula cursus.&lt;/p&gt;

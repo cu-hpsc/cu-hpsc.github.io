@@ -31,7 +31,7 @@
   <meta name="description" content="Reductions double reduce(int n, double x[]) { double y = 0; for (int i=0; i&lt;n; i&#43;&#43;) y &#43;= x[i]; return y; }  DAG properties  Work $W(n) = n$ Depth $D(n) = n$ Parallelism $P(n) = \frac{W(n)}{D(n)} = 1$  A 2-level method double reduce(int n, double x[]) { int P = sqrt(n); // ways of parallelism double y[P]; #pragma omp parallel for shared(y) for (int p=0; p&lt;P; p&#43;&#43;) { y[p] = 0; for (int i=0; i&lt;n/P; i&#43;&#43;) y[p] &#43;= x[p*(n/P) &#43; i]; } double sum = 0; for (int p=0; p&lt;P; p&#43;&#43;) sum &#43;= y[p]; return sum; }  DAG properties  Work $W(n) = n &#43; \sqrt{n}$ Depth $D(n) = 2 \sqrt{n}$ Parallelism $P(n) = \sqrt{n}$  PRAM performance model  Processing units (e.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/strategies/">
+  <link rel="alternate" hreflang="en-us" href="https://cu-hpsc.github.io/fall2019/strategies/">
 
   
 
@@ -98,7 +98,7 @@
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/strategies/">
+  <link rel="canonical" href="https://cu-hpsc.github.io/fall2019/strategies/">
 
   
   
@@ -114,10 +114,10 @@
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/strategies/">
+  <meta property="og:url" content="https://cu-hpsc.github.io/fall2019/strategies/">
   <meta property="og:title" content="Parallel Reductions and Scans | HPSC">
-  <meta property="og:description" content="Reductions double reduce(int n, double x[]) { double y = 0; for (int i=0; i&lt;n; i&#43;&#43;) y &#43;= x[i]; return y; }  DAG properties  Work $W(n) = n$ Depth $D(n) = n$ Parallelism $P(n) = \frac{W(n)}{D(n)} = 1$  A 2-level method double reduce(int n, double x[]) { int P = sqrt(n); // ways of parallelism double y[P]; #pragma omp parallel for shared(y) for (int p=0; p&lt;P; p&#43;&#43;) { y[p] = 0; for (int i=0; i&lt;n/P; i&#43;&#43;) y[p] &#43;= x[p*(n/P) &#43; i]; } double sum = 0; for (int p=0; p&lt;P; p&#43;&#43;) sum &#43;= y[p]; return sum; }  DAG properties  Work $W(n) = n &#43; \sqrt{n}$ Depth $D(n) = 2 \sqrt{n}$ Parallelism $P(n) = \sqrt{n}$  PRAM performance model  Processing units (e."><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
-  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+  <meta property="og:description" content="Reductions double reduce(int n, double x[]) { double y = 0; for (int i=0; i&lt;n; i&#43;&#43;) y &#43;= x[i]; return y; }  DAG properties  Work $W(n) = n$ Depth $D(n) = n$ Parallelism $P(n) = \frac{W(n)}{D(n)} = 1$  A 2-level method double reduce(int n, double x[]) { int P = sqrt(n); // ways of parallelism double y[P]; #pragma omp parallel for shared(y) for (int p=0; p&lt;P; p&#43;&#43;) { y[p] = 0; for (int i=0; i&lt;n/P; i&#43;&#43;) y[p] &#43;= x[p*(n/P) &#43; i]; } double sum = 0; for (int p=0; p&lt;P; p&#43;&#43;) sum &#43;= y[p]; return sum; }  DAG properties  Work $W(n) = n &#43; \sqrt{n}$ Depth $D(n) = 2 \sqrt{n}$ Parallelism $P(n) = \sqrt{n}$  PRAM performance model  Processing units (e."><meta property="og:image" content="https://cu-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cu-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
       <meta property="article:published_time" content="2019-09-18T06:49:25-06:00">
@@ -690,7 +690,7 @@ for (int i=0; i&lt;n; i++)
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/strategies/index.md">
+  <a href="https://github.com/cu-hpsc/hpsc-class/edit/master/content/fall2019/strategies/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

@@ -33,7 +33,7 @@ with some important distinctions
  Threads set CLONE_VM  threads share the same virtual-to-physical address mapping threads can access the same data at the same addresses; private data is private only because other threads don&rsquo;t know its address  Threads set CLONE_FILES  threads share file descriptors  Threads set CLONE_THREAD, CLONE_SIGHAND  process id and signal handlers shared   Myths  Processes can&rsquo;t share memory  mmap(), shm_open(), and MPI_Win_allocate_shared()  Processes are &ldquo;heavy&rdquo;  same data structures and kernel scheduling; no difference in context switching data from parent is inherited copy-on-write at very low overhead startup costs ~100 microseconds to duplicate page tables caches are physically tagged; processes can share L1 cache   MPI: Message Passing Interface  Just a library: plain C, C&#43;&#43;, or Fortran compiler  Two active open source libraries: MPICH and Open MPI Numerous vendor implementations modify/extend these open source implementations MVAPICH is an MPICH-derived open source implementation for InfiniBand and related networks  Bindings from many other languages; mpi4py is popular Scales to millions of processes across ~100k nodes  Shared memory systems can be scaled up to ~4000 cores, but latency and price ($) increase  Standard usage: processes are separate on startup Timeline">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://cucs-hpsc.github.io/fall2019/intro-mpi/">
+  <link rel="alternate" hreflang="en-us" href="https://cu-hpsc.github.io/fall2019/intro-mpi/">
 
   
 
@@ -100,7 +100,7 @@ with some important distinctions
   <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="https://cucs-hpsc.github.io/fall2019/intro-mpi/">
+  <link rel="canonical" href="https://cu-hpsc.github.io/fall2019/intro-mpi/">
 
   
   
@@ -116,12 +116,12 @@ with some important distinctions
   <meta property="twitter:creator" content="@five9a2">
   
   <meta property="og:site_name" content="HPSC">
-  <meta property="og:url" content="https://cucs-hpsc.github.io/fall2019/intro-mpi/">
+  <meta property="og:url" content="https://cu-hpsc.github.io/fall2019/intro-mpi/">
   <meta property="og:title" content="Introduction to MPI | HPSC">
   <meta property="og:description" content="def render_c(filename): from IPython.display import Markdown with open(filename) as f: contents = f.read() return Markdown(&quot;```c\n&quot; &#43; contents &#43; &quot;```\n&quot;)  Processes and Threads Threads and processes are very similar * Both created via clone system call on Linux * Scheduled in the same way by the operating system * Separate stacks (automatic variables) * Access to same memory before fork() or clone()
 with some important distinctions
- Threads set CLONE_VM  threads share the same virtual-to-physical address mapping threads can access the same data at the same addresses; private data is private only because other threads don&rsquo;t know its address  Threads set CLONE_FILES  threads share file descriptors  Threads set CLONE_THREAD, CLONE_SIGHAND  process id and signal handlers shared   Myths  Processes can&rsquo;t share memory  mmap(), shm_open(), and MPI_Win_allocate_shared()  Processes are &ldquo;heavy&rdquo;  same data structures and kernel scheduling; no difference in context switching data from parent is inherited copy-on-write at very low overhead startup costs ~100 microseconds to duplicate page tables caches are physically tagged; processes can share L1 cache   MPI: Message Passing Interface  Just a library: plain C, C&#43;&#43;, or Fortran compiler  Two active open source libraries: MPICH and Open MPI Numerous vendor implementations modify/extend these open source implementations MVAPICH is an MPICH-derived open source implementation for InfiniBand and related networks  Bindings from many other languages; mpi4py is popular Scales to millions of processes across ~100k nodes  Shared memory systems can be scaled up to ~4000 cores, but latency and price ($) increase  Standard usage: processes are separate on startup Timeline"><meta property="og:image" content="https://cucs-hpsc.github.io/img/icon-192.png">
-  <meta property="twitter:image" content="https://cucs-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
+ Threads set CLONE_VM  threads share the same virtual-to-physical address mapping threads can access the same data at the same addresses; private data is private only because other threads don&rsquo;t know its address  Threads set CLONE_FILES  threads share file descriptors  Threads set CLONE_THREAD, CLONE_SIGHAND  process id and signal handlers shared   Myths  Processes can&rsquo;t share memory  mmap(), shm_open(), and MPI_Win_allocate_shared()  Processes are &ldquo;heavy&rdquo;  same data structures and kernel scheduling; no difference in context switching data from parent is inherited copy-on-write at very low overhead startup costs ~100 microseconds to duplicate page tables caches are physically tagged; processes can share L1 cache   MPI: Message Passing Interface  Just a library: plain C, C&#43;&#43;, or Fortran compiler  Two active open source libraries: MPICH and Open MPI Numerous vendor implementations modify/extend these open source implementations MVAPICH is an MPICH-derived open source implementation for InfiniBand and related networks  Bindings from many other languages; mpi4py is popular Scales to millions of processes across ~100k nodes  Shared memory systems can be scaled up to ~4000 cores, but latency and price ($) increase  Standard usage: processes are separate on startup Timeline"><meta property="og:image" content="https://cu-hpsc.github.io/img/icon-192.png">
+  <meta property="twitter:image" content="https://cu-hpsc.github.io/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
       <meta property="article:published_time" content="2019-09-24T06:49:25-06:00">
@@ -791,7 +791,7 @@ int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
           
 <p class="edit-page">
-  <a href="https://github.com/cucs-hpsc/hpsc-class/edit/master/content/fall2019/intro-mpi/index.md">
+  <a href="https://github.com/cu-hpsc/hpsc-class/edit/master/content/fall2019/intro-mpi/index.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

@@ -2,14 +2,14 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories | HPSC</title>
-    <link>https://cucs-hpsc.github.io/categories/</link>
-      <atom:link href="https://cucs-hpsc.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <link>https://cu-hpsc.github.io/categories/</link>
+      <atom:link href="https://cu-hpsc.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
     <image>
-      <url>https://cucs-hpsc.github.io/img/icon-192.png</url>
+      <url>https://cu-hpsc.github.io/img/icon-192.png</url>
       <title>Categories</title>
-      <link>https://cucs-hpsc.github.io/categories/</link>
+      <link>https://cu-hpsc.github.io/categories/</link>
     </image>
     
   </channel>

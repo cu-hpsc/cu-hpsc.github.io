@@ -3,304 +3,304 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://cucs-hpsc.github.io/courses/example/example1/</loc>
+    <loc>https://cu-hpsc.github.io/courses/example/example1/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/courses/example/</loc>
+    <loc>https://cu-hpsc.github.io/courses/example/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/</loc>
-    <lastmod>2019-12-09T13:25:00-07:00</lastmod>
+    <loc>https://cu-hpsc.github.io/fall2019/</loc>
+    <lastmod>2020-04-02T15:16:54-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/syllabus/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/syllabus/</loc>
     <lastmod>2019-08-30T17:08:25-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/amg/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/amg/</loc>
     <lastmod>2019-12-09T13:25:00-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/multigrid/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/multigrid/</loc>
     <lastmod>2019-12-06T12:25:17-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/fft/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/fft/</loc>
     <lastmod>2019-12-04T22:21:33-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/git/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/git/</loc>
     <lastmod>2019-12-02T14:28:50-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/md/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/md/</loc>
     <lastmod>2019-11-22T16:24:03-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/nbody-longrange/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/nbody-longrange/</loc>
     <lastmod>2019-11-20T19:47:15-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/nbody/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/nbody/</loc>
     <lastmod>2019-11-18T12:26:24-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/interactive/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/interactive/</loc>
     <lastmod>2019-11-16T10:32:53-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/data-probability/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/data-probability/</loc>
     <lastmod>2019-11-13T13:01:51-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/data-methods/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/data-methods/</loc>
     <lastmod>2019-11-11T15:42:39-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/mpi-io/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/mpi-io/</loc>
     <lastmod>2019-11-08T12:49:13-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/io/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/io/</loc>
     <lastmod>2019-11-06T12:15:38-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/openmp-target/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/openmp-target/</loc>
     <lastmod>2019-11-04T12:35:19-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/cuda-practical/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/cuda-practical/</loc>
     <lastmod>2019-11-01T12:27:17-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/cuda/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/cuda/</loc>
     <lastmod>2019-10-30T13:41:28-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/coprocessor/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/coprocessor/</loc>
     <lastmod>2019-10-28T14:00:19-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/libceed/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/libceed/</loc>
     <lastmod>2019-10-25T09:43:09-04:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/transient/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/transient/</loc>
     <lastmod>2019-10-23T12:54:09-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/nonlinear/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/nonlinear/</loc>
     <lastmod>2019-10-21T14:44:59-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/mg-preconditioning/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/mg-preconditioning/</loc>
     <lastmod>2019-10-18T14:16:25-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/dd-preconditioning-2/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/dd-preconditioning-2/</loc>
     <lastmod>2019-10-16T12:16:04-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/dd-preconditioning/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/dd-preconditioning/</loc>
     <lastmod>2019-10-14T23:12:55-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/preconditioning/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/preconditioning/</loc>
     <lastmod>2019-10-14T23:05:43-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/iterative-solvers/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/iterative-solvers/</loc>
     <lastmod>2019-10-09T12:20:03-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/elemental/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/elemental/</loc>
     <lastmod>2019-10-08T21:52:08-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/dense-linalg-3/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/dense-linalg-3/</loc>
     <lastmod>2019-10-04T17:17:50-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/dense-linalg-2/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/dense-linalg-2/</loc>
     <lastmod>2019-10-02T15:45:54-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/dense-linalg/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/dense-linalg/</loc>
     <lastmod>2019-09-30T14:50:54-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/intro-mpi/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/intro-mpi/</loc>
     <lastmod>2019-09-25T11:04:09-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/sorting-graphs/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/sorting-graphs/</loc>
     <lastmod>2019-09-23T12:09:42-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/strategies/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/strategies/</loc>
     <lastmod>2019-09-18T12:13:21-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/openmp-3/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/openmp-3/</loc>
     <lastmod>2019-09-16T15:41:32-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/openmp-2/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/openmp-2/</loc>
     <lastmod>2019-09-13T15:04:27-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/openmp/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/openmp/</loc>
     <lastmod>2019-09-11T13:33:39-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/intro-parallel-scaling/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/intro-parallel-scaling/</loc>
     <lastmod>2019-09-06T12:46:03-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/intro-modeling/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/intro-modeling/</loc>
     <lastmod>2019-09-06T12:27:39-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/intro-vectorization/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/intro-vectorization/</loc>
     <lastmod>2019-08-30T17:08:25-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/intro-architecture/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/intro-architecture/</loc>
     <lastmod>2019-08-30T17:08:25-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/courses/example/example2/</loc>
+    <loc>https://cu-hpsc.github.io/courses/example/example2/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/fall2019/trends/</loc>
+    <loc>https://cu-hpsc.github.io/fall2019/trends/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/talk/example/</loc>
+    <loc>https://cu-hpsc.github.io/talk/example/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/</loc>
+    <loc>https://cu-hpsc.github.io/</loc>
     <lastmod>2019-12-09T13:25:00-07:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/slides/</loc>
+    <loc>https://cu-hpsc.github.io/slides/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/slides/example/</loc>
+    <loc>https://cu-hpsc.github.io/slides/example/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/tags/deep-learning/</loc>
+    <loc>https://cu-hpsc.github.io/tags/deep-learning/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/tags/demo/</loc>
+    <loc>https://cu-hpsc.github.io/tags/demo/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/project/external-project/</loc>
+    <loc>https://cu-hpsc.github.io/project/external-project/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/project/internal-project/</loc>
+    <loc>https://cu-hpsc.github.io/project/internal-project/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/project/</loc>
+    <loc>https://cu-hpsc.github.io/project/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/tags/</loc>
+    <loc>https://cu-hpsc.github.io/tags/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/authors/admin/</loc>
+    <loc>https://cu-hpsc.github.io/authors/admin/</loc>
     <lastmod>2019-08-26T14:04:23-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/authors/</loc>
+    <loc>https://cu-hpsc.github.io/authors/</loc>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/categories/</loc>
+    <loc>https://cu-hpsc.github.io/categories/</loc>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/courses/</loc>
+    <loc>https://cu-hpsc.github.io/courses/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/post/</loc>
+    <loc>https://cu-hpsc.github.io/post/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/publication_types/</loc>
+    <loc>https://cu-hpsc.github.io/publication_types/</loc>
   </url>
   
   <url>
-    <loc>https://cucs-hpsc.github.io/talk/</loc>
+    <loc>https://cu-hpsc.github.io/talk/</loc>
     <lastmod>2019-08-25T23:15:46-06:00</lastmod>
   </url>
   

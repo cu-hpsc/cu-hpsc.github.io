@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Authors | HPSC</title>
-    <link>https://cucs-hpsc.github.io/authors/</link>
-      <atom:link href="https://cucs-hpsc.github.io/authors/index.xml" rel="self" type="application/rss+xml" />
+    <link>https://cu-hpsc.github.io/authors/</link>
+      <atom:link href="https://cu-hpsc.github.io/authors/index.xml" rel="self" type="application/rss+xml" />
     <description>Authors</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
     <image>
-      <url>https://cucs-hpsc.github.io/img/icon-192.png</url>
+      <url>https://cu-hpsc.github.io/img/icon-192.png</url>
       <title>Authors</title>
-      <link>https://cucs-hpsc.github.io/authors/</link>
+      <link>https://cu-hpsc.github.io/authors/</link>
     </image>
     
     <item>
       <title></title>
-      <link>https://cucs-hpsc.github.io/authors/admin/</link>
+      <link>https://cu-hpsc.github.io/authors/admin/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://cucs-hpsc.github.io/authors/admin/</guid>
+      <guid>https://cu-hpsc.github.io/authors/admin/</guid>
       <description></description>
     </item>
     
